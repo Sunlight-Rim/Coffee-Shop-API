@@ -1,0 +1,745 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "Example Go application with Clean Architecture pattern.\nProvides user registration, login and ordering of coffee.",
+    "title": "Coffee Shop API",
+    "version": "0.1"
+  },
+  "host": "localhost:1337",
+  "paths": {
+    "/api/auth/refresh": {
+      "post": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create new tokens pair by refresh token.",
+        "operationId": "RefreshRequestNull",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RefreshResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/auth/signin": {
+      "post": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in to user account.",
+        "operationId": "SigninRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SigninReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SigninResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/auth/signout": {
+      "post": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Remove tokens from cookies.",
+        "operationId": "SignoutRequestNull",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SignoutResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/auth/signout-all": {
+      "post": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Revoke all user refresh tokens (sessions) and removes tokens from cookies.",
+        "operationId": "SignoutAllRequestNull",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SignoutAllResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "description": "Password must be longer than 6 characters and contain at least one special character.\nUsername must be string with 6-40 characters.",
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user.",
+        "operationId": "SignupRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignupReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SignupResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/coffee/list": {
+      "get": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Coffee"
+        ],
+        "summary": "List coffee assortment.",
+        "operationId": "ListCoffeeRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "Offset",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ListCoffeeResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/coffee/{id}": {
+      "get": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Coffee"
+        ],
+        "summary": "Get one coffee info.",
+        "operationId": "GetCoffeeRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "CoffeeID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetCoffeeResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/errors": {
+      "get": {
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "Errors"
+        ],
+        "summary": "List of API errors.",
+        "operationId": "null",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ErrorsListResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check.",
+        "operationId": "null",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/HealthResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/user": {
+      "get": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "User"
+        ],
+        "summary": "Get user own account information.",
+        "operationId": "GetMeNull",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetMeResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete user own account.",
+        "operationId": "DeleteMeNull",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/DeleteMeResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/user/password": {
+      "put": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "User"
+        ],
+        "summary": "Change user password.",
+        "operationId": "ChangePasswordRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangePasswordReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ChangePasswordResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ChangePasswordReq": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "new_password": {
+          "type": "string",
+          "x-go-name": "NewPassword"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "Coffee": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "ID"
+        },
+        "image": {
+          "type": "string",
+          "x-go-name": "Image"
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "x-go-name": "Price"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Weight"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/coffee/delivery/rest"
+    },
+    "DeleteMeRes": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "ErrorResponse": {
+      "description": "easyjson:json",
+      "type": "object",
+      "title": "General error response struct.",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "Code"
+        },
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        }
+      },
+      "x-go-package": "coffeeshop-api/pkg/tools"
+    },
+    "GetCoffeeRes": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "coffee": {
+          "$ref": "#/definitions/Coffee"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/coffee/delivery/rest"
+    },
+    "GetMeRes": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "ListCoffeeRes": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "coffee_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Coffee"
+          },
+          "x-go-name": "CoffeeList"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/coffee/delivery/rest"
+    },
+    "SigninReq": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "password": {
+          "type": "string",
+          "x-go-name": "Password"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "SignoutAllRes": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "refresh_tokens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "RefreshTokens"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "SignupReq": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "password": {
+          "type": "string",
+          "x-go-name": "Password"
+        },
+        "phone": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Phone"
+        },
+        "username": {
+          "type": "string",
+          "x-go-name": "Username"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "SignupRes": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "UserID"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    },
+    "User": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "ID"
+        },
+        "phone": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Phone"
+        },
+        "username": {
+          "type": "string",
+          "x-go-name": "Username"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+    }
+  },
+  "responses": {
+    "ChangePasswordResponse": {
+      "description": "Empty response.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "x-go-name": "Response",
+            "example": "null"
+          }
+        }
+      }
+    },
+    "DeleteMeResponse": {
+      "description": "Returns user deleted account data.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/DeleteMeRes"
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "description": "General errors model. Response field is null.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "$ref": "#/definitions/ErrorResponse"
+          },
+          "response": {
+            "x-go-name": "Response",
+            "example": "null"
+          }
+        }
+      }
+    },
+    "ErrorsListResponse": {
+      "description": "A list of errors containing error codes and text descriptions.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "type": "string",
+                "x-go-name": "Language"
+              }
+            },
+            "x-go-name": "Response"
+          }
+        }
+      }
+    },
+    "GetCoffeeResponse": {
+      "description": "Returns coffee info.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/GetCoffeeRes"
+          }
+        }
+      }
+    },
+    "GetMeResponse": {
+      "description": "Returns user account data.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/GetMeRes"
+          }
+        }
+      }
+    },
+    "HealthResponse": {
+      "description": "Informs whether the service is alive or not.",
+      "schema": {
+        "type": "string"
+      }
+    },
+    "ListCoffeeResponse": {
+      "description": "Returns coffee list.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/ListCoffeeRes"
+          }
+        }
+      }
+    },
+    "RefreshResponse": {
+      "description": "Empty response.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "x-go-name": "Response",
+            "example": "null"
+          }
+        }
+      }
+    },
+    "SigninResponse": {
+      "description": "Empty response.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "x-go-name": "Response",
+            "example": "null"
+          }
+        }
+      }
+    },
+    "SignoutAllResponse": {
+      "description": "Returns revoked tokens.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/SignoutAllRes"
+          }
+        }
+      }
+    },
+    "SignoutResponse": {
+      "description": "Empty response.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "x-go-name": "Response",
+            "example": "null"
+          }
+        }
+      }
+    },
+    "SignupResponse": {
+      "description": "Returns user ID.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/SignupRes"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "accessToken": {
+      "description": "authorization access JWT stored in a cookie.",
+      "type": "apiKey",
+      "name": "access-token",
+      "in": "cookie"
+    }
+  }
+}

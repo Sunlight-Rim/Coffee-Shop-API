@@ -1,0 +1,47 @@
+{
+    "server": {
+        "application": {
+            "host": "0.0.0.0",
+            "port": "1337"
+        },
+
+        "pprof": {
+            "host": "0.0.0.0",
+            "port": "6060"
+        }
+    },
+
+    "logger": {
+        "level": "debug",
+        "json": false
+    },
+
+    "token": {
+        "secret": "victoria",
+        "access_exp": 60,
+        "refresh_exp": 43200
+    },
+
+    "database": {
+        "postgres": {
+            "host": "postgres",
+            "port": 5432,
+            "user": "coffeeshop",
+            "password": "coffeeshop",
+            "database": "coffeeshop",
+            "sslmode": "disable",
+            "max_open_conns": 1000,
+            "max_idle_conns": 50,
+            "conn_max_lifetime": 50,
+            "conn_max_idle_time": 50,
+            "ping_timeout": 10
+        },
+        
+        "redis": {
+            "host": "redis",
+            "port": 6379,
+            "password": "",
+            "database": 0
+        }
+    }
+}

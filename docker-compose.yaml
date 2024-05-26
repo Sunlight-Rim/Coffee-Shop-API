@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  api:
+    container_name: coffeeshop-api
+    build:
+      context: .
+      dockerfile: dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 1337:1337
+      - 6060:6060
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    container_name: coffeeshop-postgres
+    image: postgres
+    environment:
+      - POSTGRES_DB=coffeeshop
+      - POSTGRES_USER=coffeeshop
+      - POSTGRES_PASSWORD=coffeeshop
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    container_name: coffeeshop-redis
+    image: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+  swagger-ui:
+    container_name: coffeeshop-swagger
+    image: swaggerapi/swagger-ui
+    environment:
+      - SWAGGER_JSON=/docs/swagger.json
+    ports:
+      - 8080:8080
+    volumes:
+      - ./docs/swagger.json:/docs/swagger.json

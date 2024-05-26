@@ -1,0 +1,42 @@
+[
+    {
+        "error": "not found",
+        "http_status": 404
+    },
+    {
+        "error": "method not allowed",
+        "http_status": 405
+    },
+    {
+        "error": "invalid request format",
+        "http_status": 400
+    },
+    {
+        "error": "invalid request content",
+        "http_status": 422
+    },
+    {
+        "error": "email is busy",
+        "http_status": 422
+    },
+    {
+        "error": "invalid credentials",
+        "http_status": 401
+    },
+    {
+        "error": "missing token",
+        "http_status": 401
+    },
+    {
+        "error": "invalid token",
+        "http_status": 401
+    },
+    {
+        "error": "expired token",
+        "http_status": 401
+    },
+    {
+        "error": "deleted account",
+        "http_status": 403
+    }
+]
