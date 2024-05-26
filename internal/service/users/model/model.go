@@ -13,8 +13,8 @@ type JWTClaims struct {
 }
 
 type Token struct {
-	Token string
-	Exp   time.Time
+	String string
+	Exp    time.Time
 }
 
 type User struct {

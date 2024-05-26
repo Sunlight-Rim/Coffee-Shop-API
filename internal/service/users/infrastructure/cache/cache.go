@@ -25,7 +25,7 @@ func New(redis *redis.Client) *cache {
 func (c *cache) SaveUserRefreshToken(userID uint64, token *model.Token) error {
 	if err := c.redis.Set(
 		context.TODO(),
-		fmt.Sprintf(refreshTokenFmt, userID, token.Token),
+		fmt.Sprintf(refreshTokenFmt, userID, token.String),
 		nil,
 		time.Until(token.Exp),
 	).Err(); err != nil {

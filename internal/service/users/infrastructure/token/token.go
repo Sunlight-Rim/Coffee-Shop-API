@@ -52,7 +52,7 @@ func (s *service) CreatePair(claims *model.JWTClaims) (*model.Token, *model.Toke
 	claims.ExpiresAt.Time = time.Now().Add(s.accessExp)
 
 	accessToken.Exp = claims.ExpiresAt.Time
-	accessToken.Token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
+	accessToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "signing access token")
 	}
@@ -61,7 +61,7 @@ func (s *service) CreatePair(claims *model.JWTClaims) (*model.Token, *model.Toke
 	claims.ExpiresAt.Time = time.Now().Add(s.refreshExp)
 
 	refreshToken.Exp = claims.ExpiresAt.Time
-	accessToken.Token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
+	accessToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "signing refresh token")
 	}

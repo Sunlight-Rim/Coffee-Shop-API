@@ -209,7 +209,7 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 func setCookieTokens(c echo.Context, accessToken, refreshToken *model.Token) {
 	c.SetCookie(&http.Cookie{
 		Name:     "access",
-		Value:    accessToken.Token,
+		Value:    accessToken.String,
 		Expires:  accessToken.Exp,
 		HttpOnly: true,
 		// Secure:   true,
@@ -218,7 +218,7 @@ func setCookieTokens(c echo.Context, accessToken, refreshToken *model.Token) {
 	c.SetCookie(&http.Cookie{
 		Name:     "refresh",
 		Path:     "/api/auth/refresh",
-		Value:    refreshToken.Token,
+		Value:    refreshToken.String,
 		Expires:  refreshToken.Exp,
 		HttpOnly: true,
 		// Secure:   true,
