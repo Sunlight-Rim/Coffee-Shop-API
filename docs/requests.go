@@ -1,38 +1,38 @@
 package model
 
 import (
-	restCoffee "coffeeshop-api/internal/service/coffee/delivery/rest"
-	restUsers "coffeeshop-api/internal/service/users/delivery/rest"
+	modelCoffee "coffeeshop-api/internal/service/coffee/model"
+	modelUsers "coffeeshop-api/internal/service/users/model"
 )
 
 // swagger:parameters SignupRequest
 type SignupRequest struct {
 	// in: body
 	// required: true
-	Body restUsers.SignupReq
+	Body modelUsers.DeliverySignupReq
 }
 
 // swagger:parameters SigninRequest
 type SigninRequest struct {
 	// in: body
 	// required: true
-	Body restUsers.SigninReq
+	Body modelUsers.DeliverySigninReq
 }
 
 // swagger:parameters ChangePasswordRequest
 type ChangePasswordRequest struct {
 	// in: body
 	// required: true
-	Body restUsers.ChangePasswordReq
+	Body modelUsers.DeliveryChangePasswordReq
 }
 
-// swagger:parameters GetCoffeeRequest
-type GetCoffeeRequest struct {
+// swagger:parameters GetCoffeeInfoRequest
+type GetCoffeeInfoRequest struct {
 	// required: true
-	restCoffee.GetCoffeeReq
+	modelCoffee.DeliveryGetCoffeeInfoReq
 }
 
 // swagger:parameters ListCoffeeRequest
 type ListCoffeeRequest struct {
-	restCoffee.ListCoffeeReq
+	modelCoffee.DeliveryListCoffeeReq
 }

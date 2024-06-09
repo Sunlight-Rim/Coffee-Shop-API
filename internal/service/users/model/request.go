@@ -15,14 +15,29 @@ var (
 
 // Signup
 
-type SignupReq struct {
+// easyjson:json
+type DeliverySignupReq struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Phone    uint64 `json:"phone"`
+	Password string `json:"password"`
+}
+
+type UsecaseSignupReq struct {
 	Username string
 	Email    string
 	Phone    uint64
 	Password string
 }
 
-func (r *SignupReq) Validate() error {
+type StorageCreateReq struct {
+	Username     string
+	Email        string
+	Phone        uint64
+	PasswordHash string
+}
+
+func (r *UsecaseSignupReq) Validate() error {
 	if !usernameRegex.MatchString(r.Username) {
 		return errors.Wrap(errors.InvalidRequestContent, "username")
 	}
@@ -38,21 +53,25 @@ func (r *SignupReq) Validate() error {
 	return nil
 }
 
-type StorageCreateReq struct {
-	Username     string
-	Email        string
-	Phone        uint64
-	PasswordHash string
-}
-
 // Signin
 
-type SigninReq struct {
+// easyjson:json
+type DeliverySigninReq struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UsecaseSigninReq struct {
 	Email    string
 	Password string
 }
 
-func (r *SigninReq) Validate() error {
+type StorageCheckCredentialsReq struct {
+	Email        string
+	PasswordHash string
+}
+
+func (r *UsecaseSigninReq) Validate() error {
 	if !emailRegex.MatchString(r.Email) {
 		return errors.Wrap(errors.InvalidRequestContent, "email")
 	}
@@ -64,11 +83,6 @@ func (r *SigninReq) Validate() error {
 	return nil
 }
 
-type StorageCheckCredentialsReq struct {
-	Email        string
-	PasswordHash string
-}
-
 // IsDeleted
 
 type StorageIsDeletedReq struct {
@@ -77,19 +91,34 @@ type StorageIsDeletedReq struct {
 
 // Refresh
 
-type RefreshReq struct {
+// easyjson:json
+type DeliveryRefreshReq struct {
+	RefreshToken string
+}
+
+type UsecaseRefreshReq struct {
 	RefreshToken string
 }
 
 // SignoutAll
 
-type SignoutAllReq struct {
+// easyjson:json
+type DeliverySignoutAllReq struct {
+	UserID uint64 `json:"-"`
+}
+
+type UsecaseSignoutAllReq struct {
 	UserID uint64
 }
 
 // GetMe
 
-type GetMeReq struct {
+// easyjson:json
+type DeliveryGetMeReq struct {
+	UserID uint64 `json:"-"`
+}
+
+type UsecaseGetMeReq struct {
 	UserID uint64
 }
 
@@ -99,17 +128,15 @@ type StorageGetMeReq struct {
 
 // ChangePassword
 
-type ChangePasswordReq struct {
-	UserID      uint64
-	NewPassword string
+// easyjson:json
+type DeliveryChangePasswordReq struct {
+	UserID      uint64 `json:"-"`
+	NewPassword string `json:"new_password"`
 }
 
-func (r *ChangePasswordReq) Validate() error {
-	if !passwordRegex.MatchString(r.NewPassword) || utf8.RuneCountInString(r.NewPassword) < 6 {
-		return errors.Wrap(errors.InvalidRequestContent, "password")
-	}
-
-	return nil
+type UsecaseChangePasswordReq struct {
+	UserID      uint64
+	NewPassword string
 }
 
 type StorageChangePasswordReq struct {
@@ -117,9 +144,22 @@ type StorageChangePasswordReq struct {
 	NewPasswordHash string
 }
 
+func (r *UsecaseChangePasswordReq) Validate() error {
+	if !passwordRegex.MatchString(r.NewPassword) || utf8.RuneCountInString(r.NewPassword) < 6 {
+		return errors.Wrap(errors.InvalidRequestContent, "password")
+	}
+
+	return nil
+}
+
 // DeleteMe
 
-type DeleteMeReq struct {
+// easyjson:json
+type DeliveryDeleteMeReq struct {
+	UserID uint64 `json:"-"`
+}
+
+type UsecaseDeleteMeReq struct {
 	UserID uint64
 }
 

@@ -6,16 +6,16 @@ func (h *handler) Register(group *echo.Group) {
 	coffee := group.Group("/coffee")
 
 	/*
-		swagger:route GET /api/coffee/{id} Coffee GetCoffeeRequest
+		swagger:route GET /api/coffee/{id} Coffee GetCoffeeInfoRequest
 
-		Get one coffee info.
+		Get one coffee information.
 
 			schemes: http
 			responses:
-				200: GetCoffeeResponse
+				200: GetCoffeeInfoResponse
 				default: ErrorResponse
 	*/
-	coffee.GET("/:id", h.getCoffee)
+	coffee.GET("/:id", h.getCoffeeInfo)
 	/*
 		swagger:route GET /api/coffee/list Coffee ListCoffeeRequest
 

@@ -9,6 +9,7 @@ const unknown = "unknown"
 // echo.GET("/errors", func(ctx echo.Context) error {
 //   return ctx.JSONBlob(http.StatusOK, errors.ResponseList)
 // })
+
 var ResponseList []byte = []byte(`{
     "1447728996": {
         "en": "Invalid request content"

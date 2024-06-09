@@ -5,9 +5,9 @@ run:
 # Generate easyjson marshallers
 json:
 	@easyjson pkg/tools/response.go \
-		internal/service/users/delivery/rest \
-		internal/service/coffee/delivery/rest \
-		internal/service/orders/delivery/rest
+		internal/service/users/model \
+		internal/service/coffee/model \
+		internal/service/orders/model
 
 # Generate documentation
 swagger:

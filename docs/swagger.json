@@ -53,7 +53,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/SigninReq"
+              "$ref": "#/definitions/DeliverySigninReq"
             }
           }
         ],
@@ -138,7 +138,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/SignupReq"
+              "$ref": "#/definitions/DeliverySignupReq"
             }
           }
         ],
@@ -189,8 +189,8 @@
         "tags": [
           "Coffee"
         ],
-        "summary": "Get one coffee info.",
-        "operationId": "GetCoffeeRequest",
+        "summary": "Get one coffee information.",
+        "operationId": "GetCoffeeInfoRequest",
         "parameters": [
           {
             "type": "integer",
@@ -203,7 +203,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/GetCoffeeResponse"
+            "$ref": "#/responses/GetCoffeeInfoResponse"
           },
           "default": {
             "$ref": "#/responses/ErrorResponse"
@@ -217,7 +217,7 @@
           "https"
         ],
         "tags": [
-          "Errors"
+          "Web"
         ],
         "summary": "List of API errors.",
         "operationId": "null",
@@ -237,7 +237,7 @@
           "https"
         ],
         "tags": [
-          "Health"
+          "Web"
         ],
         "summary": "Health check.",
         "operationId": "null",
@@ -326,7 +326,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ChangePasswordReq"
+              "$ref": "#/definitions/DeliveryChangePasswordReq"
             }
           }
         ],
@@ -342,17 +342,6 @@
     }
   },
   "definitions": {
-    "ChangePasswordReq": {
-      "description": "easyjson:json",
-      "type": "object",
-      "properties": {
-        "new_password": {
-          "type": "string",
-          "x-go-name": "NewPassword"
-        }
-      },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
-    },
     "Coffee": {
       "description": "easyjson:json",
       "type": "object",
@@ -385,9 +374,20 @@
           "x-go-name": "Weight"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/coffee/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/coffee/model"
     },
-    "DeleteMeRes": {
+    "DeliveryChangePasswordReq": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "new_password": {
+          "type": "string",
+          "x-go-name": "NewPassword"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
+    },
+    "DeliveryDeleteMeRes": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -395,26 +395,9 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
     },
-    "ErrorResponse": {
-      "description": "easyjson:json",
-      "type": "object",
-      "title": "General error response struct.",
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "uint32",
-          "x-go-name": "Code"
-        },
-        "message": {
-          "type": "string",
-          "x-go-name": "Message"
-        }
-      },
-      "x-go-package": "coffeeshop-api/pkg/tools"
-    },
-    "GetCoffeeRes": {
+    "DeliveryGetCoffeeInfoRes": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -422,9 +405,9 @@
           "$ref": "#/definitions/Coffee"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/coffee/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/coffee/model"
     },
-    "GetMeRes": {
+    "DeliveryGetMeRes": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -432,9 +415,9 @@
           "$ref": "#/definitions/User"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
     },
-    "ListCoffeeRes": {
+    "DeliveryListCoffeeRes": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -446,9 +429,9 @@
           "x-go-name": "CoffeeList"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/coffee/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/coffee/model"
     },
-    "SigninReq": {
+    "DeliverySigninReq": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -461,9 +444,9 @@
           "x-go-name": "Password"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
     },
-    "SignoutAllRes": {
+    "DeliverySignoutAllRes": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -475,9 +458,9 @@
           "x-go-name": "RefreshTokens"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
     },
-    "SignupReq": {
+    "DeliverySignupReq": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -499,9 +482,9 @@
           "x-go-name": "Username"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
     },
-    "SignupRes": {
+    "DeliverySignupRes": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -511,7 +494,24 @@
           "x-go-name": "UserID"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
+    },
+    "ErrorResponse": {
+      "description": "easyjson:json",
+      "type": "object",
+      "title": "General error response struct.",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "uint32",
+          "x-go-name": "Code"
+        },
+        "message": {
+          "type": "string",
+          "x-go-name": "Message"
+        }
+      },
+      "x-go-package": "coffeeshop-api/pkg/tools"
     },
     "User": {
       "description": "easyjson:json",
@@ -536,7 +536,7 @@
           "x-go-name": "Username"
         }
       },
-      "x-go-package": "coffeeshop-api/internal/service/users/delivery/rest"
+      "x-go-package": "coffeeshop-api/internal/service/users/model"
     }
   },
   "responses": {
@@ -566,7 +566,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/DeleteMeRes"
+            "$ref": "#/definitions/DeliveryDeleteMeRes"
           }
         }
       }
@@ -604,7 +604,7 @@
         }
       }
     },
-    "GetCoffeeResponse": {
+    "GetCoffeeInfoResponse": {
       "description": "Returns coffee info.",
       "schema": {
         "type": "object",
@@ -614,7 +614,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/GetCoffeeRes"
+            "$ref": "#/definitions/DeliveryGetCoffeeInfoRes"
           }
         }
       }
@@ -629,7 +629,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/GetMeRes"
+            "$ref": "#/definitions/DeliveryGetMeRes"
           }
         }
       }
@@ -650,7 +650,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/ListCoffeeRes"
+            "$ref": "#/definitions/DeliveryListCoffeeRes"
           }
         }
       }
@@ -697,7 +697,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/SignoutAllRes"
+            "$ref": "#/definitions/DeliverySignoutAllRes"
           }
         }
       }
@@ -728,7 +728,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/SignupRes"
+            "$ref": "#/definitions/DeliverySignupRes"
           }
         }
       }
@@ -736,9 +736,9 @@
   },
   "securityDefinitions": {
     "accessToken": {
-      "description": "authorization access JWT stored in a cookie.",
+      "description": "JWT authorization token stored in a cookie.",
       "type": "apiKey",
-      "name": "access-token",
+      "name": "Authorization",
       "in": "cookie"
     }
   }

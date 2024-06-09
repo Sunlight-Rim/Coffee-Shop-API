@@ -13,12 +13,12 @@ Provides user registration, login and ordering of coffee.
 	    produces:
 	        - application/json
 
-	    securityDefinitions:
+		securityDefinitions:
 	    accessToken:
 	        type: apiKey
+	        name: Authorization
 	        in: cookie
-	        name: access-token
-	        description: authorization access JWT stored in a cookie.
+	        description: JWT authorization token stored in a cookie.
 
 swagger:meta
 */
@@ -33,9 +33,11 @@ import (
 )
 
 // Register application utility routes.
-func registerRoutes(group *echo.Group) {
+func (s *server) register() {
+	web := s.RoutesGroup.Group("/web")
+
 	/*
-		swagger:route GET /api/errors Errors null
+		swagger:route GET /api/errors Web null
 
 		List of API errors.
 
@@ -44,11 +46,11 @@ func registerRoutes(group *echo.Group) {
 				200: ErrorsListResponse
 				default: ErrorResponse
 	*/
-	group.GET("/errors", func(c echo.Context) error {
+	web.GET("/errors", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, errors.ResponseList)
 	})
 	/*
-		swagger:route GET /api/health Health null
+		swagger:route GET /api/health Web null
 
 		Health check.
 
@@ -57,7 +59,7 @@ func registerRoutes(group *echo.Group) {
 				200: HealthResponse
 				default: ErrorResponse
 	*/
-	group.GET("/health", func(c echo.Context) error {
+	web.GET("/health", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, []byte("Success!"))
 	})
 }

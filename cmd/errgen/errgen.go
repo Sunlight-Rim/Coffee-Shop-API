@@ -1,3 +1,6 @@
+/*
+Custom errors generation module.
+*/
 package main
 
 import (
@@ -189,6 +192,7 @@ func genErrData(errJson []errorJson) string {
 		// echo.GET("/errors", func(ctx echo.Context) error {
 		//   return ctx.JSONBlob(http.StatusOK, errors.ResponseList)
 		// })
+		
 		var ResponseList []byte = []byte(`+"`%s`"+`) // %s
 
 		// Error codes

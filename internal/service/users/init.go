@@ -10,12 +10,13 @@ import (
 	"coffeeshop-api/internal/service/users/usecase"
 
 	"github.com/labstack/echo/v4"
-	goRedis "github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB, redis *goRedis.Client) {
+// New service.
+func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB, redis *redis.Client) {
 	// Init usecase
 	uc := usecase.New(
 		// Init secondary adapters

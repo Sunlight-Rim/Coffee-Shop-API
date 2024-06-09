@@ -8,101 +8,61 @@ import (
 	easyjson "github.com/mailru/easyjson"
 )
 
-// easyjson:json
-type SignupReq struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Phone    uint64 `json:"phone"`
-	Password string `json:"password"`
-}
-
-func newSignupReq(c echo.Context) (SignupReq, error) {
-	var r SignupReq
+func signupReq(c echo.Context) (*model.DeliverySignupReq, error) {
+	var r model.DeliverySignupReq
 
 	if err := easyjson.UnmarshalFromReader(c.Request().Body, &r); err != nil {
-		return SignupReq{}, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
+		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
 	}
 
-	return r, nil
+	return &r, nil
 }
 
-// easyjson:json
-type SigninReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func newSigninReq(c echo.Context) (SigninReq, error) {
-	var r SigninReq
+func signinReq(c echo.Context) (*model.DeliverySigninReq, error) {
+	var r model.DeliverySigninReq
 
 	if err := easyjson.UnmarshalFromReader(c.Request().Body, &r); err != nil {
-		return SigninReq{}, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
+		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
 	}
 
-	return r, nil
+	return &r, nil
 }
 
-// easyjson:json
-type RefreshReq struct {
-	RefreshToken string
-}
-
-func newRefreshReq(c echo.Context) (RefreshReq, error) {
+func refreshReq(c echo.Context) (*model.DeliveryRefreshReq, error) {
 	cookie, err := c.Cookie("refresh")
 	if err != nil {
-		return RefreshReq{}, errors.Wrapf(errors.MissingToken, "missing refresh token in cookie, %v", err)
+		return nil, errors.Wrapf(errors.MissingToken, "missing refresh token in cookie, %v", err)
 	}
 
-	return RefreshReq{RefreshToken: cookie.Value}, nil
+	return &model.DeliveryRefreshReq{RefreshToken: cookie.Value}, nil
 }
 
-// easyjson:json
-type SignoutAllReq struct {
-	UserID uint64 `json:"-"`
-}
-
-func newSignoutAllReq(c echo.Context) SignoutAllReq {
-	return SignoutAllReq{
+func signoutAllReq(c echo.Context) *model.DeliverySignoutAllReq {
+	return &model.DeliverySignoutAllReq{
 		UserID: c.Get("claims").(*model.JWTClaims).UserID,
 	}
 }
 
-// easyjson:json
-type GetMeReq struct {
-	UserID uint64 `json:"-"`
-}
-
-func newGetMeReq(c echo.Context) GetMeReq {
-	return GetMeReq{
+func getMeReq(c echo.Context) *model.DeliveryGetMeReq {
+	return &model.DeliveryGetMeReq{
 		UserID: c.Get("claims").(*model.JWTClaims).UserID,
 	}
 }
 
-// easyjson:json
-type ChangePasswordReq struct {
-	UserID      uint64 `json:"-"`
-	NewPassword string `json:"new_password"`
-}
-
-func newChangePasswordReq(c echo.Context) (ChangePasswordReq, error) {
-	var r ChangePasswordReq
+func changePasswordReq(c echo.Context) (*model.DeliveryChangePasswordReq, error) {
+	var r model.DeliveryChangePasswordReq
 
 	if err := easyjson.UnmarshalFromReader(c.Request().Body, &r); err != nil {
-		return ChangePasswordReq{}, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
+		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
 	}
 
 	r.UserID = c.Get("claims").(*model.JWTClaims).UserID
 
-	return r, nil
+	return &r, nil
 }
 
-// easyjson:json
-type DeleteMeReq struct {
-	UserID uint64 `json:"-"`
-}
-
-func newDeleteReq(c echo.Context) DeleteMeReq {
-	return DeleteMeReq{
+func deleteReq(c echo.Context) *model.DeliveryDeleteMeReq {
+	return &model.DeliveryDeleteMeReq{
 		UserID: c.Get("claims").(*model.JWTClaims).UserID,
 	}
 }

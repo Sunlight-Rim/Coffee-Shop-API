@@ -16,10 +16,3 @@ type Token struct {
 	String string
 	Exp    time.Time
 }
-
-type User struct {
-	ID       uint64
-	Username string
-	Email    string
-	Phone    uint64
-}

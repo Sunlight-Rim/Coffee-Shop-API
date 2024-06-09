@@ -27,9 +27,9 @@ func Start() {
 		cache   = connectCache()
 	)
 
-	users.New(s.APIGroup, logger, storage, cache)
-	orders.New(s.APIGroup, logger, storage)
-	coffee.New(s.APIGroup, logger, storage)
+	users.New(s.RoutesGroup, logger, storage, cache)
+	orders.New(s.RoutesGroup, logger, storage)
+	coffee.New(s.RoutesGroup, logger, storage)
 
 	// Start server
 	go func() {

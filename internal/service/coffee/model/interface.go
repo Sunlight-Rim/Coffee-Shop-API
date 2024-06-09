@@ -4,8 +4,8 @@ import "github.com/sirupsen/logrus"
 
 // Use cases
 type IUsecase interface {
-	GetCoffee(*GetCoffeeReq) (*GetCoffeeRes, error)
-	ListCoffee(*ListCoffeeReq) (*ListCoffeeRes, error)
+	GetCoffeeInfo(*UsecaseGetCoffeeInfoReq) (*UsecaseGetCoffeeInfoRes, error)
+	ListCoffee(*UsecaseListCoffeeReq) (*UsecaseListCoffeeRes, error)
 }
 
 // Logger
@@ -15,6 +15,6 @@ type ILogger interface {
 
 // Storage
 type IStorage interface {
-	GetCoffee(*StorageGetCoffeeReq) (*StorageGetCoffeeRes, error)
+	GetCoffeeInfo(*StorageGetCoffeeInfoReq) (*StorageGetCoffeeInfoRes, error)
 	ListCoffee(*StorageListCoffeeReq) (*StorageListCoffeeRes, error)
 }

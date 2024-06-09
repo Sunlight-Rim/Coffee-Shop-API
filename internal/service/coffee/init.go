@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// New service.
 func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB) {
 	// Init usecase
 	uc := usecase.New(

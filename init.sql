@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS api.users (
     phone           BIGINT NOT NULL,
     password_hash   BYTEA NOT NULL,
     deleted_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
-    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 
 -- coffee
@@ -32,17 +32,17 @@ CREATE TABLE IF NOT EXISTS api.coffee (
     image           VARCHAR(1000) DEFAULT 'https://cdn-icons-png.freepik.com/128/1047/1047503.png' NOT NULL,
     weight          INTEGER NOT NULL,
     price           DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 COMMENT ON COLUMN api.coffee.weight IS 'Net weight in grams';
 
 -- orders
 
-CREATE TYPE status AS ENUM (
+CREATE TYPE api.status AS ENUM (
     'wait payment',
     'cancelled',
-    'queued',
-    'wait receiving'
+    'making',
+    'waiting for recipient'
     'received'
 );
 
@@ -50,14 +50,13 @@ CREATE TABLE IF NOT EXISTS api.orders (
     id              SERIAL PRIMARY KEY,
     user_id         INTEGER NOT NULL REFERENCES api.users(id),
     address         VARCHAR(1000) NOT NULL,
-    paid            BOOLEAN NOT NULL,
-    status          status NOT NULL,
-    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    status          api.status DEFAULT 'wait payment' NOT NULL,
+    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 
 -- order_items
 
-CREATE TYPE topping AS ENUM (
+CREATE TYPE api.topping AS ENUM (
     'vanilla',
     'strawberry',
     'mulberry'
@@ -67,8 +66,8 @@ CREATE TABLE IF NOT EXISTS api.order_items (
     id              SERIAL PRIMARY KEY,
     order_id        INTEGER NOT NULL REFERENCES api.orders(id),
     coffee_id       INTEGER NOT NULL REFERENCES api.coffee(id),
-    topping         topping,
-    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    topping         api.topping,
+    created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 
 -- FILL TABLES
@@ -80,9 +79,9 @@ INSERT INTO api.users (
     password_hash
 ) VALUES (
     'johndoe',
-    'me@mail.com',
-    82641845273,
-    E'\\x5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8' -- "password"
+    'test@user.com',
+    1234567890,
+    E'\\xbcea32d00fc2350539eb56f2931b32371e895c7189da287743be71bdd22f8bab' -- "Password:123"
 );
 
 INSERT INTO api.coffee (

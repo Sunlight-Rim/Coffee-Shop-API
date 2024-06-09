@@ -33,7 +33,7 @@ Pprof available at [localhost:6060](http://localhost:6060/)
 
 ### Errors
 
-To generate custom errors add their descriptions to the **[errors.json](configs/errors.json)** file and run this:
+To generate custom errors add their descriptions to the **[errors.json](configs/errors.json)** file and run:
 ```bash
 make errors
 ```

@@ -1,8 +1,8 @@
 package model
 
 import (
-	restCoffee "coffeeshop-api/internal/service/coffee/delivery/rest"
-	restUsers "coffeeshop-api/internal/service/users/delivery/rest"
+	modelCoffee "coffeeshop-api/internal/service/coffee/model"
+	modelUsers "coffeeshop-api/internal/service/users/model"
 	"coffeeshop-api/pkg/tools"
 )
 
@@ -38,7 +38,7 @@ type _ string
 type SignupResponse struct {
 	// in: body
 	Body struct {
-		Response restUsers.SignupRes `json:"response"`
+		Response modelUsers.DeliverySignupRes `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -85,7 +85,7 @@ type SignoutResponse struct {
 type SignoutAllResponse struct {
 	// in: body
 	Body struct {
-		Response restUsers.SignoutAllRes `json:"response"`
+		Response modelUsers.DeliverySignoutAllRes `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -96,7 +96,7 @@ type SignoutAllResponse struct {
 type GetMeResponse struct {
 	// in: body
 	Body struct {
-		Response restUsers.GetMeRes `json:"response"`
+		Response modelUsers.DeliveryGetMeRes `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -119,18 +119,18 @@ type ChangePasswordResponse struct {
 type DeleteMeResponse struct {
 	// in: body
 	Body struct {
-		Response restUsers.DeleteMeRes `json:"response"`
+		Response modelUsers.DeliveryDeleteMeRes `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
 }
 
 // Returns coffee info.
-// swagger:response GetCoffeeResponse
-type GetCoffeeResponse struct {
+// swagger:response GetCoffeeInfoResponse
+type GetCoffeeInfoResponse struct {
 	// in: body
 	Body struct {
-		Response restCoffee.GetCoffeeRes `json:"response"`
+		Response modelCoffee.DeliveryGetCoffeeInfoRes `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -141,7 +141,7 @@ type GetCoffeeResponse struct {
 type ListCoffeeResponse struct {
 	// in: body
 	Body struct {
-		Response restCoffee.ListCoffeeRes `json:"response"`
+		Response modelCoffee.DeliveryListCoffeeRes `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`

@@ -1,8 +1,21 @@
 package model
 
+// easyjson:json
+type User struct {
+	ID       uint64 `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Phone    uint64 `json:"phone"`
+}
+
 // Signup
 
-type SignupRes struct {
+// easyjson:json
+type DeliverySignupRes struct {
+	UserID uint64 `json:"id"`
+}
+
+type UsecaseSignupRes struct {
 	UserID uint64
 }
 
@@ -12,7 +25,7 @@ type StorageCreateRes struct {
 
 // Signin
 
-type SigninRes struct {
+type UsecaseSigninRes struct {
 	AccessToken  *Token
 	RefreshToken *Token
 }
@@ -29,20 +42,30 @@ type StorageIsDeletedRes struct {
 
 // Refresh
 
-type RefreshRes struct {
+type UsecaseRefreshRes struct {
 	AccessToken  *Token
 	RefreshToken *Token
 }
 
 // SignoutAll
 
-type SignoutAllRes struct {
+// easyjson:json
+type DeliverySignoutAllRes struct {
+	RefreshTokens []string `json:"refresh_tokens"`
+}
+
+type UsecaseSignoutAllRes struct {
 	RefreshTokens []string
 }
 
 // GetMe
 
-type GetMeRes struct {
+// easyjson:json
+type DeliveryGetMeRes struct {
+	User *User `json:"user"`
+}
+
+type UsecaseGetMeRes struct {
 	User *User
 }
 
@@ -52,7 +75,12 @@ type StorageGetMeRes struct {
 
 // DeleteMe
 
-type DeleteMeRes struct {
+// easyjson:json
+type DeliveryDeleteMeRes struct {
+	User *User `json:"user"`
+}
+
+type UsecaseDeleteMeRes struct {
 	User *User
 }
 

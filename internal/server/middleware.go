@@ -1,17 +1,21 @@
 package server
 
 import (
+	"net/http"
+
 	"coffeeshop-api/internal/service/users/model"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/tools"
 
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
-// Response logger.
+// LoggerMW provides response logger.
 var LoggerMW = middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 	LogURI:       true,
 	LogMethod:    true,
@@ -58,27 +62,49 @@ var LoggerMW = middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig
 	},
 })
 
-// Validates and parses access token and puts claims to the context.
-var AuthMW echo.MiddlewareFunc
+// AuthMW validates and parses access token and puts the claims to the context.
+var AuthMW = echojwt.WithConfig(echojwt.Config{
+	TokenLookup: "cookie:access",
+	ContextKey:  "claims",
+	ParseTokenFunc: func(c echo.Context, token string) (any, error) {
+		var claims model.JWTClaims
 
-func initAuthMiddleware(secret string) {
-	AuthMW = echojwt.WithConfig(echojwt.Config{
-		TokenLookup: "cookie:access",
-		ContextKey:  "claims",
-		ParseTokenFunc: func(c echo.Context, token string) (any, error) {
-			var claims model.JWTClaims
-
-			if _, err := jwt.ParseWithClaims(token, &claims, func(*jwt.Token) (any, error) {
-				return []byte(secret), nil
-			}); err != nil {
-				if errors.Is(err, jwt.ErrTokenExpired) {
-					return nil, errors.Wrapf(errors.ExpiredToken, "expired token, %v", err)
-				}
-
-				return nil, errors.Wrapf(errors.InvalidToken, "invalid token, %v", err)
+		if _, err := jwt.ParseWithClaims(token, &claims, func(*jwt.Token) (any, error) {
+			return tokenSecret, nil
+		}); err != nil {
+			if errors.Is(err, jwt.ErrTokenExpired) {
+				return nil, errors.Wrapf(errors.ExpiredToken, "expired token, %v", err)
 			}
 
-			return &claims, nil
-		},
-	})
+			return nil, errors.Wrapf(errors.InvalidToken, "invalid token, %v", err)
+		}
+
+		return &claims, nil
+	},
+})
+
+var tokenSecret []byte
+
+// initMiddlewares initializes the middlewares of application server.
+func (s *server) initMiddlewares() {
+	tokenSecret = []byte(viper.GetString("token.secret"))
+
+	s.echo.Use( /*middleware.Recover(),*/ middleware.CORS(), middleware.RequestID(), LoggerMW)
+	s.echo.HTTPErrorHandler = errorHandler
+}
+
+// Custom Echo error handler.
+func errorHandler(err error, c echo.Context) {
+	if httpError := new(echo.HTTPError); errors.As(err, &httpError) {
+		switch {
+		case httpError.Code == http.StatusNotFound:
+			tools.SendResponse(c, nil, errors.NotFound)
+
+		case httpError.Code == http.StatusMethodNotAllowed:
+			tools.SendResponse(c, nil, errors.MethodNotAllowed)
+
+		case httpError.Message == echojwt.ErrJWTMissing.Message:
+			tools.SendResponse(c, nil, errors.MissingToken)
+		}
+	}
 }

@@ -28,27 +28,31 @@ type ErrorResponse struct {
 
 // SendResponse sends a response or error to the client.
 func SendResponse(c echo.Context, res any, err error) {
-	if errResp := c.JSONBlob(mapResponse(res, err)); errResp != nil {
-		logrus.Errorf("Send response err: %v. Response was: %v", err, res)
+	if errRes := c.JSONBlob(fmtResponse(res, err)); errRes != nil {
+		logrus.Errorf("Send response err: %v. Response was: %v", errRes, res)
 	}
 }
 
-// mapResponse provides response mapping/matching.
-func mapResponse(data any, err error) (int, []byte) {
+// fmtResponse provides response formatting.
+func fmtResponse(data any, err error) (int, []byte) {
 	var res []byte
 
 	if err != nil {
 		// Match error
 		errStatus, code, message := errors.GetHTTPErrData(err)
 
-		if res, err = easyjson.Marshal(Response{Error: &ErrorResponse{Code: code, Message: message}}); err != nil {
+		if res, err = easyjson.Marshal(Response{
+			Error: &ErrorResponse{Code: code, Message: message},
+		}); err != nil {
 			return http.StatusInternalServerError, failedResponse
 		}
 
 		return errStatus, res
 	}
 
-	if res, err = easyjson.Marshal(Response{Response: data}); err != nil {
+	if res, err = easyjson.Marshal(Response{
+		Response: data,
+	}); err != nil {
 		return http.StatusInternalServerError, failedResponse
 	}
 

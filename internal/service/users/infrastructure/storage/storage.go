@@ -17,8 +17,6 @@ func New(db *sql.DB) *storage {
 }
 
 func (s *storage) Create(req *model.StorageCreateReq) (*model.StorageCreateRes, error) {
-	var res model.StorageCreateRes
-
 	// Check if email is busy
 	var emailBusy bool
 
@@ -26,7 +24,8 @@ func (s *storage) Create(req *model.StorageCreateReq) (*model.StorageCreateRes, 
 		SELECT true
 		FROM api.users
 		WHERE email = $1
-	`, req.Email,
+	`,
+		req.Email,
 	).Scan(&emailBusy); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, errors.Wrap(err, "check email")
 	}
@@ -36,6 +35,8 @@ func (s *storage) Create(req *model.StorageCreateReq) (*model.StorageCreateRes, 
 	}
 
 	// Add user
+	var userID uint64
+
 	if err := s.db.QueryRow(`
 		INSERT INTO api.users(
 			username,
@@ -50,15 +51,15 @@ func (s *storage) Create(req *model.StorageCreateReq) (*model.StorageCreateRes, 
 		req.Email,
 		req.Phone,
 		req.PasswordHash,
-	).Scan(&res.UserID); err != nil {
+	).Scan(&userID); err != nil {
 		return nil, errors.Wrap(err, "create user")
 	}
 
-	return &res, nil
+	return &model.StorageCreateRes{UserID: userID}, nil
 }
 
 func (s *storage) CheckCredentials(req *model.StorageCheckCredentialsReq) (*model.StorageCheckCredentialsRes, error) {
-	var res model.StorageCheckCredentialsRes
+	var userID uint64
 
 	if err := s.db.QueryRow(`
 		SELECT id
@@ -66,11 +67,11 @@ func (s *storage) CheckCredentials(req *model.StorageCheckCredentialsReq) (*mode
 		WHERE
 			email = $1 AND
 			password_hash = $2 AND
-			deleted = FALSE
+			deleted_at IS NULL
 	`,
 		req.Email,
 		req.PasswordHash,
-	).Scan(&res.UserID); err != nil {
+	).Scan(&userID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.Wrap(errors.InvalidCredentials, "invalid credentials")
 		}
@@ -78,7 +79,7 @@ func (s *storage) CheckCredentials(req *model.StorageCheckCredentialsReq) (*mode
 		return nil, errors.Wrap(err, "check email")
 	}
 
-	return &res, nil
+	return &model.StorageCheckCredentialsRes{UserID: userID}, nil
 }
 
 func (s *storage) IsDeleted(req *model.StorageIsDeletedReq) (*model.StorageIsDeletedRes, error) {
@@ -88,7 +89,9 @@ func (s *storage) IsDeleted(req *model.StorageIsDeletedReq) (*model.StorageIsDel
 		SELECT deleted_at
 		FROM api.users
 		WHERE id = $1
-	`, req.UserID).Scan(&deletedAt); err != nil {
+	`,
+		req.UserID,
+	).Scan(&deletedAt); err != nil {
 		return nil, errors.Wrap(err, "get user")
 	}
 
@@ -100,20 +103,22 @@ func (s *storage) GetMe(req *model.StorageGetMeReq) (*model.StorageGetMeRes, err
 
 	if err := s.db.QueryRow(`
 		SELECT
+			id,
 			username,
 			email,
 			phone
 		FROM api.users
 		WHERE id = $1
-	`, req.UserID).Scan(
+	`,
+		req.UserID,
+	).Scan(
+		&user.ID,
 		&user.Username,
 		&user.Email,
 		&user.Phone,
 	); err != nil {
 		return nil, errors.Wrap(err, "get user")
 	}
-
-	user.ID = req.UserID
 
 	return &model.StorageGetMeRes{User: &user}, nil
 }
@@ -149,14 +154,13 @@ func (s *storage) DeleteMe(req *model.StorageDeleteMeReq) (*model.StorageDeleteM
 		time.Now(),
 		req.UserID,
 	).Scan(
-		user.Username,
-		user.Email,
-		user.Phone,
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.Phone,
 	); err != nil {
 		return nil, errors.Wrap(err, "delete user")
 	}
-
-	user.ID = req.UserID
 
 	return &model.StorageDeleteMeRes{User: &user}, nil
 }

@@ -9,6 +9,7 @@ import (
 	"coffeeshop-api/pkg/tools"
 
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/viper"
 )
 
 type handler struct {
@@ -21,20 +22,20 @@ func New(uc model.IUsecase) *handler {
 
 func (h *handler) signup(c echo.Context) (err error) {
 	var (
-		req SignupReq
-		res SignupRes
+		req *model.DeliverySignupReq
+		res *model.DeliverySignupRes
 	)
 
 	// Send response
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	if req, err = newSignupReq(c); err != nil {
+	if req, err = signupReq(c); err != nil {
 		return errors.Wrap(err, "request")
 	}
 
 	// Call usecase
-	resUC, err := h.uc.Signup(&model.SignupReq{
+	ucRes, err := h.uc.Signup(&model.UsecaseSignupReq{
 		Username: req.Username,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -44,24 +45,26 @@ func (h *handler) signup(c echo.Context) (err error) {
 		return errors.Wrap(err, "signup")
 	}
 
-	res.UserID = resUC.UserID
+	res = &model.DeliverySignupRes{
+		UserID: ucRes.UserID,
+	}
 
 	return
 }
 
 func (h *handler) signin(c echo.Context) (err error) {
-	var req SigninReq
+	var req *model.DeliverySigninReq
 
 	// Send response
 	defer func() { tools.SendResponse(c, nil, err) }()
 
 	// Parse request
-	if req, err = newSigninReq(c); err != nil {
+	if req, err = signinReq(c); err != nil {
 		return errors.Wrap(err, "request")
 	}
 
 	// Call usecase
-	resUC, err := h.uc.Signin(&model.SigninReq{
+	ucRes, err := h.uc.Signin(&model.UsecaseSigninReq{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -69,31 +72,31 @@ func (h *handler) signin(c echo.Context) (err error) {
 		return errors.Wrap(err, "signin")
 	}
 
-	setCookieTokens(c, resUC.AccessToken, resUC.RefreshToken)
+	setCookieTokens(c, ucRes.AccessToken, ucRes.RefreshToken)
 
 	return
 }
 
 func (h *handler) refresh(c echo.Context) (err error) {
-	var req RefreshReq
+	var req *model.DeliveryRefreshReq
 
 	// Send response
 	defer func() { tools.SendResponse(c, nil, err) }()
 
 	// Parse request
-	if req, err = newRefreshReq(c); err != nil {
+	if req, err = refreshReq(c); err != nil {
 		return errors.Wrap(err, "request")
 	}
 
 	// Call usecase
-	resUC, err := h.uc.Refresh(&model.RefreshReq{
+	ucRes, err := h.uc.Refresh(&model.UsecaseRefreshReq{
 		RefreshToken: req.RefreshToken,
 	})
 	if err != nil {
 		return errors.Wrap(err, "refresh")
 	}
 
-	setCookieTokens(c, resUC.AccessToken, resUC.RefreshToken)
+	setCookieTokens(c, ucRes.AccessToken, ucRes.RefreshToken)
 
 	return
 }
@@ -109,25 +112,27 @@ func (h *handler) signout(c echo.Context) (err error) {
 
 func (h *handler) signoutAll(c echo.Context) (err error) {
 	var (
-		req SignoutAllReq
-		res SignoutAllRes
+		req *model.DeliverySignoutAllReq
+		res *model.DeliverySignoutAllRes
 	)
 
 	// Send response
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	req = newSignoutAllReq(c)
+	req = signoutAllReq(c)
 
 	// Call usecase
-	resUC, err := h.uc.SignoutAll(&model.SignoutAllReq{
+	ucRes, err := h.uc.SignoutAll(&model.UsecaseSignoutAllReq{
 		UserID: req.UserID,
 	})
 	if err != nil {
 		return errors.Wrap(err, "signout all")
 	}
 
-	res.RefreshTokens = resUC.RefreshTokens
+	res = &model.DeliverySignoutAllRes{
+		RefreshTokens: ucRes.RefreshTokens,
+	}
 
 	removeCookieTokens(c)
 
@@ -136,42 +141,44 @@ func (h *handler) signoutAll(c echo.Context) (err error) {
 
 func (h *handler) getMe(c echo.Context) (err error) {
 	var (
-		req GetMeReq
-		res GetMeRes
+		req *model.DeliveryGetMeReq
+		res *model.DeliveryGetMeRes
 	)
 
 	// Send response
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	req = newGetMeReq(c)
+	req = getMeReq(c)
 
 	// Call usecase
-	resUC, err := h.uc.GetMe(&model.GetMeReq{
+	ucRes, err := h.uc.GetMe(&model.UsecaseGetMeReq{
 		UserID: req.UserID,
 	})
 	if err != nil {
 		return errors.Wrap(err, "get")
 	}
 
-	res.User = User(*resUC.User)
+	res = &model.DeliveryGetMeRes{
+		User: ucRes.User,
+	}
 
 	return
 }
 
 func (h *handler) updatePassword(c echo.Context) (err error) {
-	var req ChangePasswordReq
+	var req *model.DeliveryChangePasswordReq
 
 	// Send response
 	defer func() { tools.SendResponse(c, nil, err) }()
 
 	// Parse request
-	if req, err = newChangePasswordReq(c); err != nil {
+	if req, err = changePasswordReq(c); err != nil {
 		return errors.Wrap(err, "request")
 	}
 
 	// Call usecase
-	if err := h.uc.ChangePassword(&model.ChangePasswordReq{
+	if err := h.uc.ChangePassword(&model.UsecaseChangePasswordReq{
 		UserID:      req.UserID,
 		NewPassword: req.NewPassword,
 	}); err != nil {
@@ -183,25 +190,25 @@ func (h *handler) updatePassword(c echo.Context) (err error) {
 
 func (h *handler) deleteMe(c echo.Context) (err error) {
 	var (
-		req DeleteMeReq
-		res DeleteMeRes
+		req *model.DeliveryDeleteMeReq
+		res *model.DeliveryDeleteMeRes
 	)
 
 	// Send response
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	req = newDeleteReq(c)
+	req = deleteReq(c)
 
 	// Call usecase
-	resUC, err := h.uc.DeleteMe(&model.DeleteMeReq{
+	ucRes, err := h.uc.DeleteMe(&model.UsecaseDeleteMeReq{
 		UserID: req.UserID,
 	})
 	if err != nil {
 		return errors.Wrap(err, "delete user")
 	}
 
-	res.User = User(*resUC.User)
+	res.User = ucRes.User
 
 	return
 }
@@ -211,8 +218,9 @@ func setCookieTokens(c echo.Context, accessToken, refreshToken *model.Token) {
 		Name:     "access",
 		Value:    accessToken.String,
 		Expires:  accessToken.Exp,
-		HttpOnly: true,
-		// Secure:   true,
+		Domain:   viper.GetString("cookie.domain"),
+		Secure:   viper.GetBool("cookie.secure"),
+		HttpOnly: viper.GetBool("cookie.http_only"),
 	})
 
 	c.SetCookie(&http.Cookie{
@@ -220,8 +228,9 @@ func setCookieTokens(c echo.Context, accessToken, refreshToken *model.Token) {
 		Path:     "/api/auth/refresh",
 		Value:    refreshToken.String,
 		Expires:  refreshToken.Exp,
-		HttpOnly: true,
-		// Secure:   true,
+		Domain:   viper.GetString("cookie.domain"),
+		Secure:   viper.GetBool("cookie.secure"),
+		HttpOnly: viper.GetBool("cookie.http_only"),
 	})
 }
 
@@ -229,15 +238,17 @@ func removeCookieTokens(c echo.Context) {
 	c.SetCookie(&http.Cookie{
 		Name:     "access",
 		Expires:  time.Unix(0, 0),
-		HttpOnly: true,
-		// Secure:   true,
+		Domain:   viper.GetString("cookie.domain"),
+		Secure:   viper.GetBool("cookie.secure"),
+		HttpOnly: viper.GetBool("cookie.http_only"),
 	})
 
 	c.SetCookie(&http.Cookie{
 		Name:     "refresh",
 		Path:     "/api/auth/refresh",
 		Expires:  time.Unix(0, 0),
-		HttpOnly: true,
-		// Secure:   true,
+		Domain:   viper.GetString("cookie.domain"),
+		Secure:   viper.GetBool("cookie.secure"),
+		HttpOnly: viper.GetBool("cookie.http_only"),
 	})
 }

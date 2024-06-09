@@ -2,17 +2,29 @@ package model
 
 // GetCoffee
 
-type GetCoffeeReq struct {
+// easyjson:json
+type DeliveryGetCoffeeInfoReq struct {
+	// in: path
+	CoffeeID uint64 `json:"id" param:"id"`
+}
+
+type UsecaseGetCoffeeInfoReq struct {
 	CoffeeID uint64
 }
 
-type StorageGetCoffeeReq struct {
+type StorageGetCoffeeInfoReq struct {
 	CoffeeID uint64
 }
 
 // ListCoffee
 
-type ListCoffeeReq struct {
+// easyjson:json
+type DeliveryListCoffeeReq struct {
+	// in: query
+	Offset uint64 `json:"offset" query:"offset"`
+}
+
+type UsecaseListCoffeeReq struct {
 	Offset uint64
 }
 

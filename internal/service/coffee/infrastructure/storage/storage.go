@@ -17,7 +17,7 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) GetCoffee(req *model.StorageGetCoffeeReq) (*model.StorageGetCoffeeRes, error) {
+func (s *storage) GetCoffeeInfo(req *model.StorageGetCoffeeInfoReq) (*model.StorageGetCoffeeInfoRes, error) {
 	var coffee model.Coffee
 
 	if err := s.db.QueryRow(`
@@ -30,7 +30,9 @@ func (s *storage) GetCoffee(req *model.StorageGetCoffeeReq) (*model.StorageGetCo
 			price
 		FROM api.coffee
 		WHERE id = $1
-	`, req.CoffeeID).Scan(
+	`,
+		req.CoffeeID,
+	).Scan(
 		&coffee.ID,
 		&coffee.Title,
 		&coffee.Description,
@@ -41,12 +43,10 @@ func (s *storage) GetCoffee(req *model.StorageGetCoffeeReq) (*model.StorageGetCo
 		return nil, errors.Wrap(err, "get coffee")
 	}
 
-	return &model.StorageGetCoffeeRes{Coffee: &coffee}, nil
+	return &model.StorageGetCoffeeInfoRes{Coffee: &coffee}, nil
 }
 
 func (s *storage) ListCoffee(req *model.StorageListCoffeeReq) (*model.StorageListCoffeeRes, error) {
-	var res model.StorageListCoffeeRes
-
 	rows, err := s.db.Query(`
 		SELECT
 			id,
@@ -65,7 +65,10 @@ func (s *storage) ListCoffee(req *model.StorageListCoffeeReq) (*model.StorageLis
 		return nil, errors.Wrap(err, "get coffee list")
 	}
 
-	var coffee model.Coffee
+	var (
+		coffeeList []model.Coffee
+		coffee     model.Coffee
+	)
 
 	for rows.Next() {
 		if err := rows.Scan(
@@ -79,8 +82,8 @@ func (s *storage) ListCoffee(req *model.StorageListCoffeeReq) (*model.StorageLis
 			return nil, errors.Wrap(err, "scan coffee list")
 		}
 
-		res.CoffeeList = append(res.CoffeeList, coffee)
+		coffeeList = append(coffeeList, coffee)
 	}
 
-	return &res, nil
+	return &model.StorageListCoffeeRes{CoffeeList: coffeeList}, nil
 }

@@ -17,34 +17,30 @@ func New(logger model.ILogger, storage model.IStorage) *usecase {
 	}
 }
 
-func (uc *usecase) GetCoffee(req *model.GetCoffeeReq) (*model.GetCoffeeRes, error) {
-	var res model.GetCoffeeRes
-
-	// Get coffee
-	resStore, err := uc.storage.GetCoffee(&model.StorageGetCoffeeReq{
+// GetCoffeeInfo returns coffee description.
+func (uc *usecase) GetCoffeeInfo(req *model.UsecaseGetCoffeeInfoReq) (*model.UsecaseGetCoffeeInfoRes, error) {
+	resInfo, err := uc.storage.GetCoffeeInfo(&model.StorageGetCoffeeInfoReq{
 		CoffeeID: req.CoffeeID,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "storage")
+		return nil, errors.Wrap(err, "get coffee")
 	}
 
-	res.Coffee = resStore.Coffee
-
-	return &res, nil
+	return &model.UsecaseGetCoffeeInfoRes{
+		Coffee: resInfo.Coffee,
+	}, nil
 }
 
-func (uc *usecase) ListCoffee(req *model.ListCoffeeReq) (*model.ListCoffeeRes, error) {
-	var res model.ListCoffeeRes
-
-	// Get coffee list
-	resStore, err := uc.storage.ListCoffee(&model.StorageListCoffeeReq{
+// ListCoffee returns list of coffee
+func (uc *usecase) ListCoffee(req *model.UsecaseListCoffeeReq) (*model.UsecaseListCoffeeRes, error) {
+	resList, err := uc.storage.ListCoffee(&model.StorageListCoffeeReq{
 		Offset: req.Offset,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "storage")
+		return nil, errors.Wrap(err, "list coffee")
 	}
 
-	res.CoffeeList = resStore.CoffeeList
-
-	return &res, nil
+	return &model.UsecaseListCoffeeRes{
+		CoffeeList: resList.CoffeeList,
+	}, nil
 }

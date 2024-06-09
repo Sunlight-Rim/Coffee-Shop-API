@@ -4,13 +4,13 @@ import "github.com/sirupsen/logrus"
 
 // Use cases
 type IUsecase interface {
-	Signup(*SignupReq) (*SignupRes, error)
-	Signin(*SigninReq) (*SigninRes, error)
-	Refresh(*RefreshReq) (*RefreshRes, error)
-	SignoutAll(*SignoutAllReq) (*SignoutAllRes, error)
-	GetMe(*GetMeReq) (*GetMeRes, error)
-	ChangePassword(*ChangePasswordReq) error
-	DeleteMe(*DeleteMeReq) (*DeleteMeRes, error)
+	Signup(*UsecaseSignupReq) (*UsecaseSignupRes, error)
+	Signin(*UsecaseSigninReq) (*UsecaseSigninRes, error)
+	Refresh(*UsecaseRefreshReq) (*UsecaseRefreshRes, error)
+	SignoutAll(*UsecaseSignoutAllReq) (*UsecaseSignoutAllRes, error)
+	GetMe(*UsecaseGetMeReq) (*UsecaseGetMeRes, error)
+	ChangePassword(*UsecaseChangePasswordReq) error
+	DeleteMe(*UsecaseDeleteMeReq) (*UsecaseDeleteMeRes, error)
 }
 
 // Logger

@@ -40,7 +40,7 @@ func (s *service) Parse(token string) (*model.JWTClaims, error) {
 	return &claims, nil
 }
 
-// CreatePair creates new tokens pair with Access and Refresh tokens.
+// CreatePair creates new tokens pair.
 func (s *service) CreatePair(claims *model.JWTClaims) (*model.Token, *model.Token, error) {
 	var (
 		accessToken  model.Token
@@ -49,7 +49,9 @@ func (s *service) CreatePair(claims *model.JWTClaims) (*model.Token, *model.Toke
 	)
 
 	// Access
-	claims.ExpiresAt.Time = time.Now().Add(s.accessExp)
+	claims.ExpiresAt = &jwt.NumericDate{
+		Time: time.Now().Add(s.accessExp),
+	}
 
 	accessToken.Exp = claims.ExpiresAt.Time
 	accessToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
@@ -58,10 +60,12 @@ func (s *service) CreatePair(claims *model.JWTClaims) (*model.Token, *model.Toke
 	}
 
 	// Refresh
-	claims.ExpiresAt.Time = time.Now().Add(s.refreshExp)
+	claims.ExpiresAt = &jwt.NumericDate{
+		Time: time.Now().Add(s.refreshExp),
+	}
 
 	refreshToken.Exp = claims.ExpiresAt.Time
-	accessToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
+	refreshToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.secret)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "signing refresh token")
 	}

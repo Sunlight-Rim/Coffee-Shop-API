@@ -22,6 +22,12 @@
         "refresh_exp": 43200
     },
 
+    "cookie": {
+        "domain": "localhost",
+        "secure": false,
+        "http_only": true
+    },
+
     "database": {
         "postgres": {
             "host": "postgres",
