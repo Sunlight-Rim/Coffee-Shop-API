@@ -61,7 +61,7 @@ func changePasswordReq(c echo.Context) (*model.DeliveryChangePasswordReq, error)
 	return &r, nil
 }
 
-func deleteReq(c echo.Context) *model.DeliveryDeleteMeReq {
+func deleteMeReq(c echo.Context) *model.DeliveryDeleteMeReq {
 	return &model.DeliveryDeleteMeReq{
 		UserID: c.Get("claims").(*model.JWTClaims).UserID,
 	}

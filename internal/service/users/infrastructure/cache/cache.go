@@ -29,7 +29,7 @@ func (c *cache) SaveUserRefreshToken(userID uint64, token *model.Token) error {
 		nil,
 		time.Until(token.Exp),
 	).Err(); err != nil {
-		return errors.Wrap(err, "store token")
+		return errors.Wrap(err, "save token")
 	}
 
 	return nil

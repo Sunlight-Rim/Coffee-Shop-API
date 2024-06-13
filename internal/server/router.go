@@ -34,8 +34,6 @@ import (
 
 // Register application utility routes.
 func (s *server) register() {
-	web := s.RoutesGroup.Group("/web")
-
 	/*
 		swagger:route GET /api/errors Web null
 
@@ -46,7 +44,7 @@ func (s *server) register() {
 				200: ErrorsListResponse
 				default: ErrorResponse
 	*/
-	web.GET("/errors", func(c echo.Context) error {
+	s.RoutesGroup.GET("/errors", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, errors.ResponseList)
 	})
 	/*
@@ -59,7 +57,7 @@ func (s *server) register() {
 				200: HealthResponse
 				default: ErrorResponse
 	*/
-	web.GET("/health", func(c echo.Context) error {
+	s.RoutesGroup.GET("/health", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, []byte("Success!"))
 	})
 }

@@ -166,7 +166,7 @@ func (h *handler) getMe(c echo.Context) (err error) {
 	return
 }
 
-func (h *handler) updatePassword(c echo.Context) (err error) {
+func (h *handler) changePassword(c echo.Context) (err error) {
 	var req *model.DeliveryChangePasswordReq
 
 	// Send response
@@ -198,7 +198,7 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	req = deleteReq(c)
+	req = deleteMeReq(c)
 
 	// Call usecase
 	ucRes, err := h.uc.DeleteMe(&model.UsecaseDeleteMeReq{

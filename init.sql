@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS api.users (
 CREATE TABLE IF NOT EXISTS api.coffee (
     id              SERIAL PRIMARY KEY,
     title           VARCHAR(200) NOT NULL,
-    description     TEXT,
-    image           VARCHAR(1000) DEFAULT 'https://cdn-icons-png.freepik.com/128/1047/1047503.png' NOT NULL,
-    weight          INTEGER NOT NULL,
+    "description"   TEXT,
+    "image"         VARCHAR(1000) DEFAULT 'https://cdn-icons-png.freepik.com/128/1047/1047503.png' NOT NULL,
+    "weight"        INTEGER NOT NULL,
     price           DECIMAL(10, 2) NOT NULL DEFAULT 0,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
@@ -49,8 +49,8 @@ CREATE TYPE api.status AS ENUM (
 CREATE TABLE IF NOT EXISTS api.orders (
     id              SERIAL PRIMARY KEY,
     user_id         INTEGER NOT NULL REFERENCES api.users(id),
-    address         VARCHAR(1000) NOT NULL,
-    status          api.status DEFAULT 'wait payment' NOT NULL,
+    "address"       VARCHAR(1000) NOT NULL,
+    "status"        api.status DEFAULT 'wait payment' NOT NULL,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 
@@ -85,7 +85,7 @@ INSERT INTO api.users (
 );
 
 INSERT INTO api.coffee (
-    title, description, weight, price
+    title, "description", "weight", price
 ) VALUES
     ('Espresso', 'A strong and concentrated coffee made by forcing steam through finely-ground coffee beans.', 250, 4.99),
     ('Latte', 'A creamy and mild coffee drink made with espresso and steamed milk.', 400, 5.99),

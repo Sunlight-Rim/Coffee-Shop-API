@@ -36,7 +36,7 @@ func Connect(connOpts ConnectionOptions) (*sql.DB, error) {
 		connOpts.SSLMode,
 	))
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot connect")
+		return nil, errors.Wrap(err, "connect")
 	}
 
 	db.SetMaxOpenConns(connOpts.MaxOpenConns)
@@ -48,7 +48,7 @@ func Connect(connOpts ConnectionOptions) (*sql.DB, error) {
 	defer cancel()
 
 	if err = db.PingContext(ctx); err != nil {
-		return nil, errors.Wrap(err, "cannot ping")
+		return nil, errors.Wrap(err, "ping")
 	}
 
 	return db, nil

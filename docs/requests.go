@@ -34,5 +34,7 @@ type GetCoffeeInfoRequest struct {
 
 // swagger:parameters ListCoffeeRequest
 type ListCoffeeRequest struct {
+	// in: query
+	// required: true
 	modelCoffee.DeliveryListCoffeeReq
 }

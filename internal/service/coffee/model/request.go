@@ -20,7 +20,6 @@ type StorageGetCoffeeInfoReq struct {
 
 // easyjson:json
 type DeliveryListCoffeeReq struct {
-	// in: query
 	Offset uint64 `json:"offset" query:"offset"`
 }
 

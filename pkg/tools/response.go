@@ -29,7 +29,7 @@ type ErrorResponse struct {
 // SendResponse sends a response or error to the client.
 func SendResponse(c echo.Context, res any, err error) {
 	if errRes := c.JSONBlob(fmtResponse(res, err)); errRes != nil {
-		logrus.Errorf("Send response err: %v. Response was: %v", errRes, res)
+		logrus.Errorf("Send response: %v. Response was: %v", errRes, res)
 	}
 }
 
@@ -44,6 +44,7 @@ func fmtResponse(data any, err error) (int, []byte) {
 		if res, err = easyjson.Marshal(Response{
 			Error: &ErrorResponse{Code: code, Message: message},
 		}); err != nil {
+			logrus.Errorf("Marshal error: %v. Message was: %v", err, message)
 			return http.StatusInternalServerError, failedResponse
 		}
 
@@ -53,6 +54,7 @@ func fmtResponse(data any, err error) (int, []byte) {
 	if res, err = easyjson.Marshal(Response{
 		Response: data,
 	}); err != nil {
+		logrus.Errorf("Marshal response: %v. Response was: %v", err, data)
 		return http.StatusInternalServerError, failedResponse
 	}
 

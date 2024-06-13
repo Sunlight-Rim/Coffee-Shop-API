@@ -97,7 +97,7 @@ func (h *handler) Register(group *echo.Group) {
 				200: ChangePasswordResponse
 				default: ErrorResponse
 	*/
-	user.PUT("/password", h.updatePassword)
+	user.PUT("/password", h.changePassword)
 	/*
 		swagger:route DELETE /api/user User DeleteMeNull
 

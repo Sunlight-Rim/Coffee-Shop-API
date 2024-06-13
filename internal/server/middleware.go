@@ -89,7 +89,7 @@ var tokenSecret []byte
 func (s *server) initMiddlewares() {
 	tokenSecret = []byte(viper.GetString("token.secret"))
 
-	s.echo.Use( /*middleware.Recover(),*/ middleware.CORS(), middleware.RequestID(), LoggerMW)
+	s.echo.Use(middleware.Recover(), middleware.CORS(), middleware.RequestID(), LoggerMW)
 	s.echo.HTTPErrorHandler = errorHandler
 }
 
