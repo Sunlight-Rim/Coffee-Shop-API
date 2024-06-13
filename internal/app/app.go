@@ -17,16 +17,17 @@ func init() {
 }
 
 func Start() {
-	// Init server
-	s := server.New()
-
-	// Init services
+	// Init infrastructure
 	var (
 		logger  = newLogger()
 		storage = connectStorage()
 		cache   = connectCache()
 	)
 
+	// Init server
+	s := server.New(logger)
+
+	// Init services
 	users.New(s.RoutesGroup, logger, storage, cache)
 	orders.New(s.RoutesGroup, logger, storage)
 	coffee.New(s.RoutesGroup, logger, storage)
