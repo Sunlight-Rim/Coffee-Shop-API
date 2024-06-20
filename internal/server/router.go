@@ -16,7 +16,7 @@ Provides user registration, login and ordering of coffee.
 		securityDefinitions:
 	    accessToken:
 	        type: apiKey
-	        name: Authorization
+	        name: access
 	        in: cookie
 	        description: JWT authorization token stored in a cookie.
 
@@ -32,10 +32,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Register application utility routes.
+// Register basic application routes.
 func (s *server) register() {
 	/*
-		swagger:route GET /api/errors Web null
+		swagger:route GET /api/errors Web errorsNull
 
 		List of API errors.
 
@@ -44,11 +44,11 @@ func (s *server) register() {
 				200: ErrorsListResponse
 				default: ErrorResponse
 	*/
-	s.RoutesGroup.GET("/errors", func(c echo.Context) error {
+	s.ApiGroup.GET("/errors", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, errors.ResponseList)
 	})
 	/*
-		swagger:route GET /api/health Web null
+		swagger:route GET /api/health Web healthNull
 
 		Health check.
 
@@ -57,7 +57,7 @@ func (s *server) register() {
 				200: HealthResponse
 				default: ErrorResponse
 	*/
-	s.RoutesGroup.GET("/health", func(c echo.Context) error {
+	s.ApiGroup.GET("/health", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, []byte("Success!"))
 	})
 }

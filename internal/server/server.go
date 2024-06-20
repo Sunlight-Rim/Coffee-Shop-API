@@ -3,33 +3,38 @@ package server
 import (
 	"context"
 	"fmt"
+	"net/http"
 
+	"coffeeshop-api/internal/server/middleware"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/tools"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echomw "github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 type server struct {
-	RoutesGroup *echo.Group
-	echo        *echo.Echo
+	ApiGroup *echo.Group
+	echo     *echo.Echo
 }
 
-// New application server.
+// New application server, init middlewares and basic application routes.
 func New(logger logrus.FieldLogger) *server {
+	// Init middlewares
+	middleware.Init(logger, viper.GetString("token.secret"))
+
+	// Init echo
 	echo := echo.New()
+	echo.Use(echomw.Recover(), echomw.RequestID(), middleware.Logger, middleware.CORS)
+	echo.HTTPErrorHandler = errorHandler
 
+	// Init server
 	s := &server{
-		RoutesGroup: echo.Group("/api"),
-		echo:        echo,
+		ApiGroup: echo.Group("/api"),
+		echo:     echo,
 	}
-
-	s.initMiddlewares(logger, viper.GetString("token.secret"))
-
-	s.echo.Use(middleware.Recover(), middleware.CORS(), middleware.RequestID(), LoggerMW)
-	s.echo.HTTPErrorHandler = errorHandler
 
 	s.register()
 
@@ -56,4 +61,17 @@ func (s *server) Shutdown(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// Custom Echo error handler.
+func errorHandler(err error, c echo.Context) {
+	if httpError := new(echo.HTTPError); errors.As(err, &httpError) {
+		switch httpError.Code {
+		case http.StatusNotFound:
+			tools.SendResponse(c, nil, errors.NotFound)
+
+		case http.StatusMethodNotAllowed:
+			tools.SendResponse(c, nil, errors.MethodNotAllowed)
+		}
+	}
 }

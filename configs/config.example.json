@@ -40,14 +40,15 @@
             "max_idle_conns": 50,
             "conn_max_lifetime": 50,
             "conn_max_idle_time": 50,
-            "ping_timeout": 10
+            "ping_timeout_sec": 10
         },
         
         "redis": {
             "host": "redis",
             "port": 6379,
             "password": "",
-            "database": 0
+            "database": 0,
+            "ping_timeout_sec": 10
         }
     }
 }

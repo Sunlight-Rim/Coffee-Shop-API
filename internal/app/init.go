@@ -7,6 +7,7 @@ import (
 	"coffeeshop-api/pkg/logger"
 	"coffeeshop-api/pkg/postgres"
 	"coffeeshop-api/pkg/redis"
+	"coffeeshop-api/pkg/tools"
 
 	goRedis "github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -33,6 +34,15 @@ func readConfig() {
 	}
 }
 
+// Init application tools.
+func initTools() {
+	tools.Init(tools.Options{
+		CookieDomain:   viper.GetString("cookie.domain"),
+		CookieSecure:   viper.GetBool("cookie.secure"),
+		CookieHttpOnly: viper.GetBool("cookie.http_only"),
+	})
+}
+
 // Initialize logger.
 func newLogger() *logrus.Logger {
 	return logger.New(
@@ -43,7 +53,7 @@ func newLogger() *logrus.Logger {
 
 // Connect main storage.
 func connectStorage() *sql.DB {
-	db, err := postgres.Connect(postgres.ConnectionOptions{
+	db, err := postgres.Connect(&postgres.ConnectionOptions{
 		Host:            viper.GetString("database.postgres.host"),
 		Port:            viper.GetString("database.postgres.port"),
 		User:            viper.GetString("database.postgres.user"),
@@ -54,7 +64,7 @@ func connectStorage() *sql.DB {
 		MaxIdleConns:    viper.GetInt("database.postgres.max_idle_conns"),
 		ConnMaxLifetime: viper.GetDuration("database.postgres.conn_max_lifetime"),
 		ConnMaxIdleTime: viper.GetDuration("database.postgres.conn_max_idle_time"),
-		PingTimeout:     viper.GetDuration("database.postgres.ping_timeout"),
+		PingTimeout:     viper.GetDuration("database.postgres.ping_timeout_sec"),
 	})
 	if err != nil {
 		logrus.Fatalf("connect to postgres: %v", err)
@@ -65,12 +75,13 @@ func connectStorage() *sql.DB {
 
 // Connect cache.
 func connectCache() *goRedis.Client {
-	client, err := redis.Connect(
-		viper.GetString("database.redis.host"),
-		viper.GetString("database.redis.port"),
-		viper.GetString("database.redis.password"),
-		viper.GetInt("database.redis.database"),
-	)
+	client, err := redis.Connect(&redis.ConnectionOptions{
+		Host:        viper.GetString("database.redis.host"),
+		Port:        viper.GetString("database.redis.port"),
+		Password:    viper.GetString("database.redis.password"),
+		Database:    viper.GetInt("database.redis.database"),
+		PingTimeout: viper.GetDuration("database.redis.ping_timeout_sec"),
+	})
 	if err != nil {
 		logrus.Fatalf("connect to redis: %v", err)
 	}

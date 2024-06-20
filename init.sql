@@ -39,10 +39,10 @@ COMMENT ON COLUMN api.coffee.weight IS 'Net weight in grams';
 -- orders
 
 CREATE TYPE api.status AS ENUM (
-    'wait payment',
+    'waiting payment',
     'cancelled',
     'making',
-    'waiting for recipient'
+    'waiting for receiving',
     'received'
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS api.orders (
     id              SERIAL PRIMARY KEY,
     user_id         INTEGER NOT NULL REFERENCES api.users(id),
     "address"       VARCHAR(1000) NOT NULL,
-    "status"        api.status DEFAULT 'wait payment' NOT NULL,
+    "status"        api.status DEFAULT 'waiting payment' NOT NULL,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 

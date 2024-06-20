@@ -1,8 +1,8 @@
 package model
 
 import (
-	modelCoffee "coffeeshop-api/internal/service/coffee/model"
-	modelUsers "coffeeshop-api/internal/service/users/model"
+	modelCoffee "coffeeshop-api/internal/services/coffee/model"
+	modelUsers "coffeeshop-api/internal/services/users/model"
 	"coffeeshop-api/pkg/tools"
 )
 
@@ -38,7 +38,7 @@ type _ string
 type SignupResponse struct {
 	// in: body
 	Body struct {
-		Response modelUsers.DeliverySignupRes `json:"response"`
+		Response modelUsers.SignupResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -85,7 +85,7 @@ type SignoutResponse struct {
 type SignoutAllResponse struct {
 	// in: body
 	Body struct {
-		Response modelUsers.DeliverySignoutAllRes `json:"response"`
+		Response modelUsers.SignoutAllResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -96,7 +96,7 @@ type SignoutAllResponse struct {
 type GetMeResponse struct {
 	// in: body
 	Body struct {
-		Response modelUsers.DeliveryGetMeRes `json:"response"`
+		Response modelUsers.GetMeResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -119,7 +119,7 @@ type ChangePasswordResponse struct {
 type DeleteMeResponse struct {
 	// in: body
 	Body struct {
-		Response modelUsers.DeliveryDeleteMeRes `json:"response"`
+		Response modelUsers.DeleteMeResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -130,7 +130,7 @@ type DeleteMeResponse struct {
 type GetCoffeeInfoResponse struct {
 	// in: body
 	Body struct {
-		Response modelCoffee.DeliveryGetCoffeeInfoRes `json:"response"`
+		Response modelCoffee.GetCoffeeInfoResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`
@@ -141,7 +141,7 @@ type GetCoffeeInfoResponse struct {
 type ListCoffeeResponse struct {
 	// in: body
 	Body struct {
-		Response modelCoffee.DeliveryListCoffeeRes `json:"response"`
+		Response modelCoffee.ListCoffeeResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`

@@ -42,6 +42,7 @@ services:
     image: swaggerapi/swagger-ui
     environment:
       - SWAGGER_JSON=/docs/swagger.json
+      - WITH_CREDENTIALS=true
     ports:
       - 8080:8080
     volumes:

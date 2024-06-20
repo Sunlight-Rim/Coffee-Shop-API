@@ -6,14 +6,15 @@ import (
 	"syscall"
 
 	"coffeeshop-api/internal/server"
-	"coffeeshop-api/internal/service/coffee"
-	"coffeeshop-api/internal/service/orders"
-	"coffeeshop-api/internal/service/users"
+	"coffeeshop-api/internal/services/coffee"
+	"coffeeshop-api/internal/services/orders"
+	"coffeeshop-api/internal/services/users"
 )
 
 func init() {
 	readFlags()
 	readConfig()
+	initTools()
 }
 
 func Start() {
@@ -28,9 +29,9 @@ func Start() {
 	s := server.New(logger)
 
 	// Init services
-	users.New(s.RoutesGroup, logger, storage, cache)
-	orders.New(s.RoutesGroup, logger, storage)
-	coffee.New(s.RoutesGroup, logger, storage)
+	users.New(s.ApiGroup, logger, storage, cache)
+	coffee.New(s.ApiGroup, logger, storage)
+	orders.New(s.ApiGroup, logger, storage)
 
 	// Start server
 	go func() {

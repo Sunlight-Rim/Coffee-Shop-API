@@ -25,26 +25,26 @@ type ConnectionOptions struct {
 }
 
 // Connect and ping a postgres.
-func Connect(connOpts ConnectionOptions) (*sql.DB, error) {
+func Connect(opts *ConnectionOptions) (*sql.DB, error) {
 	db, err := sql.Open("postgres", fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		connOpts.Host,
-		connOpts.Port,
-		connOpts.User,
-		connOpts.Password,
-		connOpts.DBName,
-		connOpts.SSLMode,
+		opts.Host,
+		opts.Port,
+		opts.User,
+		opts.Password,
+		opts.DBName,
+		opts.SSLMode,
 	))
 	if err != nil {
 		return nil, errors.Wrap(err, "connect")
 	}
 
-	db.SetMaxOpenConns(connOpts.MaxOpenConns)
-	db.SetMaxIdleConns(connOpts.MaxIdleConns)
-	db.SetConnMaxLifetime(connOpts.ConnMaxLifetime * time.Second)
-	db.SetConnMaxIdleTime(connOpts.ConnMaxIdleTime * time.Second)
+	db.SetMaxOpenConns(opts.MaxOpenConns)
+	db.SetMaxIdleConns(opts.MaxIdleConns)
+	db.SetConnMaxLifetime(opts.ConnMaxLifetime * time.Second)
+	db.SetConnMaxIdleTime(opts.ConnMaxIdleTime * time.Second)
 
-	ctx, cancel := context.WithTimeout(context.Background(), connOpts.PingTimeout*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), opts.PingTimeout*time.Second)
 	defer cancel()
 
 	if err = db.PingContext(ctx); err != nil {

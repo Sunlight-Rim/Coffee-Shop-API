@@ -23,7 +23,7 @@ Check health:
 curl localhost:1337/api/health
 ```
 
-### Documentation
+### API Documentation
 
 Swagger available at [localhost:8080](http://localhost:8080/)
 
