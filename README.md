@@ -3,7 +3,6 @@
 Example Go application with Clean Architecture pattern. \
 Contains CRUD operations for `Users`, `Coffee` and `Orders` services.
 
-
 ![Scheme](https://iili.io/JLaxaUX.png)
 
 ### Run
@@ -25,7 +24,7 @@ curl localhost:1337/api/health
 
 ### API Documentation
 
-Swagger available at [localhost:8080](http://localhost:8080/)
+Swagger available at [localhost:8080](http://localhost:8080/). You can also use **[requests.sh](api/requests.sh)** for make sample requests.
 
 ### Profiling
 

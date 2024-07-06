@@ -31,7 +31,7 @@ services:
   redis:
     container_name: coffeeshop-redis
     image: redis
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --requirepass coffeeshop
     ports:
       - 6379:6379
     volumes:

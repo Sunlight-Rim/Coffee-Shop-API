@@ -10,31 +10,29 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Auth middleware validates and parses access token and puts the claims to the context.
+// Auth middleware validates and parses access token
+// and puts the claims to the context.
 var Auth echo.MiddlewareFunc
 
-func initAuth(tokenSecret string) {
+func initAuth(secret string) {
 	Auth = echojwt.WithConfig(echojwt.Config{
 		TokenLookup:    "cookie:access",
 		ContextKey:     "claims",
-		ParseTokenFunc: parseToken(tokenSecret),
+		ParseTokenFunc: parseToken([]byte(secret)),
 		ErrorHandler:   errorHandler,
 	})
 }
 
-func parseToken(tokenSecret string) func(c echo.Context, token string) (any, error) {
-	byteSecret := []byte(tokenSecret)
-
+func parseToken(secret []byte) func(c echo.Context, token string) (any, error) {
 	return func(c echo.Context, token string) (any, error) {
 		var claims model.Claims
 
 		if _, err := jwt.ParseWithClaims(token, &claims, func(*jwt.Token) (any, error) {
-			return byteSecret, nil
+			return secret, nil
 		}); err != nil {
 			if errors.Is(err, jwt.ErrTokenExpired) {
 				return nil, errors.Wrapf(errors.ExpiredToken, "expired token, %v", err)
 			}
-
 			return nil, errors.Wrapf(errors.InvalidToken, "invalid token, %v", err)
 		}
 
@@ -45,13 +43,10 @@ func parseToken(tokenSecret string) func(c echo.Context, token string) (any, err
 func errorHandler(c echo.Context, jwtErr error) (err error) {
 	switch {
 	case errors.Is(jwtErr, echojwt.ErrJWTMissing):
-		err = errors.Wrap(errors.MissingToken, "echojwt middleware")
+		err = errors.Wrapf(errors.MissingToken, "echojwt middleware: %v", jwtErr)
 
 	case errors.Is(jwtErr, echojwt.ErrJWTInvalid):
-		err = errors.Wrap(errors.InvalidToken, "echojwt middleware")
-
-	default:
-		err = errors.Wrap(jwtErr, "echojwt middleware unknown error")
+		err = errors.Wrapf(errors.InvalidToken, "echojwt middleware: %v", jwtErr)
 	}
 
 	tools.SendResponse(c, nil, err)

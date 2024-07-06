@@ -11,8 +11,6 @@ CREATE SCHEMA IF NOT EXISTS api;
 
 -- CREATE TABLES
 
--- users
-
 CREATE TABLE IF NOT EXISTS api.users (
     id              SERIAL PRIMARY KEY,
     username        VARCHAR(200) NOT NULL,
@@ -22,8 +20,6 @@ CREATE TABLE IF NOT EXISTS api.users (
     deleted_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
-
--- coffee
 
 CREATE TABLE IF NOT EXISTS api.coffee (
     id              SERIAL PRIMARY KEY,
@@ -35,8 +31,6 @@ CREATE TABLE IF NOT EXISTS api.coffee (
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 COMMENT ON COLUMN api.coffee.weight IS 'Net weight in grams';
-
--- orders
 
 CREATE TYPE api.status AS ENUM (
     'waiting payment',
@@ -53,8 +47,6 @@ CREATE TABLE IF NOT EXISTS api.orders (
     "status"        api.status DEFAULT 'waiting payment' NOT NULL,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
-
--- order_items
 
 CREATE TYPE api.topping AS ENUM (
     'vanilla',
