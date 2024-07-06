@@ -17,6 +17,20 @@ func New(logger model.ILogger, storage model.IStorage) *usecase {
 	}
 }
 
+// ListCoffee returns list of coffee.
+func (uc *usecase) ListCoffee(req *model.ListCoffeeReqUsecase) (*model.ListCoffeeResUsecase, error) {
+	list, err := uc.storage.ListCoffee(&model.ListCoffeeReqStorage{
+		Offset: req.Offset,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "list coffee")
+	}
+
+	return &model.ListCoffeeResUsecase{
+		CoffeeList: list.CoffeeList,
+	}, nil
+}
+
 // GetCoffeeInfo returns coffee description.
 func (uc *usecase) GetCoffeeInfo(req *model.GetCoffeeInfoReqUsecase) (*model.GetCoffeeInfoResUsecase, error) {
 	info, err := uc.storage.GetCoffeeInfo(&model.GetCoffeeInfoReqStorage{
@@ -31,16 +45,16 @@ func (uc *usecase) GetCoffeeInfo(req *model.GetCoffeeInfoReqUsecase) (*model.Get
 	}, nil
 }
 
-// ListCoffee returns list of coffee
-func (uc *usecase) ListCoffee(req *model.ListCoffeeReqUsecase) (*model.ListCoffeeResUsecase, error) {
-	list, err := uc.storage.ListCoffee(&model.ListCoffeeReqStorage{
+// ListToppings returns list of toppings.
+func (uc *usecase) ListToppings(req *model.ListToppingsReqUsecase) (*model.ListToppingsResUsecase, error) {
+	list, err := uc.storage.ListToppings(&model.ListToppingsReqStorage{
 		Offset: req.Offset,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "list coffee")
+		return nil, errors.Wrap(err, "list toppings")
 	}
 
-	return &model.ListCoffeeResUsecase{
-		CoffeeList: list.CoffeeList,
+	return &model.ListToppingsResUsecase{
+		ToppingsList: list.ToppingsList,
 	}, nil
 }

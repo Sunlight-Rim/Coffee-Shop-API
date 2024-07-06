@@ -1,5 +1,20 @@
 package model
 
+// ListCoffee
+
+// easyjson:json
+type ListCoffeeReqDelivery struct {
+	Offset uint64 `json:"offset" query:"offset"`
+}
+
+type ListCoffeeReqUsecase struct {
+	Offset uint64
+}
+
+type ListCoffeeReqStorage struct {
+	Offset uint64
+}
+
 // GetCoffee
 
 // easyjson:json
@@ -16,17 +31,17 @@ type GetCoffeeInfoReqStorage struct {
 	CoffeeID uint64
 }
 
-// ListCoffee
+// ListToppings
 
 // easyjson:json
-type ListCoffeeReqDelivery struct {
+type ListToppingsReqDelivery struct {
 	Offset uint64 `json:"offset" query:"offset"`
 }
 
-type ListCoffeeReqUsecase struct {
+type ListToppingsReqUsecase struct {
 	Offset uint64
 }
 
-type ListCoffeeReqStorage struct {
+type ListToppingsReqStorage struct {
 	Offset uint64
 }

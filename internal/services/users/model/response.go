@@ -19,7 +19,7 @@ type SignupResUsecase struct {
 	UserID uint64
 }
 
-type CreateResStorage struct {
+type CreateUserResStorage struct {
 	UserID uint64
 }
 

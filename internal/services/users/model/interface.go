@@ -20,7 +20,7 @@ type ILogger interface {
 
 // Storage
 type IStorage interface {
-	Create(*CreateReqStorage) (*CreateResStorage, error)
+	CreateUser(*CreateUserReqStorage) (*CreateUserResStorage, error)
 	CheckCredentials(*CheckCredentialsReqStorage) (*CheckCredentialsResStorage, error)
 	IsDeleted(*IsDeletedReqStorage) (*IsDeletedResStorage, error)
 	GetMe(*GetMeReqStorage) (*GetMeResStorage, error)

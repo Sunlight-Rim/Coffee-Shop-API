@@ -16,7 +16,7 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) Create(req *model.CreateReqStorage) (*model.CreateResStorage, error) {
+func (s *storage) CreateUser(req *model.CreateUserReqStorage) (*model.CreateUserResStorage, error) {
 	// Check if email is busy
 	var emailBusy bool
 
@@ -55,7 +55,7 @@ func (s *storage) Create(req *model.CreateReqStorage) (*model.CreateResStorage, 
 		return nil, errors.Wrap(err, "create user")
 	}
 
-	return &model.CreateResStorage{UserID: userID}, nil
+	return &model.CreateUserResStorage{UserID: userID}, nil
 }
 
 func (s *storage) CheckCredentials(req *model.CheckCredentialsReqStorage) (*model.CheckCredentialsResStorage, error) {

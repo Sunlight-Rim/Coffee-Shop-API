@@ -42,9 +42,13 @@ curl -sX GET http://localhost:1337/api/coffee/list \
 curl -sX GET http://localhost:1337/api/coffee/2 \
     -H 'Accept: application/json'
 
+### List available toppings
+curl -sX GET http://localhost:1337/api/topping/list \
+    -H 'Accept: application/json'
+
 # ORDERS
 
-### Connect to orders websocket
+### Connect to websocket for check orders statuses
 
 
 ### Make a coffee order

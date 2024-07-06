@@ -146,3 +146,14 @@ type ListCoffeeResponse struct {
 		Error any `json:"error"`
 	} `json:"body"`
 }
+
+// Returns toppings list.
+// swagger:response ListToppingsResponse
+type ListToppingsResponse struct {
+	// in: body
+	Body struct {
+		Response modelCoffee.ListToppingsResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}

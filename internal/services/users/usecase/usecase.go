@@ -29,7 +29,7 @@ func (uc *usecase) Signup(req *model.SignupReqUsecase) (*model.SignupResUsecase,
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	userInfo, err := uc.storage.Create(&model.CreateReqStorage{
+	userInfo, err := uc.storage.CreateUser(&model.CreateUserReqStorage{
 		Username:     req.Username,
 		Email:        req.Email,
 		Phone:        req.Phone,

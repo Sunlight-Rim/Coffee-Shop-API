@@ -30,7 +30,7 @@ type SignupReqUsecase struct {
 	Password string
 }
 
-type CreateReqStorage struct {
+type CreateUserReqStorage struct {
 	Username     string
 	Email        string
 	Phone        uint64

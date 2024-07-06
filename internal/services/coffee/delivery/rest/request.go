@@ -7,6 +7,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func listCoffeeReq(c echo.Context) (*model.ListCoffeeReqDelivery, error) {
+	var r model.ListCoffeeReqDelivery
+
+	if err := c.Bind(&r); err != nil {
+		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
+	}
+
+	return &r, nil
+}
+
 func getCoffeeInfoReq(c echo.Context) (*model.GetCoffeeInfoReqDelivery, error) {
 	var r model.GetCoffeeInfoReqDelivery
 
@@ -17,8 +27,8 @@ func getCoffeeInfoReq(c echo.Context) (*model.GetCoffeeInfoReqDelivery, error) {
 	return &r, nil
 }
 
-func listCoffeeReq(c echo.Context) (*model.ListCoffeeReqDelivery, error) {
-	var r model.ListCoffeeReqDelivery
+func listToppingsReq(c echo.Context) (*model.ListToppingsReqDelivery, error) {
+	var r model.ListToppingsReqDelivery
 
 	if err := c.Bind(&r); err != nil {
 		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)

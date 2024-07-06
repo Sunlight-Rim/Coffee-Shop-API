@@ -16,6 +16,35 @@ func New(uc model.IUsecase) *handler {
 	return &handler{uc: uc}
 }
 
+func (h *handler) listCoffee(c echo.Context) (err error) {
+	var (
+		req *model.ListCoffeeReqDelivery
+		res *model.ListCoffeeResDelivery
+	)
+
+	// Send response
+	defer func() { tools.SendResponse(c, res, err) }()
+
+	// Parse request
+	if req, err = listCoffeeReq(c); err != nil {
+		return errors.Wrap(err, "request")
+	}
+
+	// Call usecase
+	list, err := h.uc.ListCoffee(&model.ListCoffeeReqUsecase{
+		Offset: req.Offset,
+	})
+	if err != nil {
+		return errors.Wrap(err, "list coffee")
+	}
+
+	res = &model.ListCoffeeResDelivery{
+		CoffeeList: list.CoffeeList,
+	}
+
+	return
+}
+
 func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 	var (
 		req *model.GetCoffeeInfoReqDelivery
@@ -45,30 +74,30 @@ func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 	return
 }
 
-func (h *handler) listCoffee(c echo.Context) (err error) {
+func (h *handler) listToppings(c echo.Context) (err error) {
 	var (
-		req *model.ListCoffeeReqDelivery
-		res *model.ListCoffeeResDelivery
+		req *model.ListToppingsReqDelivery
+		res *model.ListToppingsResDelivery
 	)
 
 	// Send response
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	if req, err = listCoffeeReq(c); err != nil {
+	if req, err = listToppingsReq(c); err != nil {
 		return errors.Wrap(err, "request")
 	}
 
 	// Call usecase
-	list, err := h.uc.ListCoffee(&model.ListCoffeeReqUsecase{
+	list, err := h.uc.ListToppings(&model.ListToppingsReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
-		return errors.Wrap(err, "list coffee")
+		return errors.Wrap(err, "list toppings")
 	}
 
-	res = &model.ListCoffeeResDelivery{
-		CoffeeList: list.CoffeeList,
+	res = &model.ListToppingsResDelivery{
+		ToppingsList: list.ToppingsList,
 	}
 
 	return

@@ -38,3 +38,10 @@ type ListCoffeeRequest struct {
 	// required: true
 	modelCoffee.ListCoffeeReqDelivery
 }
+
+// swagger:parameters ListToppingsRequest
+type ListToppingsRequest struct {
+	// in: query
+	// required: true
+	modelCoffee.ListToppingsReqDelivery
+}
