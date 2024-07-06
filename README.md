@@ -24,7 +24,7 @@ curl localhost:1337/api/health
 
 ### API Documentation
 
-Swagger available at [localhost:8080](http://localhost:8080/). You can also use **[requests.sh](api/requests.sh)** for make sample requests.
+Swagger available at [localhost:8080](http://localhost:8080/). You can also use **[requests.rest](api/requests.rest)** for make sample requests.
 
 ### Profiling
 

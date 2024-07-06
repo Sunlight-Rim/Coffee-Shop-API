@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s" -o build/coffeeshop-api cmd/api/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s" -o build/coffeeshop-api cmd/coffeeshop/main.go
 
 # Run stage
 

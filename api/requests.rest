@@ -1,0 +1,69 @@
+# For vscode you can use https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+
+# AUTH
+
+### Create new user account
+curl -sX POST http://localhost:1337/api/auth/signup \
+    -H 'Accept: application/json' \
+    -d '{
+            "username": "test",
+            "phone":    11234567890,
+            "email":    "test@mail.com",
+            "password": "Password:123"
+    }'
+
+### Login to your account
+curl -sX POST http://localhost:1337/api/auth/signin \
+    -H 'Accept: application/json' \
+    -d '{
+            "email":    "test@mail.com",
+            "password": "Password:123"
+    }'
+
+### Get your account information
+curl -sX GET http://localhost:1337/api/user \
+    -H 'Accept: application/json'
+
+### Change account password
+curl -sX PUT http://localhost:1337/api/user/password \
+    -H 'Accept: application/json' \
+    -d '{
+        "old_password": "Password:123",
+        "new_password": "newPassword:123"
+    }'
+
+# COFFEE
+
+### List available coffee
+curl -sX GET http://localhost:1337/api/coffee/list \
+    -H 'Accept: application/json'
+
+### Get coffee details
+curl -sX GET http://localhost:1337/api/coffee/2 \
+    -H 'Accept: application/json'
+
+# ORDERS
+
+### Connect to orders websocket
+
+
+### Make a coffee order
+
+
+### List your orders
+
+
+### Get order details
+
+
+# DEAUTH
+
+### Delete your account
+curl -sX DELETE http://localhost:1337/api/user \
+    -H 'Accept: application/json'
+
+### Deauthorize from account
+curl -sX POST http://localhost:1337/api/auth/signout-all \
+    -H 'Accept: application/json'
+
+

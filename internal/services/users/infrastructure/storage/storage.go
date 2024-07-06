@@ -124,17 +124,20 @@ func (s *storage) GetMe(req *model.GetMeReqStorage) (*model.GetMeResStorage, err
 }
 
 func (s *storage) ChangePassword(req *model.ChangePasswordReqStorage) error {
-	if _, err := s.db.Exec(`
+	var changed bool
+
+	if err := s.db.QueryRow(`
 		UPDATE api.users
 		SET password_hash = $1
 		WHERE
 			id = $2 AND
 			password_hash = $3
+		RETURNING true
 	`,
 		req.NewPasswordHash,
 		req.UserID,
 		req.OldPasswordHash,
-	); err != nil {
+	).Scan(&changed); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return errors.Wrap(errors.InvalidCredentials, "invalid password")
 		}
