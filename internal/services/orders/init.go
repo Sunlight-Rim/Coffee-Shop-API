@@ -16,6 +16,5 @@ func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB) {
 	// )
 
 	// // Init primary adapters
-	// rest.New(uc).Register(group)
-	// websocket.New(uc).Register(group)
+	// delivery.New(uc).Register(group)
 }

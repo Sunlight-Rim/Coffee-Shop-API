@@ -3,7 +3,7 @@
 Example Go application with Clean Architecture pattern. \
 Contains CRUD operations for `Users`, `Coffee` and `Orders` services.
 
-![Scheme](https://iili.io/JLaxaUX.png)
+![Scheme](https://iili.io/df9DCbI.png)
 
 ### Run
 

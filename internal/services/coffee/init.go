@@ -3,7 +3,7 @@ package coffee
 import (
 	"database/sql"
 
-	"coffeeshop-api/internal/services/coffee/delivery/rest"
+	"coffeeshop-api/internal/services/coffee/delivery"
 	"coffeeshop-api/internal/services/coffee/infrastructure/storage"
 	"coffeeshop-api/internal/services/coffee/usecase"
 
@@ -21,5 +21,5 @@ func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB) {
 	)
 
 	// Init primary adapters
-	rest.New(uc).Register(group)
+	delivery.New(uc).Register(group)
 }

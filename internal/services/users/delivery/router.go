@@ -1,4 +1,4 @@
-package rest
+package delivery
 
 import (
 	"coffeeshop-api/internal/server/middleware"

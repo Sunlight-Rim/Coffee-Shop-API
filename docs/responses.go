@@ -2,6 +2,7 @@ package model
 
 import (
 	modelCoffee "coffeeshop-api/internal/services/coffee/model"
+	modelOrders "coffeeshop-api/internal/services/orders/model"
 	modelUsers "coffeeshop-api/internal/services/users/model"
 	"coffeeshop-api/pkg/tools"
 )
@@ -153,6 +154,17 @@ type ListToppingsResponse struct {
 	// in: body
 	Body struct {
 		Response modelCoffee.ListToppingsResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}
+
+// Returns toppings list.
+// swagger:response CreateOrderResponse
+type CreateOrderResponse struct {
+	// in: body
+	Body struct {
+		Response modelOrders.CreateOrderResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`

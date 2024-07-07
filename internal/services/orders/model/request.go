@@ -1,28 +1,22 @@
 package model
 
-// // easyjson:json
-// type Order struct {
-// 	CoffeeID  uint `json:"coffee_id"`
-// 	ToppingID uint `json:"topping_id"`
-// }
+// easyjson:json
+type Order struct {
+	CoffeeID uint   `json:"coffee_id"`
+	Topping  string `json:"topping"`
+}
 
-// // CreateOrder
+// CreateOrder
 
-// // easyjson:json
-// type CreateOrderReqDelivery struct {
-// 	Orders []Order `json:"orders"`
-// }
+// easyjson:json
+type CreateOrderReqDelivery struct {
+	Orders []Order `json:"orders"`
+}
 
-// type CreateOrderReqUsecase struct {
-// 	Username string
-// 	Email    string
-// 	Phone    uint64
-// 	Password string
-// }
+type CreateOrderReqUsecase struct {
+	Orders []Order
+}
 
-// type CreateOrderReqStorage struct {
-// 	Username     string
-// 	Email        string
-// 	Phone        uint64
-// 	PasswordHash string
-// }
+type CreateOrderReqStorage struct {
+	Orders []Order
+}

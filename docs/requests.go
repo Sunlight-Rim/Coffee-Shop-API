@@ -2,6 +2,7 @@ package model
 
 import (
 	modelCoffee "coffeeshop-api/internal/services/coffee/model"
+	modelOrders "coffeeshop-api/internal/services/orders/model"
 	modelUsers "coffeeshop-api/internal/services/users/model"
 )
 
@@ -44,4 +45,11 @@ type ListToppingsRequest struct {
 	// in: query
 	// required: true
 	modelCoffee.ListToppingsReqDelivery
+}
+
+// swagger:parameters CreateOrderRequest
+type CreateOrderRequest struct {
+	// in: query
+	// required: true
+	modelOrders.CreateOrderReqDelivery
 }

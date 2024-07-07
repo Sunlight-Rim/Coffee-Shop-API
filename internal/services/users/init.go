@@ -3,7 +3,7 @@ package users
 import (
 	"database/sql"
 
-	"coffeeshop-api/internal/services/users/delivery/rest"
+	"coffeeshop-api/internal/services/users/delivery"
 	"coffeeshop-api/internal/services/users/infrastructure/cache"
 	"coffeeshop-api/internal/services/users/infrastructure/storage"
 	"coffeeshop-api/internal/services/users/infrastructure/token"
@@ -31,5 +31,5 @@ func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB, redis *redi
 	)
 
 	// Init primary adapters
-	rest.New(uc).Register(group)
+	delivery.New(uc).Register(group)
 }

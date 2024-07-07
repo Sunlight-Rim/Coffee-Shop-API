@@ -1,6 +1,8 @@
 package model
 
-// Use cases
+// import "github.com/sirupsen/logrus"
+
+// // Use cases
 // type IUsecase interface {
 // 	CreateOrder(*CreateOrderReqUsecase) (*CreateOrderResUsecase, error)
 // 	ListOrders(*ListOrdersReqUsecase) (*ListOrdersResUsecase, error)
