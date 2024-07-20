@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"coffeeshop-api/internal/services/users/model"
+	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 
 	"github.com/labstack/echo/v4"
@@ -39,13 +40,13 @@ func refreshReq(c echo.Context) (*model.RefreshReqDelivery, error) {
 
 func signoutAllReq(c echo.Context) *model.SignoutAllReqDelivery {
 	return &model.SignoutAllReqDelivery{
-		UserID: c.Get("claims").(*model.Claims).UserID,
+		UserID: c.Get("claims").(*claims.Claims).UserID,
 	}
 }
 
 func getMeReq(c echo.Context) *model.GetMeReqDelivery {
 	return &model.GetMeReqDelivery{
-		UserID: c.Get("claims").(*model.Claims).UserID,
+		UserID: c.Get("claims").(*claims.Claims).UserID,
 	}
 }
 
@@ -56,13 +57,13 @@ func changePasswordReq(c echo.Context) (*model.ChangePasswordReqDelivery, error)
 		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)
 	}
 
-	r.UserID = c.Get("claims").(*model.Claims).UserID
+	r.UserID = c.Get("claims").(*claims.Claims).UserID
 
 	return &r, nil
 }
 
 func deleteMeReq(c echo.Context) *model.DeleteMeReqDelivery {
 	return &model.DeleteMeReqDelivery{
-		UserID: c.Get("claims").(*model.Claims).UserID,
+		UserID: c.Get("claims").(*claims.Claims).UserID,
 	}
 }

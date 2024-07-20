@@ -40,7 +40,7 @@ func fmtResponse(data any, err error) (int, []byte) {
 
 	if err != nil {
 		// Match error
-		errStatus, code, message := errors.GetHTTPErrData(err)
+		status, code, message := errors.GetHTTPErrData(err)
 
 		if res, err = easyjson.Marshal(Response{
 			Error: &ErrorResponse{Code: code, Message: message},
@@ -49,7 +49,7 @@ func fmtResponse(data any, err error) (int, []byte) {
 			return http.StatusInternalServerError, failedResponse
 		}
 
-		return errStatus, res
+		return status, res
 	}
 
 	if res, err = easyjson.Marshal(Response{

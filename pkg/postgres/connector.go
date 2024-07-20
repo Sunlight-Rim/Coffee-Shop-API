@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type ConnectionOptions struct {
+type Options struct {
 	Host            string
 	Port            string
 	User            string
@@ -25,7 +25,7 @@ type ConnectionOptions struct {
 }
 
 // Connect and ping a postgres.
-func Connect(opts *ConnectionOptions) (*sql.DB, error) {
+func Connect(opts *Options) (*sql.DB, error) {
 	db, err := sql.Open("postgres", fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		opts.Host,

@@ -14,10 +14,10 @@ type Options struct {
 	CookieHttpOnly bool
 }
 
-var opts Options
+var options Options
 
-func Init(options Options) {
-	opts = options
+func Init(opts Options) {
+	options = opts
 }
 
 // SHA256 generates SHA-256 hash string.
@@ -27,14 +27,14 @@ func SHA256(text string) string {
 }
 
 // SetCookie sets cookies.
-func SetCookie(c echo.Context, name, value, path string, expires time.Time) {
+func SetCookie(c echo.Context, name, path, value string, expires time.Time) {
 	c.SetCookie(&http.Cookie{
 		Name:     name,
-		Value:    value,
 		Path:     path,
+		Value:    value,
 		Expires:  expires,
-		Domain:   opts.CookieDomain,
-		Secure:   opts.CookieSecure,
-		HttpOnly: opts.CookieHttpOnly,
+		Domain:   options.CookieDomain,
+		Secure:   options.CookieSecure,
+		HttpOnly: options.CookieHttpOnly,
 	})
 }

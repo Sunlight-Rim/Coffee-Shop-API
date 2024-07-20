@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"coffeeshop-api/internal/services/users/model"
+	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -24,8 +25,8 @@ func New(secret string, accessExp, refreshExp time.Duration) *provider {
 }
 
 // Parse token.
-func (p *provider) Parse(token string) (*model.Claims, error) {
-	var claims model.Claims
+func (p *provider) Parse(token string) (*claims.Claims, error) {
+	var claims claims.Claims
 
 	if _, err := jwt.ParseWithClaims(token, &claims, func(*jwt.Token) (any, error) {
 		return p.secret, nil
@@ -41,7 +42,7 @@ func (p *provider) Parse(token string) (*model.Claims, error) {
 }
 
 // CreatePair creates new tokens pair.
-func (p *provider) CreatePair(claims *model.Claims) (*model.Token, *model.Token, error) {
+func (p *provider) CreatePair(claims *claims.Claims) (*model.TokensPair, error) {
 	var (
 		accessToken  model.Token
 		refreshToken model.Token
@@ -55,7 +56,7 @@ func (p *provider) CreatePair(claims *model.Claims) (*model.Token, *model.Token,
 	accessToken.Exp = claims.ExpiresAt.Time
 	accessToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(p.secret)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "signing access token")
+		return nil, errors.Wrap(err, "signing access token")
 	}
 
 	// Refresh
@@ -65,8 +66,11 @@ func (p *provider) CreatePair(claims *model.Claims) (*model.Token, *model.Token,
 	refreshToken.Exp = claims.ExpiresAt.Time
 	refreshToken.String, err = jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(p.secret)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "signing refresh token")
+		return nil, errors.Wrap(err, "signing refresh token")
 	}
 
-	return &accessToken, &refreshToken, nil
+	return &model.TokensPair{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }

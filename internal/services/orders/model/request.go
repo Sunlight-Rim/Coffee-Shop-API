@@ -1,8 +1,10 @@
 package model
 
+import "coffeeshop-api/pkg/errors"
+
 // easyjson:json
-type Order struct {
-	CoffeeID uint   `json:"coffee_id"`
+type OrderItem struct {
+	CoffeeID uint64 `json:"coffee_id"`
 	Topping  string `json:"topping"`
 }
 
@@ -10,13 +12,31 @@ type Order struct {
 
 // easyjson:json
 type CreateOrderReqDelivery struct {
-	Orders []Order `json:"orders"`
+	UserID  uint64
+	Address string      `json:"address"`
+	Items   []OrderItem `json:"items"`
 }
 
 type CreateOrderReqUsecase struct {
-	Orders []Order
+	UserID  uint64
+	Address string
+	Items   []OrderItem
 }
 
 type CreateOrderReqStorage struct {
-	Orders []Order
+	UserID  uint64
+	Address string
+	Items   []OrderItem
+}
+
+func (req *CreateOrderReqUsecase) Validate() error {
+	if lenItems := len(req.Items); lenItems < 0 || lenItems > 10 {
+		return errors.Wrapf(errors.InvalidRequestContent, "incorrect items count: %d", len(req.Items))
+	}
+
+	if req.Address == "" {
+		return errors.Wrap(errors.InvalidRequestContent, "empty address")
+	}
+
+	return nil
 }

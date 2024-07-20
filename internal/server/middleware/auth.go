@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"coffeeshop-api/internal/services/users/model"
+	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
 
@@ -25,7 +25,7 @@ func initAuth(secret string) {
 
 func parseToken(secret []byte) func(c echo.Context, token string) (any, error) {
 	return func(c echo.Context, token string) (any, error) {
-		var claims model.Claims
+		var claims claims.Claims
 
 		if _, err := jwt.ParseWithClaims(token, &claims, func(*jwt.Token) (any, error) {
 			return secret, nil

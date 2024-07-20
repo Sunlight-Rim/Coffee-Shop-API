@@ -53,7 +53,7 @@ func newLogger() *logrus.Logger {
 
 // Connect main storage.
 func connectStorage() *sql.DB {
-	db, err := postgres.Connect(&postgres.ConnectionOptions{
+	db, err := postgres.Connect(&postgres.Options{
 		Host:            viper.GetString("database.postgres.host"),
 		Port:            viper.GetString("database.postgres.port"),
 		User:            viper.GetString("database.postgres.user"),
@@ -75,7 +75,7 @@ func connectStorage() *sql.DB {
 
 // Connect cache.
 func connectCache() *goRedis.Client {
-	client, err := redis.Connect(&redis.ConnectionOptions{
+	client, err := redis.Connect(&redis.Options{
 		Host:        viper.GetString("database.redis.host"),
 		Port:        viper.GetString("database.redis.port"),
 		Password:    viper.GetString("database.redis.password"),

@@ -1,6 +1,10 @@
 package model
 
-import "github.com/sirupsen/logrus"
+import (
+	"coffeeshop-api/pkg/claims"
+
+	"github.com/sirupsen/logrus"
+)
 
 // Use cases
 type IUsecase interface {
@@ -22,7 +26,6 @@ type ILogger interface {
 type IStorage interface {
 	CreateUser(*CreateUserReqStorage) (*CreateUserResStorage, error)
 	CheckCredentials(*CheckCredentialsReqStorage) (*CheckCredentialsResStorage, error)
-	IsDeleted(*IsDeletedReqStorage) (*IsDeletedResStorage, error)
 	GetMe(*GetMeReqStorage) (*GetMeResStorage, error)
 	ChangePassword(*ChangePasswordReqStorage) error
 	DeleteMe(*DeleteMeReqStorage) (*DeleteMeResStorage, error)
@@ -30,13 +33,13 @@ type IStorage interface {
 
 // Cache service
 type ICache interface {
-	SaveUserRefreshToken(userID uint64, token *Token) error
+	SaveUserRefreshToken(userID uint64, token Token) error
 	RevokeUserRefreshToken(userID uint64, token string) error
 	RevokeAllUserRefreshTokens(userID uint64) (tokens []string, err error)
 }
 
 // Token service
 type IToken interface {
-	Parse(token string) (claims *Claims, err error)
-	CreatePair(claims *Claims) (accessToken, refreshToken *Token, err error)
+	Parse(token string) (claims *claims.Claims, err error)
+	CreatePair(claims *claims.Claims) (tokensPair *TokensPair, err error)
 }

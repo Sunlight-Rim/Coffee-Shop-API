@@ -7,7 +7,10 @@ import (
 	"coffeeshop-api/pkg/errors"
 )
 
-const coffeeLimit = 10
+const (
+	coffeeLimit   = 10
+	toppingsLimit = 10
+)
 
 type storage struct {
 	db *sql.DB
@@ -93,7 +96,7 @@ func (s *storage) ListToppings(req *model.ListToppingsReqStorage) (*model.ListTo
 		SELECT unnest(enum_range(NULL::api.topping))
 		LIMIT $1 OFFSET $2
 	`,
-		coffeeLimit,
+		toppingsLimit,
 		req.Offset,
 	)
 	if err != nil {
@@ -106,9 +109,7 @@ func (s *storage) ListToppings(req *model.ListToppingsReqStorage) (*model.ListTo
 	)
 
 	for rows.Next() {
-		if err := rows.Scan(
-			&topping,
-		); err != nil {
+		if err := rows.Scan(&topping); err != nil {
 			return nil, errors.Wrap(err, "scan toppings list")
 		}
 

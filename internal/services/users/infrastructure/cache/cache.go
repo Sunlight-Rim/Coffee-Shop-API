@@ -22,7 +22,7 @@ func New(redis *redis.Client) *cache {
 }
 
 // SaveUserRefreshToken saves refresh token by user ID with expiration.
-func (c *cache) SaveUserRefreshToken(userID uint64, token *model.Token) error {
+func (c *cache) SaveUserRefreshToken(userID uint64, token model.Token) error {
 	if err := c.redis.Set(
 		context.TODO(),
 		fmt.Sprintf(refreshTokenFmt, userID, token.String),

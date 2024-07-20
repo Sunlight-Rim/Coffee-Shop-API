@@ -16,7 +16,7 @@ func New(level string, jsonFormat bool) *logrus.Logger {
 	}
 
 	logger.SetLevel(logLevel)
-	logrus.SetOutput(os.Stdout)
+	logger.SetOutput(os.Stdout)
 
 	if jsonFormat {
 		logger.SetFormatter(&logrus.JSONFormatter{
@@ -28,12 +28,6 @@ func New(level string, jsonFormat bool) *logrus.Logger {
 	}
 
 	logger.SetFormatter(&logrus.TextFormatter{
-		TimestampFormat: "2006-01-02 15:04:05.000",
-		FullTimestamp:   true,
-		ForceColors:     true,
-	})
-
-	logrus.SetFormatter(&logrus.TextFormatter{
 		TimestampFormat: "2006-01-02 15:04:05.000",
 		FullTimestamp:   true,
 		ForceColors:     true,

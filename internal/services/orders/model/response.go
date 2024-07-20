@@ -1,6 +1,6 @@
 package model
 
-// Signup
+// CreateOrder
 
 // easyjson:json
 type CreateOrderResDelivery struct {

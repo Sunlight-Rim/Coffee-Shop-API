@@ -1,28 +1,37 @@
 package usecase
 
-// type usecase struct {
-// 	logger  model.ILogger
-// 	storage model.IStorage
-// }
+import (
+	"coffeeshop-api/internal/services/orders/model"
+	"coffeeshop-api/pkg/errors"
+)
 
-// // New usecase.
-// func New(logger model.ILogger, storage model.IStorage) *usecase {
-// 	return &usecase{
-// 		logger:  logger,
-// 		storage: storage,
-// 	}
-// }
+type usecase struct {
+	logger  model.ILogger
+	storage model.IStorage
+}
 
-// // CreateOrder creates order in database.
-// func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
-// 	orderInfo, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{
-// 		Orders: req.Orders,
-// 	})
-// 	if err != nil {
-// 		return nil, errors.Wrap(err, "create order")
-// 	}
+// New usecase.
+func New(logger model.ILogger, storage model.IStorage) *usecase {
+	return &usecase{
+		logger:  logger,
+		storage: storage,
+	}
+}
 
-// 	return &model.CreateOrderResUsecase{
-// 		OrderID: orderInfo.OrderID,
-// 	}, nil
-// }
+// CreateOrder creates order in database.
+func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
+	if err := req.Validate(); err != nil {
+		return nil, errors.Wrap(err, "request validation")
+	}
+
+	orderInfo, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{
+		Items: req.Items,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "create order")
+	}
+
+	return &model.CreateOrderResUsecase{
+		OrderID: orderInfo.OrderID,
+	}, nil
+}

@@ -37,16 +37,16 @@ type CreateUserReqStorage struct {
 	PasswordHash string
 }
 
-func (r *SignupReqUsecase) Validate() error {
-	if !usernameRegex.MatchString(r.Username) {
+func (req *SignupReqUsecase) Validate() error {
+	if !usernameRegex.MatchString(req.Username) {
 		return errors.Wrap(errors.InvalidRequestContent, "username")
 	}
 
-	if !emailRegex.MatchString(r.Email) {
+	if !emailRegex.MatchString(req.Email) {
 		return errors.Wrap(errors.InvalidRequestContent, "email")
 	}
 
-	if !passwordRegex.MatchString(r.Password) || utf8.RuneCountInString(r.Password) < 6 {
+	if !passwordRegex.MatchString(req.Password) || utf8.RuneCountInString(req.Password) < 6 {
 		return errors.Wrap(errors.InvalidRequestContent, "password")
 	}
 
@@ -71,22 +71,16 @@ type CheckCredentialsReqStorage struct {
 	PasswordHash string
 }
 
-func (r *SigninReqUsecase) Validate() error {
-	if !emailRegex.MatchString(r.Email) {
+func (req *SigninReqUsecase) Validate() error {
+	if !emailRegex.MatchString(req.Email) {
 		return errors.Wrap(errors.InvalidRequestContent, "email")
 	}
 
-	if !passwordRegex.MatchString(r.Password) || utf8.RuneCountInString(r.Password) < 6 {
+	if !passwordRegex.MatchString(req.Password) || utf8.RuneCountInString(req.Password) < 6 {
 		return errors.Wrap(errors.InvalidRequestContent, "password")
 	}
 
 	return nil
-}
-
-// IsDeleted
-
-type IsDeletedReqStorage struct {
-	UserID uint64
 }
 
 // Refresh
@@ -147,12 +141,12 @@ type ChangePasswordReqStorage struct {
 	NewPasswordHash string
 }
 
-func (r *ChangePasswordReqUsecase) Validate() error {
-	if !passwordRegex.MatchString(r.OldPassword) || utf8.RuneCountInString(r.OldPassword) < 6 {
+func (req *ChangePasswordReqUsecase) Validate() error {
+	if !passwordRegex.MatchString(req.OldPassword) || utf8.RuneCountInString(req.OldPassword) < 6 {
 		return errors.Wrap(errors.InvalidRequestContent, "old password")
 	}
 
-	if !passwordRegex.MatchString(r.NewPassword) || utf8.RuneCountInString(r.NewPassword) < 6 {
+	if !passwordRegex.MatchString(req.NewPassword) || utf8.RuneCountInString(req.NewPassword) < 6 {
 		return errors.Wrap(errors.InvalidRequestContent, "new password")
 	}
 

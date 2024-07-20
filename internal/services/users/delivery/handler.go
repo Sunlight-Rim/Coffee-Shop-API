@@ -68,7 +68,7 @@ func (h *handler) signin(c echo.Context) (err error) {
 		return errors.Wrap(err, "signin")
 	}
 
-	setCookieTokens(c, tokens.AccessToken, tokens.RefreshToken)
+	setCookieTokens(c, tokens.TokensPair)
 
 	return
 }
@@ -92,7 +92,7 @@ func (h *handler) refresh(c echo.Context) (err error) {
 		return errors.Wrap(err, "refresh")
 	}
 
-	setCookieTokens(c, tokens.AccessToken, tokens.RefreshToken)
+	setCookieTokens(c, tokens.TokensPair)
 
 	return
 }
@@ -101,7 +101,7 @@ func (h *handler) signout(c echo.Context) (err error) {
 	// Send response
 	defer func() { tools.SendResponse(c, nil, err) }()
 
-	setCookieTokens(c, &model.Token{}, &model.Token{})
+	setCookieTokens(c, &model.TokensPair{})
 
 	return
 }
@@ -130,7 +130,7 @@ func (h *handler) signoutAll(c echo.Context) (err error) {
 		RefreshTokens: tokens.RefreshTokens,
 	}
 
-	setCookieTokens(c, &model.Token{}, &model.Token{})
+	setCookieTokens(c, &model.TokensPair{})
 
 	return
 }
@@ -210,7 +210,19 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 	return
 }
 
-func setCookieTokens(c echo.Context, accessToken, refreshToken *model.Token) {
-	tools.SetCookie(c, "access", accessToken.String, "/", accessToken.Exp)
-	tools.SetCookie(c, "refresh", refreshToken.String, "/api/auth/refresh", refreshToken.Exp)
+func setCookieTokens(c echo.Context, tokensPair *model.TokensPair) {
+	tools.SetCookie(
+		c,
+		"access",
+		"/",
+		tokensPair.AccessToken.String,
+		tokensPair.AccessToken.Exp,
+	)
+	tools.SetCookie(
+		c,
+		"refresh",
+		"/api/auth/refresh",
+		tokensPair.RefreshToken.String,
+		tokensPair.RefreshToken.Exp,
+	)
 }

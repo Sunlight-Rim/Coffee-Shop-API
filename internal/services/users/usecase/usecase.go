@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"coffeeshop-api/internal/services/users/model"
+	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"strings"
 )
 
 type usecase struct {
@@ -31,8 +33,8 @@ func (uc *usecase) Signup(req *model.SignupReqUsecase) (*model.SignupResUsecase,
 
 	userInfo, err := uc.storage.CreateUser(&model.CreateUserReqStorage{
 		Username:     req.Username,
-		Email:        req.Email,
 		Phone:        req.Phone,
+		Email:        strings.ToLower(req.Email),
 		PasswordHash: tools.SHA256(req.Password),
 	})
 	if err != nil {
@@ -52,7 +54,7 @@ func (uc *usecase) Signin(req *model.SigninReqUsecase) (*model.SigninResUsecase,
 
 	// Check credentials
 	userInfo, err := uc.storage.CheckCredentials(&model.CheckCredentialsReqStorage{
-		Email:        req.Email,
+		Email:        strings.ToLower(req.Email),
 		PasswordHash: tools.SHA256(req.Password),
 	})
 	if err != nil {
@@ -60,21 +62,20 @@ func (uc *usecase) Signin(req *model.SigninReqUsecase) (*model.SigninResUsecase,
 	}
 
 	// Create new tokens pair
-	accessToken, refreshToken, err := uc.token.CreatePair(&model.Claims{
+	tokensPair, err := uc.token.CreatePair(&claims.Claims{
 		UserID: userInfo.UserID,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "create access token")
+		return nil, errors.Wrap(err, "create tokens pair")
 	}
 
 	// Save refresh token
-	if err := uc.cache.SaveUserRefreshToken(userInfo.UserID, refreshToken); err != nil {
+	if err := uc.cache.SaveUserRefreshToken(userInfo.UserID, tokensPair.RefreshToken); err != nil {
 		return nil, errors.Wrap(err, "save refresh token")
 	}
 
 	return &model.SigninResUsecase{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		TokensPair: tokensPair,
 	}, nil
 }
 
@@ -83,39 +84,27 @@ func (uc *usecase) Refresh(req *model.RefreshReqUsecase) (*model.RefreshResUseca
 	// Parse refresh token
 	claims, err := uc.token.Parse(req.RefreshToken)
 	if err != nil {
-		return nil, errors.Wrap(err, "parse token")
+		return nil, errors.Wrap(err, "parse refresh token")
 	}
 
 	// Revoke refresh token
 	if err := uc.cache.RevokeUserRefreshToken(claims.UserID, req.RefreshToken); err != nil {
-		return nil, errors.Wrap(err, "revoke token")
-	}
-
-	// Check if user account is not deleted
-	deleted, err := uc.storage.IsDeleted(&model.IsDeletedReqStorage{
-		UserID: claims.UserID,
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "check if account deleted")
-	}
-	if deleted.Deleted {
-		return nil, errors.Wrap(errors.DeletedAccount, "account was deleted")
+		return nil, errors.Wrap(err, "revoke refresh token")
 	}
 
 	// Create new tokens pair
-	accessToken, refreshToken, err := uc.token.CreatePair(claims)
+	tokensPair, err := uc.token.CreatePair(claims)
 	if err != nil {
-		return nil, errors.Wrap(err, "create token")
+		return nil, errors.Wrap(err, "create tokens pair")
 	}
 
 	// Save refresh token
-	if err := uc.cache.SaveUserRefreshToken(claims.UserID, refreshToken); err != nil {
+	if err := uc.cache.SaveUserRefreshToken(claims.UserID, tokensPair.RefreshToken); err != nil {
 		return nil, errors.Wrap(err, "save refresh token")
 	}
 
 	return &model.RefreshResUsecase{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		TokensPair: tokensPair,
 	}, nil
 }
 
@@ -124,7 +113,7 @@ func (uc *usecase) SignoutAll(req *model.SignoutAllReqUsecase) (*model.SignoutAl
 	// Revoke all refresh tokens
 	refreshTokens, err := uc.cache.RevokeAllUserRefreshTokens(req.UserID)
 	if err != nil {
-		return nil, errors.Wrap(err, "revoke all tokens")
+		return nil, errors.Wrap(err, "revoke all refresh tokens")
 	}
 
 	return &model.SignoutAllResUsecase{
@@ -167,6 +156,11 @@ func (uc *usecase) ChangePassword(req *model.ChangePasswordReqUsecase) error {
 
 // DeleteMe deletes user account.
 func (uc *usecase) DeleteMe(req *model.DeleteMeReqUsecase) (*model.DeleteMeResUsecase, error) {
+	// Revoke user all refresh tokens
+	if _, err := uc.cache.RevokeAllUserRefreshTokens(req.UserID); err != nil {
+		return nil, errors.Wrap(err, "revoke all refresh tokens")
+	}
+
 	// Delete user
 	userInfo, err := uc.storage.DeleteMe(&model.DeleteMeReqStorage{
 		UserID: req.UserID,

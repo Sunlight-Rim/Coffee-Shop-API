@@ -1,19 +1,23 @@
 package delivery
 
-// import "github.com/labstack/echo/v4"
+import (
+	"coffeeshop-api/internal/server/middleware"
 
-// func (h *handler) Register(group *echo.Group) {
-// order := group.Group("/order")
+	"github.com/labstack/echo/v4"
+)
 
-// /*
-// 	swagger:route POST /api/order Orders CreateOrderRequest
+func (h *handler) Register(group *echo.Group) {
+	order := group.Group("/order", middleware.Auth)
 
-// 	Make a new coffee order.
+	/*
+	   swagger:route POST /api/order Orders CreateOrderRequest
 
-// 		schemes: http
-// 		responses:
-// 			200: CreateOrderResponse
-// 			default: ErrorResponse
-// */
-// order.POST("", h.createOrder)
-// }
+	   Make a new coffee order.
+
+	   	schemes: http
+	   	responses:
+	   		200: CreateOrderResponse
+	   		default: ErrorResponse
+	*/
+	order.POST("", h.createOrder)
+}

@@ -9,7 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type ConnectionOptions struct {
+type Options struct {
 	Host        string
 	Port        string
 	Password    string
@@ -18,7 +18,7 @@ type ConnectionOptions struct {
 }
 
 // Connect and ping a redis.
-func Connect(opts *ConnectionOptions) (*redis.Client, error) {
+func Connect(opts *Options) (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", opts.Host, opts.Port),
 		Password: opts.Password,

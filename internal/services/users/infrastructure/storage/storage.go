@@ -82,22 +82,6 @@ func (s *storage) CheckCredentials(req *model.CheckCredentialsReqStorage) (*mode
 	return &model.CheckCredentialsResStorage{UserID: userID}, nil
 }
 
-func (s *storage) IsDeleted(req *model.IsDeletedReqStorage) (*model.IsDeletedResStorage, error) {
-	var deletedAt *time.Time
-
-	if err := s.db.QueryRow(`
-		SELECT deleted_at
-		FROM api.users
-		WHERE id = $1
-	`,
-		req.UserID,
-	).Scan(&deletedAt); err != nil {
-		return nil, errors.Wrap(err, "get user")
-	}
-
-	return &model.IsDeletedResStorage{Deleted: deletedAt != nil}, nil
-}
-
 func (s *storage) GetMe(req *model.GetMeReqStorage) (*model.GetMeResStorage, error) {
 	var user model.User
 

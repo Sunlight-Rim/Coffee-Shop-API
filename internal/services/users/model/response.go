@@ -26,25 +26,17 @@ type CreateUserResStorage struct {
 // Signin
 
 type SigninResUsecase struct {
-	AccessToken  *Token
-	RefreshToken *Token
+	TokensPair *TokensPair
 }
 
 type CheckCredentialsResStorage struct {
 	UserID uint64
 }
 
-// IsDeleted
-
-type IsDeletedResStorage struct {
-	Deleted bool
-}
-
 // Refresh
 
 type RefreshResUsecase struct {
-	AccessToken  *Token
-	RefreshToken *Token
+	TokensPair *TokensPair
 }
 
 // SignoutAll
