@@ -21,7 +21,7 @@ func initLogger(logger logrus.FieldLogger) {
 		LogRequestID: true,
 		LogUserAgent: true,
 		LogError:     true,
-		LogHeaders:   []string{"*"},
+		LogHeaders:   []string{"Cookie"},
 
 		LogValuesFunc: func(c echo.Context, values echomw.RequestLoggerValues) error {
 			errLocation, _ := errors.GetLocation(values.Error)

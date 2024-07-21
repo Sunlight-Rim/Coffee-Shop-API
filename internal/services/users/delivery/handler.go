@@ -31,7 +31,7 @@ func (h *handler) signup(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	userInfo, err := h.uc.Signup(&model.SignupReqUsecase{
+	user, err := h.uc.Signup(&model.SignupReqUsecase{
 		Username: req.Username,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -42,7 +42,7 @@ func (h *handler) signup(c echo.Context) (err error) {
 	}
 
 	res = &model.SignupResDelivery{
-		UserID: userInfo.UserID,
+		UserID: user.UserID,
 	}
 
 	return
@@ -148,7 +148,7 @@ func (h *handler) getMe(c echo.Context) (err error) {
 	req = getMeReq(c)
 
 	// Call usecase
-	userInfo, err := h.uc.GetMe(&model.GetMeReqUsecase{
+	user, err := h.uc.GetMe(&model.GetMeReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -156,7 +156,7 @@ func (h *handler) getMe(c echo.Context) (err error) {
 	}
 
 	res = &model.GetMeResDelivery{
-		User: userInfo.User,
+		User: user.User,
 	}
 
 	return
@@ -198,14 +198,14 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 	req = deleteMeReq(c)
 
 	// Call usecase
-	userInfo, err := h.uc.DeleteMe(&model.DeleteMeReqUsecase{
+	user, err := h.uc.DeleteMe(&model.DeleteMeReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {
 		return errors.Wrap(err, "delete user")
 	}
 
-	res.User = userInfo.User
+	res.User = user.User
 
 	return
 }

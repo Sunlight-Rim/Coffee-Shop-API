@@ -18,20 +18,50 @@ func New(logger model.ILogger, storage model.IStorage) *usecase {
 	}
 }
 
+func (uc *usecase) ListOrders(*model.ListOrdersReqUsecase) (*model.ListOrdersResUsecase, error) {
+	return nil, nil
+}
+func (uc *usecase) GetOrderInfo(*model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
+	return nil, nil
+}
+
 // CreateOrder creates order in database.
 func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	orderInfo, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{
-		Items: req.Items,
+	order, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{
+		UserID:  req.UserID,
+		Address: req.Address,
+		Items:   req.Items,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "create order")
 	}
 
 	return &model.CreateOrderResUsecase{
-		OrderID: orderInfo.OrderID,
+		OrderID: order.OrderID,
+	}, nil
+}
+
+func (uc *usecase) CancelOrder(*model.CancelOrderReqUsecase) (*model.CancelOrderResUsecase, error) {
+	return nil, nil
+}
+
+// EmployeeCompleteOrder marks order as completed.
+func (uc *usecase) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqUsecase) (*model.EmployeeCompleteOrderResUsecase, error) {
+	order, err := uc.storage.EmployeeCompleteOrder(&model.EmployeeCompleteOrderReqStorage{
+		OrderID: req.OrderID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "complete order")
+	}
+
+	return &model.EmployeeCompleteOrderResUsecase{
+		OrderCustomerID: order.OrderCustomerID,
+		OrderID:         order.OrderID,
+		OrderCreatedAt:  order.OrderCreatedAt,
+		OrderStatus:     order.OrderStatus,
 	}, nil
 }

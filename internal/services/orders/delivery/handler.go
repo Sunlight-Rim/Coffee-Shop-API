@@ -6,6 +6,7 @@ import (
 	"coffeeshop-api/pkg/tools"
 
 	"github.com/labstack/echo/v4"
+	"github.com/mailru/easyjson"
 )
 
 type handler struct {
@@ -14,6 +15,66 @@ type handler struct {
 
 func New(uc model.IUsecase) *handler {
 	return &handler{uc: uc}
+}
+
+func (h *handler) listOrders(c echo.Context) (err error) {
+	var (
+		req *model.ListOrdersReqDelivery
+		res *model.ListOrdersResDelivery
+	)
+
+	// Send response
+	defer func() { tools.SendResponse(c, res, err) }()
+
+	// Parse request
+	if req, err = listOrdersReq(c); err != nil {
+		return errors.Wrap(err, "request")
+	}
+
+	// Call usecase
+	orders, err := h.uc.ListOrders(&model.ListOrdersReqUsecase{
+		UserID: req.UserID,
+		Offset: req.Offset,
+	})
+	if err != nil {
+		return errors.Wrap(err, "list orders")
+	}
+
+	res = &model.ListOrdersResDelivery{
+		Orders: orders.Orders,
+	}
+
+	return
+}
+
+func (h *handler) getOrderInfo(c echo.Context) (err error) {
+	var (
+		req *model.GetOrderInfoReqDelivery
+		res *model.GetOrderInfoResDelivery
+	)
+
+	// Send response
+	defer func() { tools.SendResponse(c, res, err) }()
+
+	// Parse request
+	if req, err = getOrderInfoReq(c); err != nil {
+		return errors.Wrap(err, "request")
+	}
+
+	// Call usecase
+	order, err := h.uc.GetOrderInfo(&model.GetOrderInfoReqUsecase{
+		UserID:  req.UserID,
+		OrderID: req.OrderID,
+	})
+	if err != nil {
+		return errors.Wrap(err, "get order info")
+	}
+
+	res = &model.GetOrderInfoResDelivery{
+		Order: order.Order,
+	}
+
+	return
 }
 
 func (h *handler) createOrder(c echo.Context) (err error) {
@@ -31,15 +92,90 @@ func (h *handler) createOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	orderInfo, err := h.uc.CreateOrder(&model.CreateOrderReqUsecase{
-		Items: req.Items,
+	order, err := h.uc.CreateOrder(&model.CreateOrderReqUsecase{
+		UserID:  req.UserID,
+		Address: req.Address,
+		Items:   req.Items,
 	})
 	if err != nil {
 		return errors.Wrap(err, "create order")
 	}
 
 	res = &model.CreateOrderResDelivery{
-		OrderID: orderInfo.OrderID,
+		OrderID: order.OrderID,
+	}
+
+	return
+}
+
+func (h *handler) cancelOrder(c echo.Context) (err error) {
+	var (
+		req *model.CancelOrderReqDelivery
+		res *model.CancelOrderResDelivery
+	)
+
+	// Send response
+	defer func() { tools.SendResponse(c, res, err) }()
+
+	// Parse request
+	if req, err = cancelOrderReq(c); err != nil {
+		return errors.Wrap(err, "request")
+	}
+
+	// Call usecase
+	order, err := h.uc.CancelOrder(&model.CancelOrderReqUsecase{
+		UserID:  req.UserID,
+		OrderID: req.OrderID,
+	})
+	if err != nil {
+		return errors.Wrap(err, "cancel order")
+	}
+
+	res = &model.CancelOrderResDelivery{
+		OrderID: order.OrderID,
+	}
+
+	return
+}
+
+func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
+	var (
+		req *model.EmployeeCompleteOrderReqDelivery
+		res *model.EmployeeCompleteOrderResDelivery
+	)
+
+	// Send response
+	defer func() { tools.SendResponse(c, res, err) }()
+
+	// Parse request
+	if req, err = employeeCompleteOrderReq(c); err != nil {
+		return errors.Wrap(err, "request")
+	}
+
+	// Call usecase
+	order, err := h.uc.EmployeeCompleteOrder(&model.EmployeeCompleteOrderReqUsecase{
+		OrderID: req.OrderID,
+	})
+	if err != nil {
+		return errors.Wrap(err, "complete order as employee")
+	}
+
+	res = &model.EmployeeCompleteOrderResDelivery{
+		OrderID: order.OrderID,
+	}
+
+	// Send order status to user via SSE connection
+	msg, err := easyjson.Marshal(model.OrdersStatusesResDelivery{
+		OrderID:        order.OrderID,
+		OrderCreatedAt: order.OrderCreatedAt,
+		OrderStatus:    order.OrderStatus,
+	})
+	if err != nil {
+		return errors.Wrap(err, "send order status to user SSE")
+	}
+
+	if _, ok := sseClients[order.OrderCustomerID]; ok {
+		sseClients[order.OrderCustomerID] <- msg
 	}
 
 	return

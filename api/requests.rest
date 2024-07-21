@@ -16,7 +16,7 @@ curl -sX POST http://localhost:1337/api/auth/signup \
 curl -sX POST http://localhost:1337/api/auth/signin \
     -H 'Accept: application/json' \
     -d '{
-            "email":    "test@mail.com",
+            "email":    "test@user.com",
             "password": "Password:123"
     }'
 
@@ -28,8 +28,8 @@ curl -sX GET http://localhost:1337/api/user \
 curl -sX PUT http://localhost:1337/api/user/password \
     -H 'Accept: application/json' \
     -d '{
-        "old_password": "Password:123",
-        "new_password": "newPassword:123"
+            "old_password": "Password:123",
+            "new_password": "newPassword:123"
     }'
 
 # COFFEE
@@ -43,18 +43,33 @@ curl -sX GET http://localhost:1337/api/coffee/2 \
     -H 'Accept: application/json'
 
 ### List available toppings
-curl -sX GET http://localhost:1337/api/topping/list \
+curl -sX GET http://localhost:1337/api/toppings/list \
     -H 'Accept: application/json'
 
 # ORDERS
 
-### Connect to server-sent events endpoint for check orders statuses
+### Connect to server-sent events endpoint for get orders statuses updates (rest-client not supports)
+curl -N http://localhost:1337/api/events/orders/statuses \
+    -H 'Accept: text/event-stream'
 
+### Create a coffee order (payment not needed)
+curl -X POST http://localhost:1337/api/orders \
+    -H 'Accept: application/json' \
+    -d '{
+            "address": "Grove st., 45",
+            "items": [
+                {
+                    "coffee_id": 1,
+                    "topping": "vanilla"
+                }
+            ]
+    }'
 
-### Make a coffee order
+### Complete order cooking as a coffeeshop employee...
+curl -X POST http://localhost:1337/api/employee/orders/1/complete \
+    -H 'accept: application/json'
 
-
-### Cancel this order
+### ...or cancel this order as a user
 
 
 ### List your orders

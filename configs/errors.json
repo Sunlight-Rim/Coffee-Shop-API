@@ -38,5 +38,9 @@
     {
         "error": "deleted account",
         "http_status": 403
+    },
+    {
+        "error": "order not exists",
+        "http_status": 404
     }
 ]

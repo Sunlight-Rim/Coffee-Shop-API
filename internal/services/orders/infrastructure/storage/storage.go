@@ -17,6 +17,13 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
+func (s *storage) ListOrders(*model.ListOrdersReqStorage) (*model.ListOrdersResStorage, error) {
+	return nil, nil
+}
+func (s *storage) GetOrderInfo(*model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
+	return nil, nil
+}
+
 func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOrderResStorage, error) {
 	tx, err := s.db.Begin()
 	if err != nil {
@@ -27,7 +34,7 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOr
 	defer func() {
 		if err != nil {
 			if errRollback := tx.Rollback(); errRollback != nil {
-				logrus.Errorf("Rollback error: %v. Query error: %v", errRollback, err)
+				logrus.Errorf("Rollback error: %v", errRollback)
 			}
 		} else {
 			if errCommit := tx.Commit(); errCommit != nil {
@@ -65,18 +72,52 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOr
 		VALUES ($1, $2, $3)
 	`)
 	if err != nil {
-		return nil, errors.Wrap(err, "prepare")
+		return nil, errors.Wrap(err, "prepare items")
 	}
 
 	for i := range req.Items {
 		if _, err := stmt.Exec(
 			orderID,
 			req.Items[i].CoffeeID,
-			req.Items[i].Topping,
+			&req.Items[i].Topping,
 		); err != nil {
 			return nil, errors.Wrap(err, "insert item")
 		}
 	}
 
 	return &model.CreateOrderResStorage{OrderID: orderID}, nil
+}
+
+func (s *storage) CancelOrder(*model.CancelOrderReqStorage) (*model.CancelOrderResStorage, error) {
+	return nil, nil
+}
+
+func (s *storage) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqStorage) (*model.EmployeeCompleteOrderResStorage, error) {
+	var orderInfo model.EmployeeCompleteOrderResStorage
+
+	if err := s.db.QueryRow(`
+		UPDATE api.orders
+		SET "status" = 'ready to receive'
+		WHERE id = $1
+		RETURNING
+			id,
+			user_id,
+			created_at,
+			"status"
+	`,
+		req.OrderID,
+	).Scan(
+		&orderInfo.OrderID,
+		&orderInfo.OrderCustomerID,
+		&orderInfo.OrderCreatedAt,
+		&orderInfo.OrderStatus,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.Wrap(errors.OrderNotExists, "order not found")
+		}
+
+		return nil, errors.Wrap(err, "change order status")
+	}
+
+	return &orderInfo, nil
 }

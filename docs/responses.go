@@ -159,12 +159,67 @@ type ListToppingsResponse struct {
 	} `json:"body"`
 }
 
+// Returns orders statuses updates.
+// swagger:response OrdersStatusesResponse
+type OrdersStatusesResponse struct {
+	// in: body
+	Body struct {
+		Response modelOrders.OrdersStatusesResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}
+
+// Returns orders list.
+// swagger:response ListOrdersResponse
+type ListOrdersResponse struct {
+	// in: body
+	Body struct {
+		Response modelOrders.ListOrdersResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}
+
+// Returns order information.
+// swagger:response GetOrderInfoResponse
+type GetOrderInfoResponse struct {
+	// in: body
+	Body struct {
+		Response modelOrders.GetOrderInfoResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}
+
 // Returns toppings list.
 // swagger:response CreateOrderResponse
 type CreateOrderResponse struct {
 	// in: body
 	Body struct {
 		Response modelOrders.CreateOrderResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}
+
+// Order was cancelled.
+// swagger:response CancelOrderResponse
+type CancelOrderResponse struct {
+	// in: body
+	Body struct {
+		Response modelOrders.CancelOrderResDelivery `json:"response"`
+		// example: null
+		Error any `json:"error"`
+	} `json:"body"`
+}
+
+// Order was completed.
+// swagger:response EmployeeCompleteOrderResponse
+type EmployeeCompleteOrderResponse struct {
+	// in: body
+	Body struct {
+		Response modelOrders.EmployeeCompleteOrderResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`

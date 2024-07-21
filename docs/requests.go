@@ -47,9 +47,34 @@ type ListToppingsRequest struct {
 	modelCoffee.ListToppingsReqDelivery
 }
 
-// swagger:parameters CreateOrderRequest
-type CreateOrderRequest struct {
+// swagger:parameters ListOrdersRequest
+type ListOrdersRequest struct {
 	// in: query
 	// required: true
-	modelOrders.CreateOrderReqDelivery
+	modelOrders.ListOrdersReqDelivery
+}
+
+// swagger:parameters GetOrderInfoRequest
+type GetOrderInfoRequest struct {
+	// required: true
+	modelOrders.GetOrderInfoReqDelivery
+}
+
+// swagger:parameters CreateOrderRequest
+type CreateOrderRequest struct {
+	// in: body
+	// required: true
+	Body modelOrders.CreateOrderReqDelivery
+}
+
+// swagger:parameters CancelOrderRequest
+type CancelOrderRequest struct {
+	// required: true
+	modelOrders.CancelOrderReqDelivery
+}
+
+// swagger:parameters EmployeeCompleteOrderRequest
+type EmployeeCompleteOrderRequest struct {
+	// required: true
+	modelOrders.EmployeeCompleteOrderReqDelivery
 }

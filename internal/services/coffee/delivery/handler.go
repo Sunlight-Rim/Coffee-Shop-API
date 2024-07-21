@@ -31,7 +31,7 @@ func (h *handler) listCoffee(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	list, err := h.uc.ListCoffee(&model.ListCoffeeReqUsecase{
+	coffee, err := h.uc.ListCoffee(&model.ListCoffeeReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
@@ -39,7 +39,7 @@ func (h *handler) listCoffee(c echo.Context) (err error) {
 	}
 
 	res = &model.ListCoffeeResDelivery{
-		CoffeeList: list.CoffeeList,
+		CoffeeList: coffee.CoffeeList,
 	}
 
 	return
@@ -60,7 +60,7 @@ func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	info, err := h.uc.GetCoffeeInfo(&model.GetCoffeeInfoReqUsecase{
+	coffee, err := h.uc.GetCoffeeInfo(&model.GetCoffeeInfoReqUsecase{
 		CoffeeID: req.CoffeeID,
 	})
 	if err != nil {
@@ -68,7 +68,7 @@ func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 	}
 
 	res = &model.GetCoffeeInfoResDelivery{
-		Coffee: info.Coffee,
+		Coffee: coffee.Coffee,
 	}
 
 	return
@@ -89,7 +89,7 @@ func (h *handler) listToppings(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	list, err := h.uc.ListToppings(&model.ListToppingsReqUsecase{
+	toppings, err := h.uc.ListToppings(&model.ListToppingsReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
@@ -97,7 +97,7 @@ func (h *handler) listToppings(c echo.Context) (err error) {
 	}
 
 	res = &model.ListToppingsResDelivery{
-		ToppingsList: list.ToppingsList,
+		ToppingsList: toppings.ToppingsList,
 	}
 
 	return

@@ -4,10 +4,10 @@ import "github.com/labstack/echo/v4"
 
 func (h *handler) Register(group *echo.Group) {
 	coffee := group.Group("/coffee")
-	topping := group.Group("/topping")
+	toppings := group.Group("/toppings")
 
 	/*
-		swagger:route GET /api/coffee/list Coffee ListCoffeeRequest
+		swagger:route GET /api/coffee Coffee ListCoffeeRequest
 
 		List coffee assortment.
 
@@ -29,7 +29,7 @@ func (h *handler) Register(group *echo.Group) {
 	*/
 	coffee.GET("/:id", h.getCoffeeInfo)
 	/*
-		swagger:route GET /api/topping/list Coffee ListToppingsRequest
+		swagger:route GET /api/toppings/list Coffee ListToppingsRequest
 
 		List toppings assortment.
 
@@ -38,5 +38,5 @@ func (h *handler) Register(group *echo.Group) {
 				200: ListToppingsResponse
 				default: ErrorResponse
 	*/
-	topping.GET("/list", h.listToppings)
+	toppings.GET("/list", h.listToppings)
 }

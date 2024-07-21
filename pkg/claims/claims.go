@@ -2,7 +2,7 @@ package claims
 
 import "github.com/golang-jwt/jwt/v5"
 
-// General tokens claims.
+// General application tokens claims.
 type Claims struct {
 	jwt.RegisteredClaims
 

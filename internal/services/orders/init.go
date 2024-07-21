@@ -19,6 +19,6 @@ func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB) {
 		storage.New(postgres),
 	)
 
-	// Init primary adapters
+	// // Init primary adapters
 	delivery.New(uc).Register(group)
 }

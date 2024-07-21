@@ -152,7 +152,7 @@
         }
       }
     },
-    "/api/coffee/list": {
+    "/api/coffee": {
       "get": {
         "schemes": [
           "http"
@@ -211,6 +211,37 @@
         }
       }
     },
+    "/api/employee/orders/{id}/complete": {
+      "post": {
+        "description": "In this version receives the same token as a users endpoints.",
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Set coffee order status to 'ready to receive' after complete the cooking.",
+        "operationId": "EmployeeCompleteOrderRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "OrderID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/EmployeeCompleteOrderResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
     "/api/errors": {
       "get": {
         "schemes": [
@@ -231,6 +262,32 @@
         }
       }
     },
+    "/api/events/orders/statuses": {
+      "get": {
+        "consumes": [
+          "text/event-stream"
+        ],
+        "produces": [
+          "text/event-stream"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Server-Sent Events for instantly receive orders statuses.",
+        "operationId": "OrdersStatusesRequest",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/OrdersStatusesResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "schemes": [
@@ -244,6 +301,152 @@
         "responses": {
           "200": {
             "$ref": "#/responses/HealthResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "List user orders.",
+        "operationId": "ListOrdersRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "Offset",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ListOrdersResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      },
+      "post": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create a new coffee order.",
+        "operationId": "CreateOrderRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateOrderReqDelivery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/CreateOrderResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get details about coffee order.",
+        "operationId": "GetOrderInfoRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "OrderID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetOrderInfoResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/cancel": {
+      "post": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Set coffee order status to 'cancelled'.",
+        "operationId": "CancelOrderRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "OrderID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/CancelOrderResponse"
+          },
+          "default": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/api/toppings/list": {
+      "get": {
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Coffee"
+        ],
+        "summary": "List toppings assortment.",
+        "operationId": "ListToppingsRequest",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "Offset",
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ListToppingsResponse"
           },
           "default": {
             "$ref": "#/responses/ErrorResponse"
@@ -342,6 +545,18 @@
     }
   },
   "definitions": {
+    "CancelOrderResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderID"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
     "ChangePasswordReqDelivery": {
       "description": "easyjson:json",
       "type": "object",
@@ -349,6 +564,10 @@
         "new_password": {
           "type": "string",
           "x-go-name": "NewPassword"
+        },
+        "old_password": {
+          "type": "string",
+          "x-go-name": "OldPassword"
         }
       },
       "x-go-package": "coffeeshop-api/internal/services/users/model"
@@ -387,6 +606,52 @@
       },
       "x-go-package": "coffeeshop-api/internal/services/coffee/model"
     },
+    "CreateOrderOrderItem": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "coffee_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "CoffeeID"
+        },
+        "topping": {
+          "type": "string",
+          "x-go-name": "Topping"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
+    "CreateOrderReqDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "x-go-name": "Address"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CreateOrderOrderItem"
+          },
+          "x-go-name": "Items"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
+    "CreateOrderResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderID"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
     "DeleteMeResDelivery": {
       "description": "easyjson:json",
       "type": "object",
@@ -396,6 +661,18 @@
         }
       },
       "x-go-package": "coffeeshop-api/internal/services/users/model"
+    },
+    "EmployeeCompleteOrderResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderID"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
     },
     "ErrorResponse": {
       "description": "easyjson:json",
@@ -434,6 +711,62 @@
       },
       "x-go-package": "coffeeshop-api/internal/services/users/model"
     },
+    "GetOrderInfoOrder": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "x-go-name": "Address"
+        },
+        "created_at": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "CreatedAt"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderID"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetOrderInfoOrderItem"
+          },
+          "x-go-name": "Items"
+        },
+        "status": {
+          "type": "string",
+          "x-go-name": "Status"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
+    "GetOrderInfoOrderItem": {
+      "type": "object",
+      "properties": {
+        "coffee_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "CoffeeID"
+        },
+        "topping": {
+          "type": "string",
+          "x-go-name": "Topping"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
+    "GetOrderInfoResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "order": {
+          "$ref": "#/definitions/GetOrderInfoOrder"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
     "ListCoffeeResDelivery": {
       "description": "easyjson:json",
       "type": "object",
@@ -447,6 +780,71 @@
         }
       },
       "x-go-package": "coffeeshop-api/internal/services/coffee/model"
+    },
+    "ListOrdersOrder": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderCreatedAt"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderID"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
+    "ListOrdersResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ListOrdersOrder"
+          },
+          "x-go-name": "Orders"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
+    },
+    "ListToppingsResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "toppings_list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "ToppingsList"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/coffee/model"
+    },
+    "OrdersStatusesResDelivery": {
+      "description": "easyjson:json",
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "OrderCreatedAt"
+        },
+        "id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "OrderID"
+        },
+        "status": {
+          "type": "string",
+          "x-go-name": "OrderStatus"
+        }
+      },
+      "x-go-package": "coffeeshop-api/internal/services/orders/model"
     },
     "SigninReqDelivery": {
       "description": "easyjson:json",
@@ -540,6 +938,21 @@
     }
   },
   "responses": {
+    "CancelOrderResponse": {
+      "description": "Order was cancelled.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/CancelOrderResDelivery"
+          }
+        }
+      }
+    },
     "ChangePasswordResponse": {
       "description": "Empty response.",
       "schema": {
@@ -556,6 +969,21 @@
         }
       }
     },
+    "CreateOrderResponse": {
+      "description": "Returns toppings list.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/CreateOrderResDelivery"
+          }
+        }
+      }
+    },
     "DeleteMeResponse": {
       "description": "Returns user deleted account data.",
       "schema": {
@@ -567,6 +995,21 @@
           },
           "response": {
             "$ref": "#/definitions/DeleteMeResDelivery"
+          }
+        }
+      }
+    },
+    "EmployeeCompleteOrderResponse": {
+      "description": "Order was completed.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/EmployeeCompleteOrderResDelivery"
           }
         }
       }
@@ -634,6 +1077,21 @@
         }
       }
     },
+    "GetOrderInfoResponse": {
+      "description": "Returns order information.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/GetOrderInfoResDelivery"
+          }
+        }
+      }
+    },
     "HealthResponse": {
       "description": "Informs whether the service is alive or not.",
       "schema": {
@@ -651,6 +1109,51 @@
           },
           "response": {
             "$ref": "#/definitions/ListCoffeeResDelivery"
+          }
+        }
+      }
+    },
+    "ListOrdersResponse": {
+      "description": "Returns orders list.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/ListOrdersResDelivery"
+          }
+        }
+      }
+    },
+    "ListToppingsResponse": {
+      "description": "Returns toppings list.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/ListToppingsResDelivery"
+          }
+        }
+      }
+    },
+    "OrdersStatusesResponse": {
+      "description": "Returns orders statuses updates.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "x-go-name": "Error",
+            "example": "null"
+          },
+          "response": {
+            "$ref": "#/definitions/OrdersStatusesResDelivery"
           }
         }
       }

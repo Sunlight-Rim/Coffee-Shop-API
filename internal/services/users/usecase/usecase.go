@@ -31,7 +31,7 @@ func (uc *usecase) Signup(req *model.SignupReqUsecase) (*model.SignupResUsecase,
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	userInfo, err := uc.storage.CreateUser(&model.CreateUserReqStorage{
+	user, err := uc.storage.CreateUser(&model.CreateUserReqStorage{
 		Username:     req.Username,
 		Phone:        req.Phone,
 		Email:        strings.ToLower(req.Email),
@@ -42,7 +42,7 @@ func (uc *usecase) Signup(req *model.SignupReqUsecase) (*model.SignupResUsecase,
 	}
 
 	return &model.SignupResUsecase{
-		UserID: userInfo.UserID,
+		UserID: user.UserID,
 	}, nil
 }
 
@@ -53,7 +53,7 @@ func (uc *usecase) Signin(req *model.SigninReqUsecase) (*model.SigninResUsecase,
 	}
 
 	// Check credentials
-	userInfo, err := uc.storage.CheckCredentials(&model.CheckCredentialsReqStorage{
+	user, err := uc.storage.CheckCredentials(&model.CheckCredentialsReqStorage{
 		Email:        strings.ToLower(req.Email),
 		PasswordHash: tools.SHA256(req.Password),
 	})
@@ -63,14 +63,14 @@ func (uc *usecase) Signin(req *model.SigninReqUsecase) (*model.SigninResUsecase,
 
 	// Create new tokens pair
 	tokensPair, err := uc.token.CreatePair(&claims.Claims{
-		UserID: userInfo.UserID,
+		UserID: user.UserID,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "create tokens pair")
 	}
 
 	// Save refresh token
-	if err := uc.cache.SaveUserRefreshToken(userInfo.UserID, tokensPair.RefreshToken); err != nil {
+	if err := uc.cache.SaveUserRefreshToken(user.UserID, tokensPair.RefreshToken); err != nil {
 		return nil, errors.Wrap(err, "save refresh token")
 	}
 
@@ -124,7 +124,7 @@ func (uc *usecase) SignoutAll(req *model.SignoutAllReqUsecase) (*model.SignoutAl
 // GetMe returns user account inforamtion.
 func (uc *usecase) GetMe(req *model.GetMeReqUsecase) (*model.GetMeResUsecase, error) {
 	// Get user
-	userInfo, err := uc.storage.GetMe(&model.GetMeReqStorage{
+	user, err := uc.storage.GetMe(&model.GetMeReqStorage{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -132,7 +132,7 @@ func (uc *usecase) GetMe(req *model.GetMeReqUsecase) (*model.GetMeResUsecase, er
 	}
 
 	return &model.GetMeResUsecase{
-		User: userInfo.User,
+		User: user.User,
 	}, nil
 }
 
@@ -162,7 +162,7 @@ func (uc *usecase) DeleteMe(req *model.DeleteMeReqUsecase) (*model.DeleteMeResUs
 	}
 
 	// Delete user
-	userInfo, err := uc.storage.DeleteMe(&model.DeleteMeReqStorage{
+	user, err := uc.storage.DeleteMe(&model.DeleteMeReqStorage{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -170,6 +170,6 @@ func (uc *usecase) DeleteMe(req *model.DeleteMeReqUsecase) (*model.DeleteMeResUs
 	}
 
 	return &model.DeleteMeResUsecase{
-		User: userInfo.User,
+		User: user.User,
 	}, nil
 }
