@@ -7,14 +7,51 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/mailru/easyjson"
+	"github.com/sirupsen/logrus"
 )
 
 type handler struct {
-	uc model.IUsecase
+	uc  model.IUsecase
+	hub *Hub
 }
 
-func New(uc model.IUsecase) *handler {
-	return &handler{uc: uc}
+func New(uc model.IUsecase, hub *Hub) *handler {
+	return &handler{
+		uc:  uc,
+		hub: hub,
+	}
+}
+
+func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
+	// Parse request
+	req := ordersStatusesReq(c)
+
+	w := c.Response()
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	// Register SSE client
+	h.hub.registerClient <- req.UserID
+
+	// Unregister SSE client after context was done
+	go func() {
+		<-c.Request().Context().Done()
+		h.hub.unregisterClient <- req.UserID
+	}()
+
+	// Send events
+	for status := range h.hub.clients[req.UserID] {
+		logrus.WithField("user_id", req.UserID).Info("SSE sent order status update")
+
+		if _, err := w.Write(append(status, []byte("\n")...)); err != nil {
+			return errors.Wrap(err, "write to the client")
+		}
+
+		w.Flush()
+	}
+
+	return
 }
 
 func (h *handler) listOrders(c echo.Context) (err error) {
@@ -164,7 +201,7 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 		OrderID: order.OrderID,
 	}
 
-	// Send order status to user via SSE connection
+	// Send status to user SSE connection
 	msg, err := easyjson.Marshal(model.OrdersStatusesResDelivery{
 		OrderID:        order.OrderID,
 		OrderCreatedAt: order.OrderCreatedAt,
@@ -174,8 +211,8 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 		return errors.Wrap(err, "send order status to user SSE")
 	}
 
-	if _, ok := sseClients[order.OrderCustomerID]; ok {
-		sseClients[order.OrderCustomerID] <- msg
+	if _, ok := h.hub.clients[order.OrderCustomerID]; ok {
+		h.hub.clients[order.OrderCustomerID] <- msg
 	}
 
 	return

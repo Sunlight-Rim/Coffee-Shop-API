@@ -14,18 +14,16 @@ func (h *handler) Register(group *echo.Group) {
 	/*
 		swagger:route GET /api/events/orders/statuses Orders OrdersStatusesRequest
 
-		Server-Sent Events for instantly receive orders statuses.
+		Server-Sent Events for instantly receiving orders statuses.
 
 		schemes: http
-		consumes:
-			- text/event-stream
 		produces:
 			- text/event-stream
 		responses:
 			200: OrdersStatusesResponse
 			default: ErrorResponse
 	*/
-	events.GET("/orders/statuses", h.ordersStatuses)
+	events.GET("/orders/statuses", h.sseOrdersStatuses)
 	/*
 	   swagger:route GET /api/orders Orders ListOrdersRequest
 

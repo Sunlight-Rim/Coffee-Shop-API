@@ -9,12 +9,10 @@ import (
 	"github.com/mailru/easyjson"
 )
 
-func ordersStatusesReq(c echo.Context) (*model.OrdersStatusesReqDelivery, error) {
-	var r model.OrdersStatusesReqDelivery
-
-	r.UserID = c.Get("claims").(*claims.Claims).UserID
-
-	return &r, nil
+func ordersStatusesReq(c echo.Context) *model.OrdersStatusesReqDelivery {
+	return &model.OrdersStatusesReqDelivery{
+		UserID: c.Get("claims").(*claims.Claims).UserID,
+	}
 }
 
 func listOrdersReq(c echo.Context) (*model.ListOrdersReqDelivery, error) {

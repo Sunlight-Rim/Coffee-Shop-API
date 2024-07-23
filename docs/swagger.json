@@ -264,9 +264,6 @@
     },
     "/api/events/orders/statuses": {
       "get": {
-        "consumes": [
-          "text/event-stream"
-        ],
         "produces": [
           "text/event-stream"
         ],
@@ -276,7 +273,7 @@
         "tags": [
           "Orders"
         ],
-        "summary": "Server-Sent Events for instantly receive orders statuses.",
+        "summary": "Server-Sent Events for instantly receiving orders statuses.",
         "operationId": "OrdersStatusesRequest",
         "responses": {
           "200": {

@@ -20,5 +20,8 @@ func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB) {
 	)
 
 	// // Init primary adapters
-	delivery.New(uc).Register(group)
+	hub := delivery.NewHubSSE()
+	go hub.Run()
+
+	delivery.New(uc, hub).Register(group)
 }
