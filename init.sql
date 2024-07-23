@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS api.coffee (
     id              SERIAL PRIMARY KEY,
     title           VARCHAR(200) NOT NULL,
     "description"   TEXT,
-    "image"         VARCHAR(1000) DEFAULT 'https://cdn-icons-png.freepik.com/128/1047/1047503.png' NOT NULL,
+    "image"         VARCHAR(1000) DEFAULT 'https://example.com/coffee.png' NOT NULL,
     "weight"        INTEGER NOT NULL,
     price           DECIMAL(10, 2) NOT NULL DEFAULT 0,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL

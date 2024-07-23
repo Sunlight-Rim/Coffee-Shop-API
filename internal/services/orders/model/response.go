@@ -94,11 +94,17 @@ type CancelOrderResDelivery struct {
 }
 
 type CancelOrderResUsecase struct {
-	OrderID uint64
+	OrderID         uint64
+	OrderCustomerID uint64
+	OrderCreatedAt  time.Time
+	OrderStatus     string
 }
 
 type CancelOrderResStorage struct {
-	OrderID uint64
+	OrderID         uint64
+	OrderCustomerID uint64
+	OrderCreatedAt  time.Time
+	OrderStatus     string
 }
 
 // EmployeeCompleteOrder

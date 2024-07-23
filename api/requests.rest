@@ -3,7 +3,7 @@
 # AUTHORIZATION
 
 ### Create new account
-curl -sX POST http://localhost:1337/api/auth/signup \
+curl -X POST http://localhost:1337/api/auth/signup \
     -H 'Accept: application/json' \
     -d '{
             "username": "test",
@@ -13,7 +13,7 @@ curl -sX POST http://localhost:1337/api/auth/signup \
     }'
 
 ### Login
-curl -sX POST http://localhost:1337/api/auth/signin \
+curl -X POST http://localhost:1337/api/auth/signin \
     -H 'Accept: application/json' \
     -d '{
             "email":    "test@user.com",
@@ -21,11 +21,11 @@ curl -sX POST http://localhost:1337/api/auth/signin \
     }'
 
 ### Get account information
-curl -sX GET http://localhost:1337/api/user \
+curl -X GET http://localhost:1337/api/user \
     -H 'Accept: application/json'
 
 ### Change password
-curl -sX PUT http://localhost:1337/api/user/password \
+curl -X PUT http://localhost:1337/api/user/password \
     -H 'Accept: application/json' \
     -d '{
             "old_password": "Password:123",
@@ -35,15 +35,15 @@ curl -sX PUT http://localhost:1337/api/user/password \
 # COFFEE
 
 ### List available coffee
-curl -sX GET http://localhost:1337/api/coffee/list \
+curl -X GET http://localhost:1337/api/coffee/list \
     -H 'Accept: application/json'
 
 ### Get coffee details
-curl -sX GET http://localhost:1337/api/coffee/2 \
+curl -X GET http://localhost:1337/api/coffee/2 \
     -H 'Accept: application/json'
 
 ### List available toppings
-curl -sX GET http://localhost:1337/api/toppings/list \
+curl -X GET http://localhost:1337/api/toppings/list \
     -H 'Accept: application/json'
 
 # ORDERS
@@ -81,6 +81,6 @@ curl -X POST http://localhost:1337/api/employee/orders/6/complete \
 # DEAUTH
 
 ### Delete your account
-curl -sX DELETE http://localhost:1337/api/user \
+curl -X DELETE http://localhost:1337/api/user \
     -H 'Accept: application/json'
 

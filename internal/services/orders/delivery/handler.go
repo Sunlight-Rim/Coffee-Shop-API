@@ -42,7 +42,7 @@ func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
 
 	// Send events
 	for status := range h.hub.clients[req.UserID] {
-		logger.WithFields(logger.Fields{"user_id": req.UserID, "status": string(status)}).Infof("SSE sent order status update")
+		logger.WithField("user_id", req.UserID).Infof("SSE sent order status update: %s", status)
 
 		if _, err := w.Write(append(status, []byte("\n")...)); err != nil {
 			return errors.Wrap(err, "write to the client")
@@ -168,6 +168,20 @@ func (h *handler) cancelOrder(c echo.Context) (err error) {
 		return errors.Wrap(err, "cancel order")
 	}
 
+	// Send status to user SSE connection
+	msg, err := easyjson.Marshal(model.OrdersStatusesResDelivery{
+		OrderID:        order.OrderID,
+		OrderCreatedAt: order.OrderCreatedAt,
+		OrderStatus:    order.OrderStatus,
+	})
+	if err != nil {
+		return errors.Wrap(err, "send order status to user SSE")
+	}
+
+	if _, ok := h.hub.clients[order.OrderCustomerID]; ok {
+		h.hub.clients[order.OrderCustomerID] <- msg
+	}
+
 	res = &model.CancelOrderResDelivery{
 		OrderID: order.OrderID,
 	}
@@ -197,10 +211,6 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 		return errors.Wrap(err, "complete order as employee")
 	}
 
-	res = &model.EmployeeCompleteOrderResDelivery{
-		OrderID: order.OrderID,
-	}
-
 	// Send status to user SSE connection
 	msg, err := easyjson.Marshal(model.OrdersStatusesResDelivery{
 		OrderID:        order.OrderID,
@@ -213,6 +223,10 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 
 	if _, ok := h.hub.clients[order.OrderCustomerID]; ok {
 		h.hub.clients[order.OrderCustomerID] <- msg
+	}
+
+	res = &model.EmployeeCompleteOrderResDelivery{
+		OrderID: order.OrderID,
 	}
 
 	return
