@@ -8,7 +8,7 @@ import (
 	"github.com/gdexlab/go-render/render"
 	"github.com/labstack/echo/v4"
 	"github.com/mailru/easyjson"
-	"github.com/sirupsen/logrus"
+	logger "github.com/sirupsen/logrus"
 )
 
 var failedResponse = []byte(`{"response": null, "error": {"message": "failed encode response", "code": 0}}`)
@@ -30,7 +30,7 @@ type ErrorResponse struct {
 // SendResponse sends a response or error to the client.
 func SendResponse(c echo.Context, res any, err error) {
 	if errRes := c.JSONBlob(fmtResponse(res, err)); errRes != nil {
-		logrus.Errorf("Send response: %v. Response was: %v", errRes, render.AsCode(res))
+		logger.Errorf("Send response: %v. Response was: %v", errRes, render.AsCode(res))
 	}
 }
 
@@ -45,7 +45,7 @@ func fmtResponse(data any, err error) (int, []byte) {
 		if res, err = easyjson.Marshal(Response{
 			Error: &ErrorResponse{Code: code, Message: message},
 		}); err != nil {
-			logrus.Errorf("Marshal error response: %v. Error message was: %v", err, message)
+			logger.Errorf("Marshal error response: %v. Error message was: %v", err, message)
 			return http.StatusInternalServerError, failedResponse
 		}
 
@@ -55,7 +55,7 @@ func fmtResponse(data any, err error) (int, []byte) {
 	if res, err = easyjson.Marshal(Response{
 		Response: data,
 	}); err != nil {
-		logrus.Errorf("Marshal response: %v. Response data was: %#v", err, render.AsCode(data))
+		logger.Errorf("Marshal response: %v. Response data was: %#v", err, render.AsCode(data))
 		return http.StatusInternalServerError, failedResponse
 	}
 

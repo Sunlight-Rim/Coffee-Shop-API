@@ -5,13 +5,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
-	"github.com/sirupsen/logrus"
+	logger "github.com/sirupsen/logrus"
 )
 
 // Logger middleware provides response logger.
 var Logger echo.MiddlewareFunc
 
-func initLogger(logger logrus.FieldLogger) {
+func initLogger() {
 	Logger = echomw.RequestLoggerWithConfig(echomw.RequestLoggerConfig{
 		LogURI:       true,
 		LogMethod:    true,
@@ -26,7 +26,7 @@ func initLogger(logger logrus.FieldLogger) {
 		LogValuesFunc: func(c echo.Context, values echomw.RequestLoggerValues) error {
 			errLocation, _ := errors.GetLocation(values.Error)
 
-			logger := logger.WithFields(logrus.Fields{
+			logger := logger.WithFields(logger.Fields{
 				"uri":            values.URI,
 				"method":         values.Method,
 				"status":         values.Status,

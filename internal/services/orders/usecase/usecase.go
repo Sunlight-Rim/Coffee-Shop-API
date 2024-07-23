@@ -6,14 +6,12 @@ import (
 )
 
 type usecase struct {
-	logger  model.ILogger
 	storage model.IStorage
 }
 
 // New usecase.
-func New(logger model.ILogger, storage model.IStorage) *usecase {
+func New(storage model.IStorage) *usecase {
 	return &usecase{
-		logger:  logger,
 		storage: storage,
 	}
 }

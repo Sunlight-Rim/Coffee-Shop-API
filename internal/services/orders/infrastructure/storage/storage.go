@@ -6,7 +6,7 @@ import (
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
 
-	"github.com/sirupsen/logrus"
+	logger "github.com/sirupsen/logrus"
 )
 
 type storage struct {
@@ -34,11 +34,11 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOr
 	defer func() {
 		if err != nil {
 			if errRollback := tx.Rollback(); errRollback != nil {
-				logrus.Errorf("Rollback error: %v", errRollback)
+				logger.Errorf("Rollback error: %v", errRollback)
 			}
 		} else {
 			if errCommit := tx.Commit(); errCommit != nil {
-				logrus.Errorf("Commit error: %v", errCommit)
+				logger.Errorf("Commit error: %v", errCommit)
 			}
 		}
 	}()

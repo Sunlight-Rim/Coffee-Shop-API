@@ -11,7 +11,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -21,9 +20,9 @@ type server struct {
 }
 
 // New application server, init middlewares and basic application routes.
-func New(logger logrus.FieldLogger) *server {
+func New() *server {
 	// Init middlewares
-	middleware.Init(logger, viper.GetString("token.secret"))
+	middleware.Init(viper.GetString("token.secret"))
 
 	// Init echo
 	echo := echo.New()

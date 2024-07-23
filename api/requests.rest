@@ -48,10 +48,6 @@ curl -sX GET http://localhost:1337/api/toppings/list \
 
 # ORDERS
 
-### Connect to server-sent events endpoint for get orders statuses updates (rest-client not supports)
-curl -N http://localhost:1337/api/events/orders/statuses \
-    -H 'Accept: text/event-stream'
-
 ### Create a coffee order (payment not needed)
 curl -X POST http://localhost:1337/api/orders \
     -H 'Accept: application/json' \
@@ -65,8 +61,12 @@ curl -X POST http://localhost:1337/api/orders \
             ]
     }'
 
+### Connect to Server-Sent Events endpoint for get orders statuses updates (rest-client not supports)
+curl -N http://localhost:1337/api/events/orders/statuses \
+    -H 'Accept: text/event-stream'
+
 ### Complete order cooking as a coffeeshop employee...
-curl -X POST http://localhost:1337/api/employee/orders/1/complete \
+curl -X POST http://localhost:1337/api/employee/orders/6/complete \
     -H 'accept: application/json'
 
 ### ...or cancel this order as a user

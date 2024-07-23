@@ -9,29 +9,31 @@ import (
 	"coffeeshop-api/internal/services/coffee"
 	"coffeeshop-api/internal/services/orders"
 	"coffeeshop-api/internal/services/users"
+
+	logger "github.com/sirupsen/logrus"
 )
 
 func init() {
 	readFlags()
 	readConfig()
+	initLogger()
 	initTools()
 }
 
 func Start() {
 	// Init infrastructure
 	var (
-		logger  = newLogger()
 		storage = connectStorage()
 		cache   = connectCache()
 	)
 
 	// Init server
-	s := server.New(logger)
+	s := server.New()
 
 	// Init services
-	users.New(s.ApiGroup, logger, storage, cache)
-	coffee.New(s.ApiGroup, logger, storage)
-	orders.New(s.ApiGroup, logger, storage)
+	users.New(s.ApiGroup, storage, cache)
+	coffee.New(s.ApiGroup, storage)
+	orders.New(s.ApiGroup, storage)
 
 	// Start server
 	go func() {

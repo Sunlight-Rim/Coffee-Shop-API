@@ -1,7 +1,5 @@
 package model
 
-import "github.com/sirupsen/logrus"
-
 // Use cases
 type IUsecase interface {
 	ListOrders(*ListOrdersReqUsecase) (*ListOrdersResUsecase, error)
@@ -9,11 +7,6 @@ type IUsecase interface {
 	CreateOrder(*CreateOrderReqUsecase) (*CreateOrderResUsecase, error)
 	CancelOrder(*CancelOrderReqUsecase) (*CancelOrderResUsecase, error)
 	EmployeeCompleteOrder(*EmployeeCompleteOrderReqUsecase) (*EmployeeCompleteOrderResUsecase, error)
-}
-
-// Logger
-type ILogger interface {
-	logrus.FieldLogger
 }
 
 // Storage

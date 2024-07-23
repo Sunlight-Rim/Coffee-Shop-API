@@ -8,15 +8,13 @@ import (
 	"coffeeshop-api/internal/services/coffee/usecase"
 
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
 // New service.
-func New(group *echo.Group, logrus *logrus.Logger, postgres *sql.DB) {
+func New(group *echo.Group, postgres *sql.DB) {
 	// Init usecase
 	uc := usecase.New(
 		// Init secondary adapters
-		logrus,
 		storage.New(postgres),
 	)
 

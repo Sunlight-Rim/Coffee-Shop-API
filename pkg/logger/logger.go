@@ -7,31 +7,27 @@ import (
 )
 
 // Create and configure a logger.
-func New(level string, jsonFormat bool) *logrus.Logger {
-	logger := logrus.New()
-
+func Init(level string, jsonFormat bool) {
 	logLevel, err := logrus.ParseLevel(level)
 	if err != nil {
-		logger.Fatalf("parse logger level: %v", err)
+		logrus.Fatalf("parse logger level: %v", err)
 	}
 
-	logger.SetLevel(logLevel)
-	logger.SetOutput(os.Stdout)
+	logrus.SetLevel(logLevel)
+	logrus.SetOutput(os.Stdout)
 
 	if jsonFormat {
-		logger.SetFormatter(&logrus.JSONFormatter{
+		logrus.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat:   "2006-01-02 15:04:05.000",
 			DisableHTMLEscape: true,
 		})
 
-		return logger
+		return
 	}
 
-	logger.SetFormatter(&logrus.TextFormatter{
+	logrus.SetFormatter(&logrus.TextFormatter{
 		TimestampFormat: "2006-01-02 15:04:05.000",
 		FullTimestamp:   true,
 		ForceColors:     true,
 	})
-
-	return logger
 }

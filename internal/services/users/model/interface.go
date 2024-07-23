@@ -2,8 +2,6 @@ package model
 
 import (
 	"coffeeshop-api/pkg/claims"
-
-	"github.com/sirupsen/logrus"
 )
 
 // Use cases
@@ -15,11 +13,6 @@ type IUsecase interface {
 	GetMe(*GetMeReqUsecase) (*GetMeResUsecase, error)
 	ChangePassword(*ChangePasswordReqUsecase) error
 	DeleteMe(*DeleteMeReqUsecase) (*DeleteMeResUsecase, error)
-}
-
-// Logger
-type ILogger interface {
-	logrus.FieldLogger
 }
 
 // Storage

@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/mailru/easyjson"
-	"github.com/sirupsen/logrus"
+	logger "github.com/sirupsen/logrus"
 )
 
 type handler struct {
@@ -32,17 +32,17 @@ func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
 	w.Header().Set("Connection", "keep-alive")
 
 	// Register SSE client
-	h.hub.registerClient <- req.UserID
+	h.hub.registerClient(req.UserID)
 
 	// Unregister SSE client after context was done
 	go func() {
 		<-c.Request().Context().Done()
-		h.hub.unregisterClient <- req.UserID
+		h.hub.unregisterClient(req.UserID)
 	}()
 
 	// Send events
 	for status := range h.hub.clients[req.UserID] {
-		logrus.WithField("user_id", req.UserID).Info("SSE sent order status update")
+		logger.WithFields(logger.Fields{"user_id": req.UserID, "status": string(status)}).Infof("SSE sent order status update")
 
 		if _, err := w.Write(append(status, []byte("\n")...)); err != nil {
 			return errors.Wrap(err, "write to the client")

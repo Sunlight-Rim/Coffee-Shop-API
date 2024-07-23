@@ -44,8 +44,8 @@ func initTools() {
 }
 
 // Initialize logger.
-func newLogger() *logrus.Logger {
-	return logger.New(
+func initLogger() {
+	logger.Init(
 		viper.GetString("logger.level"),
 		viper.GetBool("logger.json"),
 	)
