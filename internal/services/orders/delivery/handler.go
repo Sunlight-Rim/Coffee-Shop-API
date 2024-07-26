@@ -26,11 +26,6 @@ func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
 	// Parse request
 	req := ordersStatusesReq(c)
 
-	w := c.Response()
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-
 	// Register SSE client
 	h.hub.registerClient(req.UserID)
 
@@ -41,6 +36,11 @@ func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
 	}()
 
 	// Send events
+	w := c.Response()
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
 	for status := range h.hub.clients[req.UserID] {
 		logger.WithField("user_id", req.UserID).Infof("SSE sent order status update: %s", status)
 

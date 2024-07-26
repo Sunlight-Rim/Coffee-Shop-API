@@ -185,7 +185,7 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesOrdersModel2(in *jlexer.
 				in.Delim('[')
 				if out.Orders == nil {
 					if !in.IsDelim(']') {
-						out.Orders = make([]ListOrdersOrder, 0, 4)
+						out.Orders = make([]ListOrdersOrder, 0, 2)
 					} else {
 						out.Orders = []ListOrdersOrder{}
 					}
@@ -278,7 +278,9 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesOrdersModel3(in *jlexer.
 		case "id":
 			out.OrderID = uint64(in.Uint64())
 		case "created_at":
-			out.OrderCreatedAt = uint64(in.Uint64())
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.OrderCreatedAt).UnmarshalJSON(data))
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -301,7 +303,7 @@ func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesOrdersModel3(out *jwrite
 	{
 		const prefix string = ",\"created_at\":"
 		out.RawString(prefix)
-		out.Uint64(uint64(in.OrderCreatedAt))
+		out.Raw((in.OrderCreatedAt).MarshalJSON())
 	}
 	out.RawByte('}')
 }

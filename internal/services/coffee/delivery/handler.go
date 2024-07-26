@@ -16,30 +16,30 @@ func New(uc model.IUsecase) *handler {
 	return &handler{uc: uc}
 }
 
-func (h *handler) listCoffee(c echo.Context) (err error) {
+func (h *handler) listCoffees(c echo.Context) (err error) {
 	var (
-		req *model.ListCoffeeReqDelivery
-		res *model.ListCoffeeResDelivery
+		req *model.ListCoffeesReqDelivery
+		res *model.ListCoffeesResDelivery
 	)
 
 	// Send response
 	defer func() { tools.SendResponse(c, res, err) }()
 
 	// Parse request
-	if req, err = listCoffeeReq(c); err != nil {
+	if req, err = listCoffeesReq(c); err != nil {
 		return errors.Wrap(err, "request")
 	}
 
 	// Call usecase
-	coffee, err := h.uc.ListCoffee(&model.ListCoffeeReqUsecase{
+	coffees, err := h.uc.ListCoffees(&model.ListCoffeesReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
-		return errors.Wrap(err, "list coffee")
+		return errors.Wrap(err, "list coffees")
 	}
 
-	res = &model.ListCoffeeResDelivery{
-		CoffeeList: coffee.CoffeeList,
+	res = &model.ListCoffeesResDelivery{
+		CoffeeList: coffees.CoffeeList,
 	}
 
 	return

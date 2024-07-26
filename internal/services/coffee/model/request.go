@@ -1,17 +1,17 @@
 package model
 
-// ListCoffee
+// ListCoffees
 
 // easyjson:json
-type ListCoffeeReqDelivery struct {
+type ListCoffeesReqDelivery struct {
 	Offset uint64 `json:"offset" query:"offset"`
 }
 
-type ListCoffeeReqUsecase struct {
+type ListCoffeesReqUsecase struct {
 	Offset uint64
 }
 
-type ListCoffeeReqStorage struct {
+type ListCoffeesReqStorage struct {
 	Offset uint64
 }
 

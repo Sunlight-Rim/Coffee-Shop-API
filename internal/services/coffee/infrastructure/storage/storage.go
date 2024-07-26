@@ -20,7 +20,7 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) ListCoffee(req *model.ListCoffeeReqStorage) (*model.ListCoffeeResStorage, error) {
+func (s *storage) ListCoffees(req *model.ListCoffeesReqStorage) (*model.ListCoffeesResStorage, error) {
 	rows, err := s.db.Query(`
 		SELECT
 			id,
@@ -30,6 +30,7 @@ func (s *storage) ListCoffee(req *model.ListCoffeeReqStorage) (*model.ListCoffee
 			"weight",
 			price
 		FROM api.coffee
+		ORDER BY id ASC
 		LIMIT $1 OFFSET $2
 	`,
 		coffeeLimit,
@@ -59,7 +60,7 @@ func (s *storage) ListCoffee(req *model.ListCoffeeReqStorage) (*model.ListCoffee
 		coffeeList = append(coffeeList, coffee)
 	}
 
-	return &model.ListCoffeeResStorage{CoffeeList: coffeeList}, nil
+	return &model.ListCoffeesResStorage{CoffeeList: coffeeList}, nil
 }
 
 func (s *storage) GetCoffeeInfo(req *model.GetCoffeeInfoReqStorage) (*model.GetCoffeeInfoResStorage, error) {

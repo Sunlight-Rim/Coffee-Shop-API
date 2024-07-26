@@ -34,7 +34,7 @@
         "redis": {
             "host": "redis",
             "port": 6379,
-            "user": "default",
+            "user": "coffeeshop",
             "password": "coffeeshop",
             "database": 0,
             "ping_timeout_sec": 10

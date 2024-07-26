@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func listCoffeeReq(c echo.Context) (*model.ListCoffeeReqDelivery, error) {
-	var r model.ListCoffeeReqDelivery
+func listCoffeesReq(c echo.Context) (*model.ListCoffeesReqDelivery, error) {
+	var r model.ListCoffeesReqDelivery
 
 	if err := c.Bind(&r); err != nil {
 		return nil, errors.Wrapf(errors.InvalidRequestFormat, "parsing, %v", err)

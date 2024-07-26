@@ -3,22 +3,22 @@ package delivery
 import "github.com/labstack/echo/v4"
 
 func (h *handler) Register(group *echo.Group) {
-	coffee := group.Group("/coffee")
+	coffees := group.Group("/coffees")
 	toppings := group.Group("/toppings")
 
 	/*
-		swagger:route GET /api/coffee Coffee ListCoffeeRequest
+		swagger:route GET /api/coffees Coffee ListCoffeesRequest
 
 		List coffee assortment.
 
 			schemes: http
 			responses:
-				200: ListCoffeeResponse
+				200: ListCoffeesResponse
 				default: ErrorResponse
 	*/
-	coffee.GET("/list", h.listCoffee)
+	coffees.GET("", h.listCoffees)
 	/*
-		swagger:route GET /api/coffee/{id} Coffee GetCoffeeInfoRequest
+		swagger:route GET /api/coffees/{id} Coffee GetCoffeeInfoRequest
 
 		Get one coffee information.
 
@@ -27,9 +27,9 @@ func (h *handler) Register(group *echo.Group) {
 				200: GetCoffeeInfoResponse
 				default: ErrorResponse
 	*/
-	coffee.GET("/:id", h.getCoffeeInfo)
+	coffees.GET("/:id", h.getCoffeeInfo)
 	/*
-		swagger:route GET /api/toppings/list Coffee ListToppingsRequest
+		swagger:route GET /api/toppings Coffee ListToppingsRequest
 
 		List toppings assortment.
 
@@ -38,5 +38,5 @@ func (h *handler) Register(group *echo.Group) {
 				200: ListToppingsResponse
 				default: ErrorResponse
 	*/
-	toppings.GET("/list", h.listToppings)
+	toppings.GET("", h.listToppings)
 }

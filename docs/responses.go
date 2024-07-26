@@ -138,11 +138,11 @@ type GetCoffeeInfoResponse struct {
 }
 
 // Returns coffee list.
-// swagger:response ListCoffeeResponse
-type ListCoffeeResponse struct {
+// swagger:response ListCoffeesResponse
+type ListCoffeesResponse struct {
 	// in: body
 	Body struct {
-		Response modelCoffee.ListCoffeeResDelivery `json:"response"`
+		Response modelCoffee.ListCoffeesResDelivery `json:"response"`
 		// example: null
 		Error any `json:"error"`
 	} `json:"body"`

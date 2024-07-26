@@ -2,14 +2,14 @@ package model
 
 // Use cases
 type IUsecase interface {
-	ListCoffee(*ListCoffeeReqUsecase) (*ListCoffeeResUsecase, error)
+	ListCoffees(*ListCoffeesReqUsecase) (*ListCoffeesResUsecase, error)
 	GetCoffeeInfo(*GetCoffeeInfoReqUsecase) (*GetCoffeeInfoResUsecase, error)
 	ListToppings(*ListToppingsReqUsecase) (*ListToppingsResUsecase, error)
 }
 
 // Storage
 type IStorage interface {
-	ListCoffee(*ListCoffeeReqStorage) (*ListCoffeeResStorage, error)
+	ListCoffees(*ListCoffeesReqStorage) (*ListCoffeesResStorage, error)
 	GetCoffeeInfo(*GetCoffeeInfoReqStorage) (*GetCoffeeInfoResStorage, error)
 	ListToppings(*ListToppingsReqStorage) (*ListToppingsResStorage, error)
 }

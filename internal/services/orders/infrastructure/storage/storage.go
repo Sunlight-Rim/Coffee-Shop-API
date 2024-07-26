@@ -9,6 +9,8 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
+const ordersLimit = 10
+
 type storage struct {
 	db *sql.DB
 }
@@ -17,14 +19,54 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) ListOrders(*model.ListOrdersReqStorage) (*model.ListOrdersResStorage, error) {
-	return nil, nil
+func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrdersResStorage, error) {
+	rows, err := s.db.Query(`
+		SELECT
+			id,
+			created_at
+		FROM api.orders
+		WHERE user_id = $1
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3
+	`,
+		req.UserID,
+		ordersLimit,
+		req.Offset,
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "get orders list")
+	}
+
+	var (
+		orders []model.ListOrdersOrder
+		order  model.ListOrdersOrder
+	)
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&order.OrderID,
+			&order.OrderCreatedAt,
+		); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return &model.ListOrdersResStorage{}, nil
+			}
+
+			return nil, errors.Wrap(err, "scan orders list")
+		}
+
+		orders = append(orders, order)
+	}
+
+	return &model.ListOrdersResStorage{
+		Orders: orders,
+	}, nil
 }
+
 func (s *storage) GetOrderInfo(*model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
 	return nil, nil
 }
 
-func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOrderResStorage, error) {
+func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.CreateOrderResStorage, err error) {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return nil, errors.Wrap(err, "start transaction")
@@ -44,7 +86,6 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOr
 	}()
 
 	// Insert order
-
 	var orderID uint64
 
 	if err := tx.QueryRow(`
@@ -62,7 +103,6 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOr
 	}
 
 	// Insert items
-
 	stmt, err := tx.Prepare(`
 		INSERT INTO api.order_items(
 			order_id,
@@ -76,7 +116,7 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (*model.CreateOr
 	}
 
 	for i := range req.Items {
-		if _, err := stmt.Exec(
+		if _, err = stmt.Exec(
 			orderID,
 			req.Items[i].CoffeeID,
 			&req.Items[i].Topping,

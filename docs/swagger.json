@@ -152,7 +152,7 @@
         }
       }
     },
-    "/api/coffee": {
+    "/api/coffees": {
       "get": {
         "schemes": [
           "http"
@@ -161,7 +161,7 @@
           "Coffee"
         ],
         "summary": "List coffee assortment.",
-        "operationId": "ListCoffeeRequest",
+        "operationId": "ListCoffeesRequest",
         "parameters": [
           {
             "type": "integer",
@@ -173,7 +173,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/ListCoffeeResponse"
+            "$ref": "#/responses/ListCoffeesResponse"
           },
           "default": {
             "$ref": "#/responses/ErrorResponse"
@@ -181,7 +181,7 @@
         }
       }
     },
-    "/api/coffee/{id}": {
+    "/api/coffees/{id}": {
       "get": {
         "schemes": [
           "http"
@@ -422,7 +422,7 @@
         }
       }
     },
-    "/api/toppings/list": {
+    "/api/toppings": {
       "get": {
         "schemes": [
           "http"
@@ -764,7 +764,7 @@
       },
       "x-go-package": "coffeeshop-api/internal/services/orders/model"
     },
-    "ListCoffeeResDelivery": {
+    "ListCoffeesResDelivery": {
       "description": "easyjson:json",
       "type": "object",
       "properties": {
@@ -782,8 +782,8 @@
       "type": "object",
       "properties": {
         "created_at": {
-          "type": "integer",
-          "format": "uint64",
+          "type": "string",
+          "format": "date-time",
           "x-go-name": "OrderCreatedAt"
         },
         "id": {
@@ -1095,7 +1095,7 @@
         "type": "string"
       }
     },
-    "ListCoffeeResponse": {
+    "ListCoffeesResponse": {
       "description": "Returns coffee list.",
       "schema": {
         "type": "object",
@@ -1105,7 +1105,7 @@
             "example": "null"
           },
           "response": {
-            "$ref": "#/definitions/ListCoffeeResDelivery"
+            "$ref": "#/definitions/ListCoffeesResDelivery"
           }
         }
       }

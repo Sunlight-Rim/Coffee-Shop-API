@@ -10,18 +10,18 @@ type Coffee struct {
 	Price       float64 `json:"price"`
 }
 
-// ListCoffee
+// ListCoffees
 
 // easyjson:json
-type ListCoffeeResDelivery struct {
+type ListCoffeesResDelivery struct {
 	CoffeeList []Coffee `json:"coffee_list"`
 }
 
-type ListCoffeeResUsecase struct {
+type ListCoffeesResUsecase struct {
 	CoffeeList []Coffee
 }
 
-type ListCoffeeResStorage struct {
+type ListCoffeesResStorage struct {
 	CoffeeList []Coffee
 }
 
@@ -40,7 +40,7 @@ type GetCoffeeInfoResStorage struct {
 	Coffee *Coffee
 }
 
-// ListCoffee
+// ListCoffees
 
 // easyjson:json
 type ListToppingsResDelivery struct {

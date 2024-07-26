@@ -16,8 +16,18 @@ func New(storage model.IStorage) *usecase {
 	}
 }
 
-func (uc *usecase) ListOrders(*model.ListOrdersReqUsecase) (*model.ListOrdersResUsecase, error) {
-	return nil, nil
+func (uc *usecase) ListOrders(req *model.ListOrdersReqUsecase) (*model.ListOrdersResUsecase, error) {
+	orders, err := uc.storage.ListOrders(&model.ListOrdersReqStorage{
+		UserID: req.UserID,
+		Offset: req.Offset,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "list orders")
+	}
+
+	return &model.ListOrdersResUsecase{
+		Orders: orders.Orders,
+	}, nil
 }
 func (uc *usecase) GetOrderInfo(*model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
 	return nil, nil

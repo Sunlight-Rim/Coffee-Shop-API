@@ -80,7 +80,7 @@ type CreateOrderReqStorage struct {
 }
 
 func (req *CreateOrderReqUsecase) Validate() error {
-	if lenItems := len(req.Items); lenItems < 0 || lenItems > 10 {
+	if lenItems := len(req.Items); lenItems < 1 || lenItems > 10 {
 		return errors.Wrapf(errors.InvalidRequestContent, "incorrect items count: %d", len(req.Items))
 	}
 

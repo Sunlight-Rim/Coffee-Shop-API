@@ -181,7 +181,7 @@ func (v *ListToppingsReqDelivery) UnmarshalJSON(data []byte) error {
 func (v *ListToppingsReqDelivery) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel1(l, v)
 }
-func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel2(in *jlexer.Lexer, out *ListCoffeeResDelivery) {
+func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel2(in *jlexer.Lexer, out *ListCoffeesResDelivery) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -233,7 +233,7 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel2(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel2(out *jwriter.Writer, in ListCoffeeResDelivery) {
+func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel2(out *jwriter.Writer, in ListCoffeesResDelivery) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -257,29 +257,29 @@ func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel2(out *jwrite
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v ListCoffeeResDelivery) MarshalJSON() ([]byte, error) {
+func (v ListCoffeesResDelivery) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
 	easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ListCoffeeResDelivery) MarshalEasyJSON(w *jwriter.Writer) {
+func (v ListCoffeesResDelivery) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *ListCoffeeResDelivery) UnmarshalJSON(data []byte) error {
+func (v *ListCoffeesResDelivery) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ListCoffeeResDelivery) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *ListCoffeesResDelivery) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel2(l, v)
 }
-func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel3(in *jlexer.Lexer, out *ListCoffeeReqDelivery) {
+func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel3(in *jlexer.Lexer, out *ListCoffeesReqDelivery) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -310,7 +310,7 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel3(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel3(out *jwriter.Writer, in ListCoffeeReqDelivery) {
+func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel3(out *jwriter.Writer, in ListCoffeesReqDelivery) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -323,26 +323,26 @@ func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel3(out *jwrite
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v ListCoffeeReqDelivery) MarshalJSON() ([]byte, error) {
+func (v ListCoffeesReqDelivery) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
 	easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel3(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ListCoffeeReqDelivery) MarshalEasyJSON(w *jwriter.Writer) {
+func (v ListCoffeesReqDelivery) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesCoffeeModel3(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *ListCoffeeReqDelivery) UnmarshalJSON(data []byte) error {
+func (v *ListCoffeesReqDelivery) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel3(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ListCoffeeReqDelivery) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *ListCoffeesReqDelivery) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel3(l, v)
 }
 func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesCoffeeModel4(in *jlexer.Lexer, out *GetCoffeeInfoResDelivery) {

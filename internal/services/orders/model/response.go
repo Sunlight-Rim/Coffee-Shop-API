@@ -26,8 +26,8 @@ type OrdersStatusesResStorage struct {
 // ListOrders
 
 type ListOrdersOrder struct {
-	OrderID        uint64 `json:"id"`
-	OrderCreatedAt uint64 `json:"created_at"`
+	OrderID        uint64    `json:"id"`
+	OrderCreatedAt time.Time `json:"created_at"`
 }
 
 // easyjson:json

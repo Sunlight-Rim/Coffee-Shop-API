@@ -15,17 +15,17 @@ func New(storage model.IStorage) *usecase {
 	}
 }
 
-// ListCoffee returns list of coffee.
-func (uc *usecase) ListCoffee(req *model.ListCoffeeReqUsecase) (*model.ListCoffeeResUsecase, error) {
-	coffee, err := uc.storage.ListCoffee(&model.ListCoffeeReqStorage{
+// ListCoffees returns list of coffee.
+func (uc *usecase) ListCoffees(req *model.ListCoffeesReqUsecase) (*model.ListCoffeesResUsecase, error) {
+	coffees, err := uc.storage.ListCoffees(&model.ListCoffeesReqStorage{
 		Offset: req.Offset,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "list coffee")
+		return nil, errors.Wrap(err, "list coffees")
 	}
 
-	return &model.ListCoffeeResUsecase{
-		CoffeeList: coffee.CoffeeList,
+	return &model.ListCoffeesResUsecase{
+		CoffeeList: coffees.CoffeeList,
 	}, nil
 }
 

@@ -33,11 +33,11 @@ type GetCoffeeInfoRequest struct {
 	modelCoffee.GetCoffeeInfoReqDelivery
 }
 
-// swagger:parameters ListCoffeeRequest
-type ListCoffeeRequest struct {
+// swagger:parameters ListCoffeesRequest
+type ListCoffeesRequest struct {
 	// in: query
 	// required: true
-	modelCoffee.ListCoffeeReqDelivery
+	modelCoffee.ListCoffeesReqDelivery
 }
 
 // swagger:parameters ListToppingsRequest
