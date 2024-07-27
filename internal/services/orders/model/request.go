@@ -60,15 +60,15 @@ func (req *GetOrderInfoReqUsecase) Validate() error {
 	return nil
 }
 
-// CheckAllCoffeeIDsExists
+// CheckCoffeeIDsExists
 
-type CheckAllCoffeeIDsExistsReqStorage struct {
+type CheckCoffeeIDsExistsReqStorage struct {
 	CoffeeIDs []uint64
 }
 
-// CheckAllToppingsExists
+// CheckToppingsExists
 
-type CheckAllToppingsExistsReqStorage struct {
+type CheckToppingsExistsReqStorage struct {
 	Toppings []string
 }
 

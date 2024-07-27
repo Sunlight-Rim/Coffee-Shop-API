@@ -17,11 +17,17 @@ var ResponseList []byte = []byte(`{
     "1760844835": {
         "en": "Expired token"
     },
+    "1816418752": {
+        "en": "Cannot cancel this order"
+    },
     "2213895429": {
         "en": "Method not allowed"
     },
     "2352452421": {
         "en": "Invalid token"
+    },
+    "2662116103": {
+        "en": "Topping not exists"
     },
     "3232214746": {
         "en": "Not found"
@@ -34,6 +40,9 @@ var ResponseList []byte = []byte(`{
     },
     "3482864722": {
         "en": "Missing token"
+    },
+    "3551874748": {
+        "en": "Coffee not exists"
     },
     "518472662": {
         "en": "Order not exists"
@@ -59,6 +68,9 @@ const (
 	CodeExpiredToken          uint32 = 1760844835
 	CodeDeletedAccount        uint32 = 3278175777
 	CodeOrderNotExists        uint32 = 518472662
+	CodeCoffeeNotExists       uint32 = 3551874748
+	CodeToppingNotExists      uint32 = 2662116103
+	CodeCannotCancelThisOrder uint32 = 1816418752
 )
 
 // Error Variables
@@ -74,6 +86,9 @@ var (
 	ExpiredToken          error = New("expired token", CodeExpiredToken)
 	DeletedAccount        error = New("deleted account", CodeDeletedAccount)
 	OrderNotExists        error = New("order not exists", CodeOrderNotExists)
+	CoffeeNotExists       error = New("coffee not exists", CodeCoffeeNotExists)
+	ToppingNotExists      error = New("topping not exists", CodeToppingNotExists)
+	CannotCancelThisOrder error = New("cannot cancel this order", CodeCannotCancelThisOrder)
 )
 
 // Hash map data by error codes
@@ -89,6 +104,9 @@ var HttpResponse = map[uint32]map[string]any{
 	1760844835: {"status": 401, "text": "Expired token"},
 	3278175777: {"status": 403, "text": "Deleted account"},
 	518472662:  {"status": 404, "text": "Order not exists"},
+	3551874748: {"status": 404, "text": "Coffee not exists"},
+	2662116103: {"status": 404, "text": "Topping not exists"},
+	1816418752: {"status": 422, "text": "Cannot cancel this order"},
 }
 
 // GetHTTPErrData returning http status, error message and error code

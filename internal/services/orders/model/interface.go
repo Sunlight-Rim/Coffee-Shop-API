@@ -13,8 +13,8 @@ type IUsecase interface {
 type IStorage interface {
 	ListOrders(*ListOrdersReqStorage) (*ListOrdersResStorage, error)
 	GetOrderInfo(*GetOrderInfoReqStorage) (*GetOrderInfoResStorage, error)
-	CheckAllCoffeeIDsExists(*CheckAllCoffeeIDsExistsReqStorage) error
-	CheckAllToppingsExists(*CheckAllToppingsExistsReqStorage) error
+	CheckCoffeeIDsExists(*CheckCoffeeIDsExistsReqStorage) error
+	CheckToppingsExists(*CheckToppingsExistsReqStorage) error
 	CreateOrder(*CreateOrderReqStorage) (*CreateOrderResStorage, error)
 	CancelOrder(*CancelOrderReqStorage) (*CancelOrderResStorage, error)
 	EmployeeCompleteOrder(*EmployeeCompleteOrderReqStorage) (*EmployeeCompleteOrderResStorage, error)

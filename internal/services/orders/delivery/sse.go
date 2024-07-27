@@ -7,7 +7,7 @@ import (
 )
 
 type Hub struct {
-	// Connections registry
+	// Connections registry.
 	clients map[uint64](chan []byte)
 	mu      sync.Mutex
 }
@@ -33,6 +33,8 @@ func (h *Hub) unregisterClient(userID uint64) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	close(h.clients[userID])
-	delete(h.clients, userID)
+	if _, ok := h.clients[userID]; ok {
+		close(h.clients[userID])
+		delete(h.clients, userID)
+	}
 }

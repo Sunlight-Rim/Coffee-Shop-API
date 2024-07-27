@@ -44,7 +44,9 @@
     "token": {
         "secret": "victoria",
         "access_exp": 60,
-        "refresh_exp": 43200
+        "refresh_exp": 43200,
+
+        "employee": "secret-employee-token"
     },
 
     "cookie": {

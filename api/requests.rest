@@ -9,7 +9,7 @@ curl -X POST http://localhost:1337/api/auth/signup \
     -H 'Accept: application/json' \
     -d '{
             "username": "test",
-            "phone":    11234567890,
+            "phone":    12345678901,
             "email":    "test@mail.com",
             "password": "Password:123"
     }'
@@ -78,18 +78,19 @@ curl -N http://localhost:1337/api/events/orders/statuses \
 ### Complete order cooking (as a coffeeshop employee)
 curl -X POST http://localhost:1337/api/employee/orders/1/complete \
     -H 'Authorization: Bearer secret-employee-token' \
-    -H 'accept: application/json'
+    -H 'Accept: application/json'
 
-### ...or cancel this order (as a user)
-
+### ...or cancel the order (as a user)
+curl -X POST http://localhost:1337/api/orders/2/cancel \
+    -H 'Accept: application/json'
 
 ### List your orders
 curl -X GET http://localhost:1337/api/orders \
-    -H 'accept: application/json'
+    -H 'Accept: application/json'
 
 ### Get order details
 curl -X GET http://localhost:1337/api/orders/1 \
-    -H 'accept: application/json'
+    -H 'Accept: application/json'
 
 
 # DEAUTH
@@ -101,4 +102,4 @@ curl -X DELETE http://localhost:1337/api/user \
 
 ### Singnout from all sessions
 curl -X POST http://localhost:1337/api/auth/signout-all \
-    -H 'accept: application/json'
+    -H 'Accept: application/json'

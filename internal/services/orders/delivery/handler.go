@@ -178,9 +178,11 @@ func (h *handler) cancelOrder(c echo.Context) (err error) {
 		return errors.Wrap(err, "send order status to user SSE")
 	}
 
+	h.hub.mu.Lock()
 	if _, ok := h.hub.clients[order.OrderCustomerID]; ok {
 		h.hub.clients[order.OrderCustomerID] <- msg
 	}
+	h.hub.mu.Unlock()
 
 	res = &model.CancelOrderResDelivery{
 		OrderID: order.OrderID,
@@ -221,9 +223,11 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 		return errors.Wrap(err, "send order status to user SSE")
 	}
 
+	h.hub.mu.Lock()
 	if _, ok := h.hub.clients[order.OrderCustomerID]; ok {
 		h.hub.clients[order.OrderCustomerID] <- msg
 	}
+	h.hub.mu.Unlock()
 
 	res = &model.EmployeeCompleteOrderResDelivery{
 		OrderID: order.OrderID,

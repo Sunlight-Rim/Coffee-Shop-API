@@ -67,18 +67,19 @@ func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateO
 		}
 	}
 
-	if err := uc.storage.CheckAllCoffeeIDsExists(&model.CheckAllCoffeeIDsExistsReqStorage{
+	if err := uc.storage.CheckCoffeeIDsExists(&model.CheckCoffeeIDsExistsReqStorage{
 		CoffeeIDs: tools.SliceOfMapKeys(coffeeIDs),
 	}); err != nil {
-		return nil, errors.Wrap(err, "check coffeeIDs exists")
+		return nil, errors.Wrap(err, "check all coffeeIDs exists")
 	}
 
-	if err := uc.storage.CheckAllToppingsExists(&model.CheckAllToppingsExistsReqStorage{
+	if err := uc.storage.CheckToppingsExists(&model.CheckToppingsExistsReqStorage{
 		Toppings: tools.SliceOfMapKeys(toppings),
 	}); err != nil {
-		return nil, errors.Wrap(err, "check toppings exists")
+		return nil, errors.Wrap(err, "check all toppings exists")
 	}
 
+	// Create order
 	order, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{
 		UserID:  req.UserID,
 		Address: req.Address,
@@ -93,8 +94,21 @@ func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateO
 	}, nil
 }
 
-func (uc *usecase) CancelOrder(*model.CancelOrderReqUsecase) (*model.CancelOrderResUsecase, error) {
-	return nil, nil
+func (uc *usecase) CancelOrder(req *model.CancelOrderReqUsecase) (*model.CancelOrderResUsecase, error) {
+	order, err := uc.storage.CancelOrder(&model.CancelOrderReqStorage{
+		UserID:  req.UserID,
+		OrderID: req.OrderID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "cancel order")
+	}
+
+	return &model.CancelOrderResUsecase{
+		OrderCustomerID: order.OrderCustomerID,
+		OrderID:         order.OrderID,
+		OrderCreatedAt:  order.OrderCreatedAt,
+		OrderStatus:     order.OrderStatus,
+	}, nil
 }
 
 // EmployeeCompleteOrder marks order as completed.

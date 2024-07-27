@@ -82,7 +82,7 @@ func (h *handler) Register(group *echo.Group) {
 		swagger:route POST /api/employee/orders/{id}/complete Orders EmployeeCompleteOrderRequest
 
 		Set coffee order status to 'ready to receive' after complete the cooking.
-		In this version receives the same token as a users endpoints.
+		Requires Bearer employee token in `Authorization` header.
 
 		schemes: http
 		security:

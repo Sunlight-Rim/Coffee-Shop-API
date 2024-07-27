@@ -220,7 +220,7 @@
             ]
           }
         ],
-        "description": "In this version receives the same token as a users endpoints.",
+        "description": "Requires Bearer employee token in `Authorization` header.",
         "schemes": [
           "http"
         ],

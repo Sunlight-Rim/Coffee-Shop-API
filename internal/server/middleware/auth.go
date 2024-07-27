@@ -11,13 +11,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Auth middleware validates and parses user
-// access token and puts the claims to the context.
-var Auth echo.MiddlewareFunc
+var (
+	// Auth middleware validates and parses user
+	// access token and puts the claims to the context.
+	Auth echo.MiddlewareFunc
 
-// Auth middleware validates employee Bearer
-// authorization token.
-var AuthEmployee echo.MiddlewareFunc
+	// Auth middleware validates employee Bearer authorization token.
+	AuthEmployee echo.MiddlewareFunc
+)
 
 func initAuth(tokenSecret, employeeToken string) {
 	Auth = echojwt.WithConfig(echojwt.Config{
@@ -27,25 +28,7 @@ func initAuth(tokenSecret, employeeToken string) {
 		ErrorHandler:   errorHandler,
 	})
 
-	AuthEmployee = func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			bearerToken := strings.Split(c.Request().Header.Get("Authorization"), " ")
-
-			if len(bearerToken) < 2 {
-				err := errors.Wrap(errors.MissingToken, "missing header with bearer authorization")
-				tools.SendResponse(c, nil, err)
-				return err
-			}
-
-			if bearerToken[0] != "Bearer" || bearerToken[1] != employeeToken {
-				err := errors.Wrap(errors.InvalidToken, "invalid header with bearer authorization")
-				tools.SendResponse(c, nil, err)
-				return err
-			}
-
-			return next(c)
-		}
-	}
+	AuthEmployee = parseEmployeeToken(employeeToken)
 }
 
 func parseToken(secret []byte) func(c echo.Context, token string) (any, error) {
@@ -77,4 +60,26 @@ func errorHandler(c echo.Context, jwtErr error) (err error) {
 	tools.SendResponse(c, nil, err)
 
 	return err
+}
+
+func parseEmployeeToken(employeeToken string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			bearerToken := strings.Split(c.Request().Header.Get("Authorization"), " ")
+
+			if len(bearerToken) < 2 {
+				err := errors.Wrap(errors.MissingToken, "missing header with bearer authorization")
+				tools.SendResponse(c, nil, err)
+				return err
+			}
+
+			if bearerToken[0] != "Bearer" || bearerToken[1] != employeeToken {
+				err := errors.Wrap(errors.InvalidToken, "invalid header with bearer authorization")
+				tools.SendResponse(c, nil, err)
+				return err
+			}
+
+			return next(c)
+		}
+	}
 }

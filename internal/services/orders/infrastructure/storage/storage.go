@@ -126,7 +126,7 @@ func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrd
 	return &model.GetOrderInfoResStorage{Order: order}, nil
 }
 
-func (s *storage) CheckAllCoffeeIDsExists(req *model.CheckAllCoffeeIDsExistsReqStorage) error {
+func (s *storage) CheckCoffeeIDsExists(req *model.CheckCoffeeIDsExistsReqStorage) error {
 	var count int
 
 	if err := s.db.QueryRow(`
@@ -140,13 +140,13 @@ func (s *storage) CheckAllCoffeeIDsExists(req *model.CheckAllCoffeeIDsExistsReqS
 	}
 
 	if count != len(req.CoffeeIDs) {
-		return errors.Wrap(errors.NotFound, "requested coffee ID not found")
+		return errors.Wrap(errors.CoffeeNotExists, "requested coffee ID not found")
 	}
 
 	return nil
 }
 
-func (s *storage) CheckAllToppingsExists(req *model.CheckAllToppingsExistsReqStorage) error {
+func (s *storage) CheckToppingsExists(req *model.CheckToppingsExistsReqStorage) error {
 	var count int
 
 	if err := s.db.QueryRow(`
@@ -160,7 +160,7 @@ func (s *storage) CheckAllToppingsExists(req *model.CheckAllToppingsExistsReqSto
 	}
 
 	if count != len(req.Toppings) {
-		return errors.Wrap(errors.NotFound, "requested topping not found")
+		return errors.Wrap(errors.ToppingNotExists, "requested topping not found")
 	}
 
 	return nil
@@ -228,8 +228,48 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.Create
 	return &model.CreateOrderResStorage{OrderID: orderID}, nil
 }
 
-func (s *storage) CancelOrder(*model.CancelOrderReqStorage) (*model.CancelOrderResStorage, error) {
-	return nil, nil
+func (s *storage) CancelOrder(req *model.CancelOrderReqStorage) (*model.CancelOrderResStorage, error) {
+	var order model.CancelOrderResStorage
+
+	if err := s.db.QueryRow(`
+		SELECT
+			id,
+			user_id,
+			created_at,
+			"status"
+		FROM api.orders
+		WHERE id = $1
+	`,
+		req.OrderID,
+	).Scan(
+		&order.OrderID,
+		&order.OrderCustomerID,
+		&order.OrderCreatedAt,
+		&order.OrderStatus,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.Wrap(errors.OrderNotExists, "order not found")
+		}
+
+		return nil, errors.Wrap(err, "get order")
+	}
+
+	if order.OrderStatus != "cooking" {
+		return nil, errors.Wrap(errors.CannotCancelThisOrder, "order cannot be cancelled")
+	}
+
+	if err := s.db.QueryRow(`
+		UPDATE api.orders
+		SET "status" = 'cancelled'
+		WHERE id = $1
+		RETURNING "status"
+	`,
+		req.OrderID,
+	).Scan(&order.OrderStatus); err != nil {
+		return nil, errors.Wrap(err, "change order status")
+	}
+
+	return &order, nil
 }
 
 func (s *storage) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqStorage) (*model.EmployeeCompleteOrderResStorage, error) {

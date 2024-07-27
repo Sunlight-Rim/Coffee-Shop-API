@@ -42,5 +42,17 @@
     {
         "error": "order not exists",
         "http_status": 404
+    },
+    {
+        "error": "coffee not exists",
+        "http_status": 404
+    },
+    {
+        "error": "topping not exists",
+        "http_status": 404
+    },
+    {
+        "error": "cannot cancel this order",
+        "http_status": 422
     }
 ]
