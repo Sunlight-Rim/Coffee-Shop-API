@@ -3,6 +3,7 @@ package usecase
 import (
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/tools"
 )
 
 type usecase struct {
@@ -29,14 +30,53 @@ func (uc *usecase) ListOrders(req *model.ListOrdersReqUsecase) (*model.ListOrder
 		Orders: orders.Orders,
 	}, nil
 }
-func (uc *usecase) GetOrderInfo(*model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
-	return nil, nil
+func (uc *usecase) GetOrderInfo(req *model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
+	if err := req.Validate(); err != nil {
+		return nil, errors.Wrap(err, "request validation")
+	}
+
+	order, err := uc.storage.GetOrderInfo(&model.GetOrderInfoReqStorage{
+		UserID:  req.UserID,
+		OrderID: req.OrderID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "get order info")
+	}
+
+	return &model.GetOrderInfoResUsecase{
+		Order: order.Order,
+	}, nil
 }
 
 // CreateOrder creates order in database.
 func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
+	}
+
+	// Check that all specified coffeeIDs and toppings are exists
+	var (
+		coffeeIDs = make(map[uint64]struct{})
+		toppings  = make(map[string]struct{})
+	)
+
+	for i := range req.Items {
+		coffeeIDs[req.Items[i].CoffeeID] = struct{}{}
+		if req.Items[i].Topping != nil {
+			toppings[*req.Items[i].Topping] = struct{}{}
+		}
+	}
+
+	if err := uc.storage.CheckAllCoffeeIDsExists(&model.CheckAllCoffeeIDsExistsReqStorage{
+		CoffeeIDs: tools.SliceOfMapKeys(coffeeIDs),
+	}); err != nil {
+		return nil, errors.Wrap(err, "check coffeeIDs exists")
+	}
+
+	if err := uc.storage.CheckAllToppingsExists(&model.CheckAllToppingsExistsReqStorage{
+		Toppings: tools.SliceOfMapKeys(toppings),
+	}); err != nil {
+		return nil, errors.Wrap(err, "check toppings exists")
 	}
 
 	order, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{

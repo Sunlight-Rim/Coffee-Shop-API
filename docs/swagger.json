@@ -213,6 +213,13 @@
     },
     "/api/employee/orders/{id}/complete": {
       "post": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
         "description": "In this version receives the same token as a users endpoints.",
         "schemes": [
           "http"
@@ -255,15 +262,19 @@
         "responses": {
           "200": {
             "$ref": "#/responses/ErrorsListResponse"
-          },
-          "default": {
-            "$ref": "#/responses/ErrorResponse"
           }
         }
       }
     },
     "/api/events/orders/statuses": {
       "get": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
         "produces": [
           "text/event-stream"
         ],
@@ -298,15 +309,19 @@
         "responses": {
           "200": {
             "$ref": "#/responses/HealthResponse"
-          },
-          "default": {
-            "$ref": "#/responses/ErrorResponse"
           }
         }
       }
     },
     "/api/orders": {
       "get": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
         "schemes": [
           "http"
         ],
@@ -334,6 +349,13 @@
         }
       },
       "post": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
         "schemes": [
           "http"
         ],
@@ -364,6 +386,13 @@
     },
     "/api/orders/{id}": {
       "get": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
         "schemes": [
           "http"
         ],
@@ -394,6 +423,13 @@
     },
     "/api/orders/{id}/cancel": {
       "post": {
+        "security": [
+          {
+            "accessToken": [
+              "[]"
+            ]
+          }
+        ],
         "schemes": [
           "http"
         ],
@@ -716,8 +752,8 @@
           "x-go-name": "Address"
         },
         "created_at": {
-          "type": "integer",
-          "format": "uint64",
+          "type": "string",
+          "format": "date-time",
           "x-go-name": "CreatedAt"
         },
         "id": {
@@ -746,6 +782,14 @@
           "type": "integer",
           "format": "uint64",
           "x-go-name": "CoffeeID"
+        },
+        "coffee_image": {
+          "type": "string",
+          "x-go-name": "CoffeeImage"
+        },
+        "coffee_title": {
+          "type": "string",
+          "x-go-name": "CoffeeTitle"
         },
         "topping": {
           "type": "string",

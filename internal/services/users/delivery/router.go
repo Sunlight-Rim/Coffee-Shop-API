@@ -17,10 +17,10 @@ func (h *handler) Register(group *echo.Group) {
 		Password must be longer than 6 characters and contain at least one special character.
 		Username must be string with 6-40 characters.
 
-			schemes: http
-			responses:
-				200: SignupResponse
-				default: ErrorResponse
+		schemes: http
+		responses:
+			200: SignupResponse
+			default: ErrorResponse
 	*/
 	auth.POST("/signup", h.signup)
 	/*
@@ -28,10 +28,10 @@ func (h *handler) Register(group *echo.Group) {
 
 		Sign in to user account.
 
-			schemes: http
-			responses:
-				200: SigninResponse
-				default: ErrorResponse
+		schemes: http
+		responses:
+			200: SigninResponse
+			default: ErrorResponse
 	*/
 	auth.POST("/signin", h.signin)
 	/*
@@ -39,10 +39,10 @@ func (h *handler) Register(group *echo.Group) {
 
 		Create new tokens pair by refresh token.
 
-			schemes: http
-			responses:
-				200: RefreshResponse
-				default: ErrorResponse
+		schemes: http
+		responses:
+			200: RefreshResponse
+			default: ErrorResponse
 	*/
 	auth.POST("/refresh", h.refresh)
 	/*
@@ -50,12 +50,12 @@ func (h *handler) Register(group *echo.Group) {
 
 		Remove tokens from cookies.
 
-			schemes: http
-			security:
-				accessToken: []
-			responses:
-				200: SignoutResponse
-				default: ErrorResponse
+		schemes: http
+		security:
+			accessToken: []
+		responses:
+			200: SignoutResponse
+			default: ErrorResponse
 	*/
 	auth.POST("/signout", h.signout, middleware.Auth)
 	/*
@@ -63,12 +63,12 @@ func (h *handler) Register(group *echo.Group) {
 
 		Revoke all user stored refresh tokens and remove tokens from cookies.
 
-			schemes: http
-			security:
-				accessToken: []
-			responses:
-				200: SignoutAllResponse
-				default: ErrorResponse
+		schemes: http
+		security:
+			accessToken: []
+		responses:
+			200: SignoutAllResponse
+			default: ErrorResponse
 	*/
 	auth.POST("/signout-all", h.signoutAll, middleware.Auth)
 
@@ -77,12 +77,12 @@ func (h *handler) Register(group *echo.Group) {
 
 		Get user own account information.
 
-			schemes: http
-			security:
-				accessToken: []
-			responses:
-				200: GetMeResponse
-				default: ErrorResponse
+		schemes: http
+		security:
+			accessToken: []
+		responses:
+			200: GetMeResponse
+			default: ErrorResponse
 	*/
 	user.GET("", h.getMe)
 	/*
@@ -90,12 +90,12 @@ func (h *handler) Register(group *echo.Group) {
 
 		Change user password.
 
-			schemes: http
-			security:
-				accessToken: []
-			responses:
-				200: ChangePasswordResponse
-				default: ErrorResponse
+		schemes: http
+		security:
+			accessToken: []
+		responses:
+			200: ChangePasswordResponse
+			default: ErrorResponse
 	*/
 	user.PUT("/password", h.changePassword)
 	/*
@@ -103,12 +103,12 @@ func (h *handler) Register(group *echo.Group) {
 
 		Delete user own account.
 
-			schemes: http
-			security:
-				accessToken: []
-			responses:
-				200: DeleteMeResponse
-				default: ErrorResponse
+		schemes: http
+		security:
+			accessToken: []
+		responses:
+			200: DeleteMeResponse
+			default: ErrorResponse
 	*/
 	user.DELETE("", h.deleteMe)
 }

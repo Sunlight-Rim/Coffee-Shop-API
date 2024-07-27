@@ -22,7 +22,7 @@ type server struct {
 // New application server, init middlewares and basic application routes.
 func New() *server {
 	// Init middlewares
-	middleware.Init(viper.GetString("token.secret"))
+	middleware.Init(viper.GetString("token.secret"), viper.GetString("token.employee"))
 
 	// Init echo
 	echo := echo.New()

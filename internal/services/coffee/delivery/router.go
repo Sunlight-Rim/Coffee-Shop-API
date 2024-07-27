@@ -11,10 +11,10 @@ func (h *handler) Register(group *echo.Group) {
 
 		List coffee assortment.
 
-			schemes: http
-			responses:
-				200: ListCoffeesResponse
-				default: ErrorResponse
+		schemes: http
+		responses:
+			200: ListCoffeesResponse
+			default: ErrorResponse
 	*/
 	coffees.GET("", h.listCoffees)
 	/*
@@ -22,10 +22,10 @@ func (h *handler) Register(group *echo.Group) {
 
 		Get one coffee information.
 
-			schemes: http
-			responses:
-				200: GetCoffeeInfoResponse
-				default: ErrorResponse
+		schemes: http
+		responses:
+			200: GetCoffeeInfoResponse
+			default: ErrorResponse
 	*/
 	coffees.GET("/:id", h.getCoffeeInfo)
 	/*
@@ -33,10 +33,10 @@ func (h *handler) Register(group *echo.Group) {
 
 		List toppings assortment.
 
-			schemes: http
-			responses:
-				200: ListToppingsResponse
-				default: ErrorResponse
+		schemes: http
+		responses:
+			200: ListToppingsResponse
+			default: ErrorResponse
 	*/
 	toppings.GET("", h.listToppings)
 }

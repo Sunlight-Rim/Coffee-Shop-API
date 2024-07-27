@@ -52,6 +52,26 @@ type GetOrderInfoReqStorage struct {
 	OrderID uint64
 }
 
+func (req *GetOrderInfoReqUsecase) Validate() error {
+	if req.OrderID < 1 {
+		return errors.Wrap(errors.InvalidRequestContent, "invalid order id")
+	}
+
+	return nil
+}
+
+// CheckAllCoffeeIDsExists
+
+type CheckAllCoffeeIDsExistsReqStorage struct {
+	CoffeeIDs []uint64
+}
+
+// CheckAllToppingsExists
+
+type CheckAllToppingsExistsReqStorage struct {
+	Toppings []string
+}
+
 // CreateOrder
 
 // easyjson:json

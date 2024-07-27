@@ -6,6 +6,7 @@ import (
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
 
+	"github.com/lib/pq"
 	logger "github.com/sirupsen/logrus"
 )
 
@@ -57,13 +58,112 @@ func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrders
 		orders = append(orders, order)
 	}
 
-	return &model.ListOrdersResStorage{
-		Orders: orders,
-	}, nil
+	return &model.ListOrdersResStorage{Orders: orders}, nil
 }
 
-func (s *storage) GetOrderInfo(*model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
-	return nil, nil
+func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
+	var order model.GetOrderInfoOrder
+
+	// Get order
+	if err := s.db.QueryRow(`
+		SELECT
+			id,
+			"status",
+			"address",
+			created_at
+		FROM api.orders
+		WHERE
+			user_id = $1 AND
+			id = $2
+	`,
+		req.UserID,
+		req.OrderID,
+	).Scan(
+		&order.OrderID,
+		&order.Status,
+		&order.Address,
+		&order.CreatedAt,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.Wrap(errors.OrderNotExists, "order not found")
+		}
+
+		return nil, errors.Wrap(err, "get order info")
+	}
+
+	// Get order items
+	rows, err := s.db.Query(`
+		SELECT
+			c.id,
+			c.title,
+			c."image",
+			oi.topping
+		FROM api.order_items AS oi
+		JOIN api.coffee AS c ON oi.coffee_id = c.id
+		WHERE oi.order_id = $1
+	`,
+		req.OrderID,
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "get order items")
+	}
+
+	var item model.GetOrderInfoOrderItem
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&item.CoffeeID,
+			&item.CoffeeTitle,
+			&item.CoffeeImage,
+			&item.Topping,
+		); err != nil {
+			return nil, errors.Wrap(err, "scan order item")
+		}
+
+		order.Items = append(order.Items, item)
+	}
+
+	return &model.GetOrderInfoResStorage{Order: order}, nil
+}
+
+func (s *storage) CheckAllCoffeeIDsExists(req *model.CheckAllCoffeeIDsExistsReqStorage) error {
+	var count int
+
+	if err := s.db.QueryRow(`
+		SELECT count(*)
+		FROM api.coffee
+		WHERE id = any($1::INT[])
+	`,
+		pq.Array(req.CoffeeIDs),
+	).Scan(&count); err != nil {
+		return errors.Wrap(err, "scan coffee IDs count")
+	}
+
+	if count != len(req.CoffeeIDs) {
+		return errors.Wrap(errors.NotFound, "requested coffee ID not found")
+	}
+
+	return nil
+}
+
+func (s *storage) CheckAllToppingsExists(req *model.CheckAllToppingsExistsReqStorage) error {
+	var count int
+
+	if err := s.db.QueryRow(`
+		SELECT count(*)
+		FROM unnest(enum_range(NULL::api.topping)) AS t(name)
+		WHERE t.name::TEXT = any($1::TEXT[])
+	`,
+		pq.Array(req.Toppings),
+	).Scan(&count); err != nil {
+		return errors.Wrap(err, "scan toppings count")
+	}
+
+	if count != len(req.Toppings) {
+		return errors.Wrap(errors.NotFound, "requested topping not found")
+	}
+
+	return nil
 }
 
 func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.CreateOrderResStorage, err error) {
@@ -133,7 +233,7 @@ func (s *storage) CancelOrder(*model.CancelOrderReqStorage) (*model.CancelOrderR
 }
 
 func (s *storage) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqStorage) (*model.EmployeeCompleteOrderResStorage, error) {
-	var orderInfo model.EmployeeCompleteOrderResStorage
+	var order model.EmployeeCompleteOrderResStorage
 
 	if err := s.db.QueryRow(`
 		UPDATE api.orders
@@ -147,10 +247,10 @@ func (s *storage) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqStora
 	`,
 		req.OrderID,
 	).Scan(
-		&orderInfo.OrderID,
-		&orderInfo.OrderCustomerID,
-		&orderInfo.OrderCreatedAt,
-		&orderInfo.OrderStatus,
+		&order.OrderID,
+		&order.OrderCustomerID,
+		&order.OrderCreatedAt,
+		&order.OrderStatus,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.Wrap(errors.OrderNotExists, "order not found")
@@ -159,5 +259,5 @@ func (s *storage) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqStora
 		return nil, errors.Wrap(err, "change order status")
 	}
 
-	return &orderInfo, nil
+	return &order, nil
 }

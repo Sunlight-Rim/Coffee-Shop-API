@@ -46,15 +46,17 @@ type ListOrdersResStorage struct {
 // GetOrderInfo
 
 type GetOrderInfoOrderItem struct {
-	CoffeeID uint64 `json:"coffee_id"`
-	Topping  string `json:"topping"`
+	CoffeeID    uint64  `json:"coffee_id"`
+	CoffeeTitle string  `json:"coffee_title"`
+	CoffeeImage string  `json:"coffee_image"`
+	Topping     *string `json:"topping"`
 }
 
 type GetOrderInfoOrder struct {
 	OrderID   uint64                  `json:"id"`
-	CreatedAt uint64                  `json:"created_at"`
 	Status    string                  `json:"status"`
 	Address   string                  `json:"address"`
+	CreatedAt time.Time               `json:"created_at"`
 	Items     []GetOrderInfoOrderItem `json:"items"`
 }
 

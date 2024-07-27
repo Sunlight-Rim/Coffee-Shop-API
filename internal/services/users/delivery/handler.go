@@ -205,7 +205,9 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 		return errors.Wrap(err, "delete user")
 	}
 
-	res.User = user.User
+	res = &model.DeleteMeResDelivery{
+		User: user.User,
+	}
 
 	return
 }

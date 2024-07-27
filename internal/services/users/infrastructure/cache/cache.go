@@ -62,6 +62,10 @@ func (c *cache) RevokeAllUserRefreshTokens(userID uint64) ([]string, error) {
 		return nil, errors.Wrap(err, "get all tokens")
 	}
 
+	if len(tokens) == 0 {
+		return nil, nil
+	}
+
 	if err := c.redis.Del(
 		context.TODO(),
 		tokens...,

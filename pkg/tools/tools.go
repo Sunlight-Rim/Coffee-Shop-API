@@ -38,3 +38,14 @@ func SetCookie(c echo.Context, name, path, value string, expires time.Time) {
 		HttpOnly: options.CookieHttpOnly,
 	})
 }
+
+// SliceOfMapKeys returns a slice containing only the map keys.
+func SliceOfMapKeys[K string | uint64, V any](m map[K]V) []K {
+	s := make([]K, 0, len(m))
+
+	for k := range m {
+		s = append(s, k)
+	}
+
+	return s
+}

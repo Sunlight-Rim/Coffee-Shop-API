@@ -39,10 +39,9 @@ func (s *server) register() {
 
 		List of API errors.
 
-			schemes: https
-			responses:
-				200: ErrorsListResponse
-				default: ErrorResponse
+		schemes: https
+		responses:
+			200: ErrorsListResponse
 	*/
 	s.ApiGroup.GET("/errors", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, errors.ResponseList)
@@ -52,10 +51,9 @@ func (s *server) register() {
 
 		Health check.
 
-			schemes: https
-			responses:
-				200: HealthResponse
-				default: ErrorResponse
+		schemes: https
+		responses:
+			200: HealthResponse
 	*/
 	s.ApiGroup.GET("/health", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, []byte("Success!"))

@@ -465,12 +465,14 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesOrdersModel6(in *jlexer.
 		switch key {
 		case "id":
 			out.OrderID = uint64(in.Uint64())
-		case "created_at":
-			out.CreatedAt = uint64(in.Uint64())
 		case "status":
 			out.Status = string(in.String())
 		case "address":
 			out.Address = string(in.String())
+		case "created_at":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.CreatedAt).UnmarshalJSON(data))
+			}
 		case "items":
 			if in.IsNull() {
 				in.Skip()
@@ -479,7 +481,7 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesOrdersModel6(in *jlexer.
 				in.Delim('[')
 				if out.Items == nil {
 					if !in.IsDelim(']') {
-						out.Items = make([]GetOrderInfoOrderItem, 0, 2)
+						out.Items = make([]GetOrderInfoOrderItem, 0, 1)
 					} else {
 						out.Items = []GetOrderInfoOrderItem{}
 					}
@@ -514,11 +516,6 @@ func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesOrdersModel6(out *jwrite
 		out.Uint64(uint64(in.OrderID))
 	}
 	{
-		const prefix string = ",\"created_at\":"
-		out.RawString(prefix)
-		out.Uint64(uint64(in.CreatedAt))
-	}
-	{
 		const prefix string = ",\"status\":"
 		out.RawString(prefix)
 		out.String(string(in.Status))
@@ -527,6 +524,11 @@ func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesOrdersModel6(out *jwrite
 		const prefix string = ",\"address\":"
 		out.RawString(prefix)
 		out.String(string(in.Address))
+	}
+	{
+		const prefix string = ",\"created_at\":"
+		out.RawString(prefix)
+		out.Raw((in.CreatedAt).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"items\":"
@@ -567,8 +569,20 @@ func easyjsonC80ae7adDecodeCoffeeshopApiInternalServicesOrdersModel7(in *jlexer.
 		switch key {
 		case "coffee_id":
 			out.CoffeeID = uint64(in.Uint64())
+		case "coffee_title":
+			out.CoffeeTitle = string(in.String())
+		case "coffee_image":
+			out.CoffeeImage = string(in.String())
 		case "topping":
-			out.Topping = string(in.String())
+			if in.IsNull() {
+				in.Skip()
+				out.Topping = nil
+			} else {
+				if out.Topping == nil {
+					out.Topping = new(string)
+				}
+				*out.Topping = string(in.String())
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -589,9 +603,23 @@ func easyjsonC80ae7adEncodeCoffeeshopApiInternalServicesOrdersModel7(out *jwrite
 		out.Uint64(uint64(in.CoffeeID))
 	}
 	{
+		const prefix string = ",\"coffee_title\":"
+		out.RawString(prefix)
+		out.String(string(in.CoffeeTitle))
+	}
+	{
+		const prefix string = ",\"coffee_image\":"
+		out.RawString(prefix)
+		out.String(string(in.CoffeeImage))
+	}
+	{
 		const prefix string = ",\"topping\":"
 		out.RawString(prefix)
-		out.String(string(in.Topping))
+		if in.Topping == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Topping))
+		}
 	}
 	out.RawByte('}')
 }

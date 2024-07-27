@@ -4,23 +4,48 @@ import (
 	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
-// Auth middleware validates and parses access token
-// and puts the claims to the context.
+// Auth middleware validates and parses user
+// access token and puts the claims to the context.
 var Auth echo.MiddlewareFunc
 
-func initAuth(secret string) {
+// Auth middleware validates employee Bearer
+// authorization token.
+var AuthEmployee echo.MiddlewareFunc
+
+func initAuth(tokenSecret, employeeToken string) {
 	Auth = echojwt.WithConfig(echojwt.Config{
 		TokenLookup:    "cookie:access",
 		ContextKey:     "claims",
-		ParseTokenFunc: parseToken([]byte(secret)),
+		ParseTokenFunc: parseToken([]byte(tokenSecret)),
 		ErrorHandler:   errorHandler,
 	})
+
+	AuthEmployee = func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			bearerToken := strings.Split(c.Request().Header.Get("Authorization"), " ")
+
+			if len(bearerToken) < 2 {
+				err := errors.Wrap(errors.MissingToken, "missing header with bearer authorization")
+				tools.SendResponse(c, nil, err)
+				return err
+			}
+
+			if bearerToken[0] != "Bearer" || bearerToken[1] != employeeToken {
+				err := errors.Wrap(errors.InvalidToken, "invalid header with bearer authorization")
+				tools.SendResponse(c, nil, err)
+				return err
+			}
+
+			return next(c)
+		}
+	}
 }
 
 func parseToken(secret []byte) func(c echo.Context, token string) (any, error) {

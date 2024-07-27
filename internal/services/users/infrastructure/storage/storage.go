@@ -141,6 +141,7 @@ func (s *storage) DeleteMe(req *model.DeleteMeReqStorage) (*model.DeleteMeResSto
 		SET deleted_at = $1
 		WHERE id = $2
 		RETURNING
+			id,
 			username,
 			email,
 			phone
