@@ -38,6 +38,12 @@ func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrders
 		return nil, errors.Wrap(err, "get orders list")
 	}
 
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logger.WithField("error", err).Error("Close rows")
+		}
+	}()
+
 	var (
 		orders []model.ListOrdersOrder
 		order  model.ListOrdersOrder
@@ -107,6 +113,12 @@ func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrd
 	if err != nil {
 		return nil, errors.Wrap(err, "get order items")
 	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logger.WithField("error", err).Error("Close rows")
+		}
+	}()
 
 	var item model.GetOrderInfoOrderItem
 

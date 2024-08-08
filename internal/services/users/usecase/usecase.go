@@ -15,7 +15,11 @@ type usecase struct {
 }
 
 // New usecase.
-func New(storage model.IStorage, cache model.ICache, token model.IToken) *usecase {
+func New(
+	storage model.IStorage,
+	cache model.ICache,
+	token model.IToken,
+) *usecase {
 	return &usecase{
 		storage: storage,
 		cache:   cache,

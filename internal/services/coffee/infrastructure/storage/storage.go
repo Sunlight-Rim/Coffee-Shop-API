@@ -5,6 +5,8 @@ import (
 
 	"coffeeshop-api/internal/services/coffee/model"
 	"coffeeshop-api/pkg/errors"
+
+	logger "github.com/sirupsen/logrus"
 )
 
 const (
@@ -39,6 +41,12 @@ func (s *storage) ListCoffees(req *model.ListCoffeesReqStorage) (*model.ListCoff
 	if err != nil {
 		return nil, errors.Wrap(err, "get coffee list")
 	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logger.WithField("error", err).Error("Close rows")
+		}
+	}()
 
 	var (
 		coffeeList []model.Coffee
@@ -103,6 +111,12 @@ func (s *storage) ListToppings(req *model.ListToppingsReqStorage) (*model.ListTo
 	if err != nil {
 		return nil, errors.Wrap(err, "get toppings list")
 	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logger.WithField("error", err).Error("Close rows")
+		}
+	}()
 
 	var (
 		toppingsList []string
