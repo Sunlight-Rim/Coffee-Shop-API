@@ -7,8 +7,10 @@ import (
 )
 
 func (h *handler) Register(group *echo.Group) {
-	auth := group.Group("/auth")
-	user := group.Group("/user", middleware.Auth)
+	var (
+		auth = group.Group("/auth")
+		user = group.Group("/user", middleware.Auth)
+	)
 
 	/*
 		swagger:route POST /api/auth/signup Auth SignupRequest

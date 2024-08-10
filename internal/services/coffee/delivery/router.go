@@ -3,8 +3,10 @@ package delivery
 import "github.com/labstack/echo/v4"
 
 func (h *handler) Register(group *echo.Group) {
-	coffees := group.Group("/coffees")
-	toppings := group.Group("/toppings")
+	var (
+		coffees  = group.Group("/coffees")
+		toppings = group.Group("/toppings")
+	)
 
 	/*
 		swagger:route GET /api/coffees Coffee ListCoffeesRequest

@@ -7,9 +7,11 @@ import (
 )
 
 func (h *handler) Register(group *echo.Group) {
-	orders := group.Group("/orders", middleware.Auth)
-	events := group.Group("/events", middleware.Auth)
-	employee := group.Group("/employee", middleware.AuthEmployee)
+	var (
+		orders   = group.Group("/orders", middleware.Auth)
+		events   = group.Group("/events", middleware.Auth)
+		employee = group.Group("/employee", middleware.AuthEmployee)
+	)
 
 	/*
 		swagger:route GET /api/events/orders/statuses Orders OrdersStatusesRequest
