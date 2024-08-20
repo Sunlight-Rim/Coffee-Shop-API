@@ -101,7 +101,7 @@ curl -X POST http://localhost:1337/api/employee/orders/1/complete \
 
 ### ...or cancel the order (as a user)
 ```bash
-curl -X POST http://localhost:1337/api/orders/2/cancel \
+curl -X POST http://localhost:1337/api/orders/1/cancel \
     -H 'Accept: application/json'
 ```
 

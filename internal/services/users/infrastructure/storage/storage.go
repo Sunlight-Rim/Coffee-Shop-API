@@ -134,25 +134,43 @@ func (s *storage) ChangePassword(req *model.ChangePasswordReqStorage) error {
 
 // DeleteMe provides user soft delete.
 func (s *storage) DeleteMe(req *model.DeleteMeReqStorage) (*model.DeleteMeResStorage, error) {
-	var user model.User
+	var (
+		user      model.User
+		deletedAt *time.Time
+	)
 
 	if err := s.db.QueryRow(`
-		UPDATE api.users
-		SET deleted_at = $1
-		WHERE id = $2
-		RETURNING
+		SELECT
 			id,
 			username,
 			email,
-			phone
+			phone,
+			deleted_at
+		FROM api.users
+		WHERE id = $1
 	`,
-		time.Now(),
 		req.UserID,
 	).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
 		&user.Phone,
+		&deletedAt,
+	); err != nil {
+		return nil, errors.Wrap(err, "select user")
+	}
+
+	if deletedAt != nil {
+		return nil, errors.Wrapf(errors.UserAlreadyDeleted, "already deleted at %v", *deletedAt)
+	}
+
+	if _, err := s.db.Exec(`
+		UPDATE api.users
+		SET deleted_at = $1
+		WHERE id = $2
+	`,
+		time.Now(),
+		req.UserID,
 	); err != nil {
 		return nil, errors.Wrap(err, "delete user")
 	}

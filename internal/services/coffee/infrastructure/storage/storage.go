@@ -43,8 +43,8 @@ func (s *storage) ListCoffees(req *model.ListCoffeesReqStorage) (*model.ListCoff
 	}
 
 	defer func() {
-		if err := rows.Close(); err != nil {
-			logger.WithField("error", err).Error("Close rows")
+		if errClose := rows.Close(); errClose != nil {
+			logger.WithField("error", errClose).Error("Close rows")
 		}
 	}()
 
@@ -66,6 +66,10 @@ func (s *storage) ListCoffees(req *model.ListCoffeesReqStorage) (*model.ListCoff
 		}
 
 		coffeeList = append(coffeeList, coffee)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows error")
 	}
 
 	return &model.ListCoffeesResStorage{CoffeeList: coffeeList}, nil
@@ -113,8 +117,8 @@ func (s *storage) ListToppings(req *model.ListToppingsReqStorage) (*model.ListTo
 	}
 
 	defer func() {
-		if err := rows.Close(); err != nil {
-			logger.WithField("error", err).Error("Close rows")
+		if errClose := rows.Close(); errClose != nil {
+			logger.WithField("error", errClose).Error("Close rows")
 		}
 	}()
 
@@ -129,6 +133,10 @@ func (s *storage) ListToppings(req *model.ListToppingsReqStorage) (*model.ListTo
 		}
 
 		toppingsList = append(toppingsList, topping)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows error")
 	}
 
 	return &model.ListToppingsResStorage{ToppingsList: toppingsList}, nil

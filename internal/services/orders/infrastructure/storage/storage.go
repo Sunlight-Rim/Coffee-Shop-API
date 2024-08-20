@@ -39,8 +39,8 @@ func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrders
 	}
 
 	defer func() {
-		if err := rows.Close(); err != nil {
-			logger.WithField("error", err).Error("Close rows")
+		if errClose := rows.Close(); errClose != nil {
+			logger.WithField("error", errClose).Error("Close rows")
 		}
 	}()
 
@@ -62,6 +62,10 @@ func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrders
 		}
 
 		orders = append(orders, order)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows error")
 	}
 
 	return &model.ListOrdersResStorage{Orders: orders}, nil
@@ -115,8 +119,8 @@ func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrd
 	}
 
 	defer func() {
-		if err := rows.Close(); err != nil {
-			logger.WithField("error", err).Error("Close rows")
+		if errClose := rows.Close(); errClose != nil {
+			logger.WithField("error", errClose).Error("Close rows")
 		}
 	}()
 
@@ -135,6 +139,10 @@ func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrd
 		order.Items = append(order.Items, item)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, errors.Wrap(err, "rows error")
+	}
+
 	return &model.GetOrderInfoResStorage{Order: order}, nil
 }
 
@@ -144,7 +152,7 @@ func (s *storage) CheckCoffeeIDsExists(req *model.CheckCoffeeIDsExistsReqStorage
 	if err := s.db.QueryRow(`
 		SELECT count(*)
 		FROM api.coffee
-		WHERE id = any($1::INT[])
+		WHERE id = any($1)
 	`,
 		pq.Array(req.CoffeeIDs),
 	).Scan(&count); err != nil {
@@ -164,7 +172,7 @@ func (s *storage) CheckToppingsExists(req *model.CheckToppingsExistsReqStorage) 
 	if err := s.db.QueryRow(`
 		SELECT count(*)
 		FROM unnest(enum_range(NULL::api.topping)) AS t(name)
-		WHERE t.name::TEXT = any($1::TEXT[])
+		WHERE t.name::TEXT = any($1)
 	`,
 		pq.Array(req.Toppings),
 	).Scan(&count); err != nil {
@@ -226,6 +234,12 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.Create
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare items")
 	}
+
+	defer func() {
+		if errClose := stmt.Close(); errClose != nil {
+			logger.WithField("error", errClose).Error("Close stmt")
+		}
+	}()
 
 	for i := range req.Items {
 		if _, err = stmt.Exec(

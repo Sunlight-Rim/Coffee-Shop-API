@@ -44,6 +44,9 @@ var ResponseList []byte = []byte(`{
     "3551874748": {
         "en": "Coffee not exists"
     },
+    "3560127487": {
+        "en": "User already deleted"
+    },
     "518472662": {
         "en": "Order not exists"
     },
@@ -71,6 +74,7 @@ const (
 	CodeCoffeeNotExists       uint32 = 3551874748
 	CodeToppingNotExists      uint32 = 2662116103
 	CodeCannotCancelThisOrder uint32 = 1816418752
+	CodeUserAlreadyDeleted    uint32 = 3560127487
 )
 
 // Error Variables
@@ -89,6 +93,7 @@ var (
 	CoffeeNotExists       error = New("coffee not exists", CodeCoffeeNotExists)
 	ToppingNotExists      error = New("topping not exists", CodeToppingNotExists)
 	CannotCancelThisOrder error = New("cannot cancel this order", CodeCannotCancelThisOrder)
+	UserAlreadyDeleted    error = New("user already deleted", CodeUserAlreadyDeleted)
 )
 
 // Hash map data by error codes
@@ -107,6 +112,7 @@ var HttpResponse = map[uint32]map[string]any{
 	3551874748: {"status": 404, "text": "Coffee not exists"},
 	2662116103: {"status": 404, "text": "Topping not exists"},
 	1816418752: {"status": 422, "text": "Cannot cancel this order"},
+	3560127487: {"status": 422, "text": "User already deleted"},
 }
 
 // GetHTTPErrData returning http status, error message and error code
