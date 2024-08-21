@@ -5,6 +5,7 @@ import (
 	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"context"
 	"strings"
 )
 
@@ -28,12 +29,12 @@ func New(
 }
 
 // Signup creates user in database.
-func (uc *usecase) Signup(req *model.SignupReqUsecase) (*model.SignupResUsecase, error) {
+func (uc *usecase) Signup(ctx context.Context, req *model.SignupReqUsecase) (*model.SignupResUsecase, error) {
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	user, err := uc.storage.CreateUser(&model.CreateUserReqStorage{
+	user, err := uc.storage.CreateUser(ctx, &model.CreateUserReqStorage{
 		Username:     req.Username,
 		Phone:        req.Phone,
 		Email:        strings.ToLower(req.Email),
@@ -49,13 +50,13 @@ func (uc *usecase) Signup(req *model.SignupReqUsecase) (*model.SignupResUsecase,
 }
 
 // Signin checks credentials and generates tokens.
-func (uc *usecase) Signin(req *model.SigninReqUsecase) (*model.SigninResUsecase, error) {
+func (uc *usecase) Signin(ctx context.Context, req *model.SigninReqUsecase) (*model.SigninResUsecase, error) {
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
 
 	// Check credentials
-	user, err := uc.storage.CheckCredentials(&model.CheckCredentialsReqStorage{
+	user, err := uc.storage.CheckCredentials(ctx, &model.CheckCredentialsReqStorage{
 		Email:        strings.ToLower(req.Email),
 		PasswordHash: tools.SHA256(req.Password),
 	})
@@ -82,7 +83,7 @@ func (uc *usecase) Signin(req *model.SigninReqUsecase) (*model.SigninResUsecase,
 }
 
 // Refresh revokes refresh token and updates tokens.
-func (uc *usecase) Refresh(req *model.RefreshReqUsecase) (*model.RefreshResUsecase, error) {
+func (uc *usecase) Refresh(ctx context.Context, req *model.RefreshReqUsecase) (*model.RefreshResUsecase, error) {
 	// Parse refresh token
 	claims, err := uc.token.Parse(req.RefreshToken)
 	if err != nil {
@@ -111,7 +112,7 @@ func (uc *usecase) Refresh(req *model.RefreshReqUsecase) (*model.RefreshResUseca
 }
 
 // SignoutAll revokes all refresh tokens.
-func (uc *usecase) SignoutAll(req *model.SignoutAllReqUsecase) (*model.SignoutAllResUsecase, error) {
+func (uc *usecase) SignoutAll(ctx context.Context, req *model.SignoutAllReqUsecase) (*model.SignoutAllResUsecase, error) {
 	// Revoke all refresh tokens
 	refreshTokens, err := uc.cache.RevokeAllUserRefreshTokens(req.UserID)
 	if err != nil {
@@ -124,9 +125,9 @@ func (uc *usecase) SignoutAll(req *model.SignoutAllReqUsecase) (*model.SignoutAl
 }
 
 // GetMe returns user account inforamtion.
-func (uc *usecase) GetMe(req *model.GetMeReqUsecase) (*model.GetMeResUsecase, error) {
+func (uc *usecase) GetMe(ctx context.Context, req *model.GetMeReqUsecase) (*model.GetMeResUsecase, error) {
 	// Get user
-	user, err := uc.storage.GetMe(&model.GetMeReqStorage{
+	user, err := uc.storage.GetMe(ctx, &model.GetMeReqStorage{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -139,13 +140,13 @@ func (uc *usecase) GetMe(req *model.GetMeReqUsecase) (*model.GetMeResUsecase, er
 }
 
 // ChangePassword updates user password.
-func (uc *usecase) ChangePassword(req *model.ChangePasswordReqUsecase) error {
+func (uc *usecase) ChangePassword(ctx context.Context, req *model.ChangePasswordReqUsecase) error {
 	if err := req.Validate(); err != nil {
 		return errors.Wrap(err, "request validation")
 	}
 
 	// Update password
-	if err := uc.storage.ChangePassword(&model.ChangePasswordReqStorage{
+	if err := uc.storage.ChangePassword(ctx, &model.ChangePasswordReqStorage{
 		UserID:          req.UserID,
 		OldPasswordHash: tools.SHA256(req.OldPassword),
 		NewPasswordHash: tools.SHA256(req.NewPassword),
@@ -157,14 +158,14 @@ func (uc *usecase) ChangePassword(req *model.ChangePasswordReqUsecase) error {
 }
 
 // DeleteMe deletes user account.
-func (uc *usecase) DeleteMe(req *model.DeleteMeReqUsecase) (*model.DeleteMeResUsecase, error) {
+func (uc *usecase) DeleteMe(ctx context.Context, req *model.DeleteMeReqUsecase) (*model.DeleteMeResUsecase, error) {
 	// Revoke user all refresh tokens
 	if _, err := uc.cache.RevokeAllUserRefreshTokens(req.UserID); err != nil {
 		return nil, errors.Wrap(err, "revoke all refresh tokens")
 	}
 
 	// Delete user
-	user, err := uc.storage.DeleteMe(&model.DeleteMeReqStorage{
+	user, err := uc.storage.DeleteMe(ctx, &model.DeleteMeReqStorage{
 		UserID: req.UserID,
 	})
 	if err != nil {

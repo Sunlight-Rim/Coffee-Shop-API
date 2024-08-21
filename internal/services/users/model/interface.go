@@ -2,26 +2,27 @@ package model
 
 import (
 	"coffeeshop-api/pkg/claims"
+	"context"
 )
 
 // Use cases
 type IUsecase interface {
-	Signup(*SignupReqUsecase) (*SignupResUsecase, error)
-	Signin(*SigninReqUsecase) (*SigninResUsecase, error)
-	Refresh(*RefreshReqUsecase) (*RefreshResUsecase, error)
-	SignoutAll(*SignoutAllReqUsecase) (*SignoutAllResUsecase, error)
-	GetMe(*GetMeReqUsecase) (*GetMeResUsecase, error)
-	ChangePassword(*ChangePasswordReqUsecase) error
-	DeleteMe(*DeleteMeReqUsecase) (*DeleteMeResUsecase, error)
+	Signup(context.Context, *SignupReqUsecase) (*SignupResUsecase, error)
+	Signin(context.Context, *SigninReqUsecase) (*SigninResUsecase, error)
+	Refresh(context.Context, *RefreshReqUsecase) (*RefreshResUsecase, error)
+	SignoutAll(context.Context, *SignoutAllReqUsecase) (*SignoutAllResUsecase, error)
+	GetMe(context.Context, *GetMeReqUsecase) (*GetMeResUsecase, error)
+	ChangePassword(context.Context, *ChangePasswordReqUsecase) error
+	DeleteMe(context.Context, *DeleteMeReqUsecase) (*DeleteMeResUsecase, error)
 }
 
 // Storage
 type IStorage interface {
-	CreateUser(*CreateUserReqStorage) (*CreateUserResStorage, error)
-	CheckCredentials(*CheckCredentialsReqStorage) (*CheckCredentialsResStorage, error)
-	GetMe(*GetMeReqStorage) (*GetMeResStorage, error)
-	ChangePassword(*ChangePasswordReqStorage) error
-	DeleteMe(*DeleteMeReqStorage) (*DeleteMeResStorage, error)
+	CreateUser(context.Context, *CreateUserReqStorage) (*CreateUserResStorage, error)
+	CheckCredentials(context.Context, *CheckCredentialsReqStorage) (*CheckCredentialsResStorage, error)
+	GetMe(context.Context, *GetMeReqStorage) (*GetMeResStorage, error)
+	ChangePassword(context.Context, *ChangePasswordReqStorage) error
+	DeleteMe(context.Context, *DeleteMeReqStorage) (*DeleteMeResStorage, error)
 }
 
 // Cache service

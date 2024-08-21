@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"database/sql"
 
 	"coffeeshop-api/internal/services/orders/model"
@@ -20,8 +21,8 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrdersResStorage, error) {
-	rows, err := s.db.Query(`
+func (s *storage) ListOrders(ctx context.Context, req *model.ListOrdersReqStorage) (*model.ListOrdersResStorage, error) {
+	rows, err := s.db.QueryContext(ctx, `
 		SELECT
 			id,
 			created_at
@@ -71,11 +72,11 @@ func (s *storage) ListOrders(req *model.ListOrdersReqStorage) (*model.ListOrders
 	return &model.ListOrdersResStorage{Orders: orders}, nil
 }
 
-func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
+func (s *storage) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
 	var order model.GetOrderInfoOrder
 
 	// Get order
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT
 			id,
 			"status",
@@ -102,7 +103,7 @@ func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrd
 	}
 
 	// Get order items
-	rows, err := s.db.Query(`
+	rows, err := s.db.QueryContext(ctx, `
 		SELECT
 			c.id,
 			c.title,
@@ -146,10 +147,10 @@ func (s *storage) GetOrderInfo(req *model.GetOrderInfoReqStorage) (*model.GetOrd
 	return &model.GetOrderInfoResStorage{Order: order}, nil
 }
 
-func (s *storage) CheckCoffeeIDsExists(req *model.CheckCoffeeIDsExistsReqStorage) error {
+func (s *storage) CheckCoffeeIDsExists(ctx context.Context, req *model.CheckCoffeeIDsExistsReqStorage) error {
 	var count int
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT count(*)
 		FROM api.coffee
 		WHERE id = any($1)
@@ -166,10 +167,10 @@ func (s *storage) CheckCoffeeIDsExists(req *model.CheckCoffeeIDsExistsReqStorage
 	return nil
 }
 
-func (s *storage) CheckToppingsExists(req *model.CheckToppingsExistsReqStorage) error {
+func (s *storage) CheckToppingsExists(ctx context.Context, req *model.CheckToppingsExistsReqStorage) error {
 	var count int
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT count(*)
 		FROM unnest(enum_range(NULL::api.topping)) AS t(name)
 		WHERE t.name::TEXT = any($1)
@@ -186,8 +187,8 @@ func (s *storage) CheckToppingsExists(req *model.CheckToppingsExistsReqStorage) 
 	return nil
 }
 
-func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.CreateOrderResStorage, err error) {
-	tx, err := s.db.Begin()
+func (s *storage) CreateOrder(ctx context.Context, req *model.CreateOrderReqStorage) (_ *model.CreateOrderResStorage, err error) {
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "start transaction")
 	}
@@ -208,7 +209,7 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.Create
 	// Insert order
 	var orderID uint64
 
-	if err := tx.QueryRow(`
+	if err := tx.QueryRowContext(ctx, `
 		INSERT INTO api.orders(
 			user_id,
 			"address"
@@ -223,7 +224,7 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.Create
 	}
 
 	// Insert items
-	stmt, err := tx.Prepare(`
+	stmt, err := tx.PrepareContext(ctx, `
 		INSERT INTO api.order_items(
 			order_id,
 			coffee_id,
@@ -242,7 +243,8 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.Create
 	}()
 
 	for i := range req.Items {
-		if _, err = stmt.Exec(
+		if _, err = stmt.ExecContext(
+			ctx,
 			orderID,
 			req.Items[i].CoffeeID,
 			&req.Items[i].Topping,
@@ -254,10 +256,10 @@ func (s *storage) CreateOrder(req *model.CreateOrderReqStorage) (_ *model.Create
 	return &model.CreateOrderResStorage{OrderID: orderID}, nil
 }
 
-func (s *storage) CancelOrder(req *model.CancelOrderReqStorage) (*model.CancelOrderResStorage, error) {
+func (s *storage) CancelOrder(ctx context.Context, req *model.CancelOrderReqStorage) (*model.CancelOrderResStorage, error) {
 	var order model.CancelOrderResStorage
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT
 			id,
 			user_id,
@@ -284,7 +286,7 @@ func (s *storage) CancelOrder(req *model.CancelOrderReqStorage) (*model.CancelOr
 		return nil, errors.Wrap(errors.CannotCancelThisOrder, "order cannot be cancelled")
 	}
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		UPDATE api.orders
 		SET "status" = 'cancelled'
 		WHERE id = $1
@@ -298,10 +300,10 @@ func (s *storage) CancelOrder(req *model.CancelOrderReqStorage) (*model.CancelOr
 	return &order, nil
 }
 
-func (s *storage) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqStorage) (*model.EmployeeCompleteOrderResStorage, error) {
+func (s *storage) EmployeeCompleteOrder(ctx context.Context, req *model.EmployeeCompleteOrderReqStorage) (*model.EmployeeCompleteOrderResStorage, error) {
 	var order model.EmployeeCompleteOrderResStorage
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		UPDATE api.orders
 		SET "status" = 'ready to receive'
 		WHERE id = $1

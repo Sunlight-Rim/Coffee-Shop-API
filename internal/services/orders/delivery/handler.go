@@ -69,7 +69,7 @@ func (h *handler) listOrders(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	orders, err := h.uc.ListOrders(&model.ListOrdersReqUsecase{
+	orders, err := h.uc.ListOrders(c.Request().Context(), &model.ListOrdersReqUsecase{
 		UserID: req.UserID,
 		Offset: req.Offset,
 	})
@@ -99,7 +99,7 @@ func (h *handler) getOrderInfo(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.GetOrderInfo(&model.GetOrderInfoReqUsecase{
+	order, err := h.uc.GetOrderInfo(c.Request().Context(), &model.GetOrderInfoReqUsecase{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
 	})
@@ -129,7 +129,7 @@ func (h *handler) createOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.CreateOrder(&model.CreateOrderReqUsecase{
+	order, err := h.uc.CreateOrder(c.Request().Context(), &model.CreateOrderReqUsecase{
 		UserID:  req.UserID,
 		Address: req.Address,
 		Items:   req.Items,
@@ -160,7 +160,7 @@ func (h *handler) cancelOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.CancelOrder(&model.CancelOrderReqUsecase{
+	order, err := h.uc.CancelOrder(c.Request().Context(), &model.CancelOrderReqUsecase{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
 	})
@@ -206,7 +206,7 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.EmployeeCompleteOrder(&model.EmployeeCompleteOrderReqUsecase{
+	order, err := h.uc.EmployeeCompleteOrder(c.Request().Context(), &model.EmployeeCompleteOrderReqUsecase{
 		OrderID: req.OrderID,
 	})
 	if err != nil {

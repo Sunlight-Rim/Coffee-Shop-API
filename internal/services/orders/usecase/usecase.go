@@ -4,6 +4,7 @@ import (
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"context"
 )
 
 type usecase struct {
@@ -17,8 +18,8 @@ func New(storage model.IStorage) *usecase {
 	}
 }
 
-func (uc *usecase) ListOrders(req *model.ListOrdersReqUsecase) (*model.ListOrdersResUsecase, error) {
-	orders, err := uc.storage.ListOrders(&model.ListOrdersReqStorage{
+func (uc *usecase) ListOrders(ctx context.Context, req *model.ListOrdersReqUsecase) (*model.ListOrdersResUsecase, error) {
+	orders, err := uc.storage.ListOrders(ctx, &model.ListOrdersReqStorage{
 		UserID: req.UserID,
 		Offset: req.Offset,
 	})
@@ -30,12 +31,12 @@ func (uc *usecase) ListOrders(req *model.ListOrdersReqUsecase) (*model.ListOrder
 		Orders: orders.Orders,
 	}, nil
 }
-func (uc *usecase) GetOrderInfo(req *model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
+func (uc *usecase) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	order, err := uc.storage.GetOrderInfo(&model.GetOrderInfoReqStorage{
+	order, err := uc.storage.GetOrderInfo(ctx, &model.GetOrderInfoReqStorage{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
 	})
@@ -49,7 +50,7 @@ func (uc *usecase) GetOrderInfo(req *model.GetOrderInfoReqUsecase) (*model.GetOr
 }
 
 // CreateOrder creates order in database.
-func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
+func (uc *usecase) CreateOrder(ctx context.Context, req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -67,20 +68,20 @@ func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateO
 		}
 	}
 
-	if err := uc.storage.CheckCoffeeIDsExists(&model.CheckCoffeeIDsExistsReqStorage{
+	if err := uc.storage.CheckCoffeeIDsExists(ctx, &model.CheckCoffeeIDsExistsReqStorage{
 		CoffeeIDs: tools.SliceOfMapKeys(coffeeIDs),
 	}); err != nil {
 		return nil, errors.Wrap(err, "check all coffeeIDs exists")
 	}
 
-	if err := uc.storage.CheckToppingsExists(&model.CheckToppingsExistsReqStorage{
+	if err := uc.storage.CheckToppingsExists(ctx, &model.CheckToppingsExistsReqStorage{
 		Toppings: tools.SliceOfMapKeys(toppings),
 	}); err != nil {
 		return nil, errors.Wrap(err, "check all toppings exists")
 	}
 
 	// Create order
-	order, err := uc.storage.CreateOrder(&model.CreateOrderReqStorage{
+	order, err := uc.storage.CreateOrder(ctx, &model.CreateOrderReqStorage{
 		UserID:  req.UserID,
 		Address: req.Address,
 		Items:   req.Items,
@@ -94,8 +95,8 @@ func (uc *usecase) CreateOrder(req *model.CreateOrderReqUsecase) (*model.CreateO
 	}, nil
 }
 
-func (uc *usecase) CancelOrder(req *model.CancelOrderReqUsecase) (*model.CancelOrderResUsecase, error) {
-	order, err := uc.storage.CancelOrder(&model.CancelOrderReqStorage{
+func (uc *usecase) CancelOrder(ctx context.Context, req *model.CancelOrderReqUsecase) (*model.CancelOrderResUsecase, error) {
+	order, err := uc.storage.CancelOrder(ctx, &model.CancelOrderReqStorage{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
 	})
@@ -112,8 +113,8 @@ func (uc *usecase) CancelOrder(req *model.CancelOrderReqUsecase) (*model.CancelO
 }
 
 // EmployeeCompleteOrder marks order as completed.
-func (uc *usecase) EmployeeCompleteOrder(req *model.EmployeeCompleteOrderReqUsecase) (*model.EmployeeCompleteOrderResUsecase, error) {
-	order, err := uc.storage.EmployeeCompleteOrder(&model.EmployeeCompleteOrderReqStorage{
+func (uc *usecase) EmployeeCompleteOrder(ctx context.Context, req *model.EmployeeCompleteOrderReqUsecase) (*model.EmployeeCompleteOrderResUsecase, error) {
+	order, err := uc.storage.EmployeeCompleteOrder(ctx, &model.EmployeeCompleteOrderReqStorage{
 		OrderID: req.OrderID,
 	})
 	if err != nil {

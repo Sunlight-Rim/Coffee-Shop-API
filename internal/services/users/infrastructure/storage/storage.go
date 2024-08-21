@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"database/sql"
 	"time"
 
@@ -16,11 +17,11 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) CreateUser(req *model.CreateUserReqStorage) (*model.CreateUserResStorage, error) {
+func (s *storage) CreateUser(ctx context.Context, req *model.CreateUserReqStorage) (*model.CreateUserResStorage, error) {
 	// Check if email is busy
 	var emailBusy bool
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT true
 		FROM api.users
 		WHERE email = $1
@@ -37,7 +38,7 @@ func (s *storage) CreateUser(req *model.CreateUserReqStorage) (*model.CreateUser
 	// Add user
 	var userID uint64
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		INSERT INTO api.users(
 			username,
 			email,
@@ -58,10 +59,10 @@ func (s *storage) CreateUser(req *model.CreateUserReqStorage) (*model.CreateUser
 	return &model.CreateUserResStorage{UserID: userID}, nil
 }
 
-func (s *storage) CheckCredentials(req *model.CheckCredentialsReqStorage) (*model.CheckCredentialsResStorage, error) {
+func (s *storage) CheckCredentials(ctx context.Context, req *model.CheckCredentialsReqStorage) (*model.CheckCredentialsResStorage, error) {
 	var userID uint64
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT id
 		FROM api.users
 		WHERE
@@ -82,10 +83,10 @@ func (s *storage) CheckCredentials(req *model.CheckCredentialsReqStorage) (*mode
 	return &model.CheckCredentialsResStorage{UserID: userID}, nil
 }
 
-func (s *storage) GetMe(req *model.GetMeReqStorage) (*model.GetMeResStorage, error) {
+func (s *storage) GetMe(ctx context.Context, req *model.GetMeReqStorage) (*model.GetMeResStorage, error) {
 	var user model.User
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT
 			id,
 			username,
@@ -107,10 +108,10 @@ func (s *storage) GetMe(req *model.GetMeReqStorage) (*model.GetMeResStorage, err
 	return &model.GetMeResStorage{User: &user}, nil
 }
 
-func (s *storage) ChangePassword(req *model.ChangePasswordReqStorage) error {
+func (s *storage) ChangePassword(ctx context.Context, req *model.ChangePasswordReqStorage) error {
 	var changed bool
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		UPDATE api.users
 		SET password_hash = $1
 		WHERE
@@ -133,13 +134,13 @@ func (s *storage) ChangePassword(req *model.ChangePasswordReqStorage) error {
 }
 
 // DeleteMe provides user soft delete.
-func (s *storage) DeleteMe(req *model.DeleteMeReqStorage) (*model.DeleteMeResStorage, error) {
+func (s *storage) DeleteMe(ctx context.Context, req *model.DeleteMeReqStorage) (*model.DeleteMeResStorage, error) {
 	var (
 		user      model.User
 		deletedAt *time.Time
 	)
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT
 			id,
 			username,
@@ -164,7 +165,7 @@ func (s *storage) DeleteMe(req *model.DeleteMeReqStorage) (*model.DeleteMeResSto
 		return nil, errors.Wrapf(errors.UserAlreadyDeleted, "already deleted at %v", *deletedAt)
 	}
 
-	if _, err := s.db.Exec(`
+	if _, err := s.db.ExecContext(ctx, `
 		UPDATE api.users
 		SET deleted_at = $1
 		WHERE id = $2

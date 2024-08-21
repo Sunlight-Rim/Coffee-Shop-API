@@ -31,7 +31,7 @@ func (h *handler) signup(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	user, err := h.uc.Signup(&model.SignupReqUsecase{
+	user, err := h.uc.Signup(c.Request().Context(), &model.SignupReqUsecase{
 		Username: req.Username,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -60,7 +60,7 @@ func (h *handler) signin(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	tokens, err := h.uc.Signin(&model.SigninReqUsecase{
+	tokens, err := h.uc.Signin(c.Request().Context(), &model.SigninReqUsecase{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -85,7 +85,7 @@ func (h *handler) refresh(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	tokens, err := h.uc.Refresh(&model.RefreshReqUsecase{
+	tokens, err := h.uc.Refresh(c.Request().Context(), &model.RefreshReqUsecase{
 		RefreshToken: req.RefreshToken,
 	})
 	if err != nil {
@@ -119,7 +119,7 @@ func (h *handler) signoutAll(c echo.Context) (err error) {
 	req = signoutAllReq(c)
 
 	// Call usecase
-	tokens, err := h.uc.SignoutAll(&model.SignoutAllReqUsecase{
+	tokens, err := h.uc.SignoutAll(c.Request().Context(), &model.SignoutAllReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -148,7 +148,7 @@ func (h *handler) getMe(c echo.Context) (err error) {
 	req = getMeReq(c)
 
 	// Call usecase
-	user, err := h.uc.GetMe(&model.GetMeReqUsecase{
+	user, err := h.uc.GetMe(c.Request().Context(), &model.GetMeReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -174,7 +174,7 @@ func (h *handler) changePassword(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	if err := h.uc.ChangePassword(&model.ChangePasswordReqUsecase{
+	if err := h.uc.ChangePassword(c.Request().Context(), &model.ChangePasswordReqUsecase{
 		UserID:      req.UserID,
 		OldPassword: req.OldPassword,
 		NewPassword: req.NewPassword,
@@ -198,7 +198,7 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 	req = deleteMeReq(c)
 
 	// Call usecase
-	user, err := h.uc.DeleteMe(&model.DeleteMeReqUsecase{
+	user, err := h.uc.DeleteMe(c.Request().Context(), &model.DeleteMeReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {

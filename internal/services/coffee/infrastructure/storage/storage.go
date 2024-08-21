@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"database/sql"
 
 	"coffeeshop-api/internal/services/coffee/model"
@@ -22,8 +23,8 @@ func New(db *sql.DB) *storage {
 	return &storage{db: db}
 }
 
-func (s *storage) ListCoffees(req *model.ListCoffeesReqStorage) (*model.ListCoffeesResStorage, error) {
-	rows, err := s.db.Query(`
+func (s *storage) ListCoffees(ctx context.Context, req *model.ListCoffeesReqStorage) (*model.ListCoffeesResStorage, error) {
+	rows, err := s.db.QueryContext(ctx, `
 		SELECT
 			id,
 			title,
@@ -75,10 +76,10 @@ func (s *storage) ListCoffees(req *model.ListCoffeesReqStorage) (*model.ListCoff
 	return &model.ListCoffeesResStorage{CoffeeList: coffeeList}, nil
 }
 
-func (s *storage) GetCoffeeInfo(req *model.GetCoffeeInfoReqStorage) (*model.GetCoffeeInfoResStorage, error) {
+func (s *storage) GetCoffeeInfo(ctx context.Context, req *model.GetCoffeeInfoReqStorage) (*model.GetCoffeeInfoResStorage, error) {
 	var coffee model.Coffee
 
-	if err := s.db.QueryRow(`
+	if err := s.db.QueryRowContext(ctx, `
 		SELECT
 			id,
 			title,
@@ -104,8 +105,8 @@ func (s *storage) GetCoffeeInfo(req *model.GetCoffeeInfoReqStorage) (*model.GetC
 	return &model.GetCoffeeInfoResStorage{Coffee: &coffee}, nil
 }
 
-func (s *storage) ListToppings(req *model.ListToppingsReqStorage) (*model.ListToppingsResStorage, error) {
-	rows, err := s.db.Query(`
+func (s *storage) ListToppings(ctx context.Context, req *model.ListToppingsReqStorage) (*model.ListToppingsResStorage, error) {
+	rows, err := s.db.QueryContext(ctx, `
 		SELECT unnest(enum_range(NULL::api.topping))
 		LIMIT $1 OFFSET $2
 	`,

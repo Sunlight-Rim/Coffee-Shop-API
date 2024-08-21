@@ -31,7 +31,7 @@ func (h *handler) listCoffees(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	coffees, err := h.uc.ListCoffees(&model.ListCoffeesReqUsecase{
+	coffees, err := h.uc.ListCoffees(c.Request().Context(), &model.ListCoffeesReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
@@ -60,7 +60,7 @@ func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	coffee, err := h.uc.GetCoffeeInfo(&model.GetCoffeeInfoReqUsecase{
+	coffee, err := h.uc.GetCoffeeInfo(c.Request().Context(), &model.GetCoffeeInfoReqUsecase{
 		CoffeeID: req.CoffeeID,
 	})
 	if err != nil {
@@ -89,7 +89,7 @@ func (h *handler) listToppings(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	toppings, err := h.uc.ListToppings(&model.ListToppingsReqUsecase{
+	toppings, err := h.uc.ListToppings(c.Request().Context(), &model.ListToppingsReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
