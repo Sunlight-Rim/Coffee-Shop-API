@@ -99,6 +99,10 @@ func (s *storage) GetCoffeeInfo(ctx context.Context, req *model.GetCoffeeInfoReq
 		&coffee.Weight,
 		&coffee.Price,
 	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.Wrap(errors.CoffeeNotExists, "coffee not found")
+		}
+
 		return nil, errors.Wrap(err, "get coffee")
 	}
 
