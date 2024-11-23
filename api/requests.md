@@ -2,7 +2,6 @@
 
 
 ### Create new account
-
 ```bash
 curl -X POST http://localhost:1337/api/auth/signup \
     -H 'Accept: application/json' \
@@ -86,7 +85,7 @@ curl -X POST http://localhost:1337/api/orders \
             ]
     }'
 ```
-### Connect to Server-Sent Events endpoint for get norifications about orders statuses updates
+### Connect to Server-Sent Events endpoint for get orders statuses notifications
 ```bash
 curl -N http://localhost:1337/api/events/orders/statuses \
     -H 'Accept: text/event-stream'
@@ -121,13 +120,13 @@ curl -X GET http://localhost:1337/api/orders/1 \
 # DEAUTH
 
 
-### Delete your account (revoke access tokens not implemented)
+### Delete your account
 ```bash
 curl -X DELETE http://localhost:1337/api/user \
     -H 'Accept: application/json'
 ```
 
-### Singnout from this session
+### Signout from active session
 ```bash
 curl -X POST http://localhost:1337/api/auth/signout \
     -H 'Accept: application/json'
