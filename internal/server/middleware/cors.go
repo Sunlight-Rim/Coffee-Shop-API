@@ -11,7 +11,7 @@ var CORS echo.MiddlewareFunc
 func initCORS() {
 	CORS = echomw.CORSWithConfig(echomw.CORSConfig{
 		AllowOrigins: []string{
-			"http://localhost:8080",
+			"http://localhost:8080", // For Swagger
 			"http://localhost:1337",
 		},
 		AllowHeaders:     []string{echo.HeaderContentType, "*"},

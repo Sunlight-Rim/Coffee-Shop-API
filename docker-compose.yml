@@ -13,6 +13,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - prometheus
 
   postgres:
     container_name: coffeeshop-postgres
@@ -23,8 +24,8 @@ services:
       - POSTGRES_PASSWORD=coffeeshop
     ports:
       - 5432:5432
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    # volumes:
+    #   - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   redis:
     container_name: coffeeshop-redis

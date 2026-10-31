@@ -12,6 +12,7 @@ import (
 type Options struct {
 	Host        string
 	Port        string
+	Username    string
 	Password    string
 	Database    int
 	PingTimeout time.Duration
@@ -21,6 +22,7 @@ type Options struct {
 func Connect(opts *Options) (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", opts.Host, opts.Port),
+		Username: opts.Username,
 		Password: opts.Password,
 		DB:       opts.Database,
 	})

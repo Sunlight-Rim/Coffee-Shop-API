@@ -11,8 +11,18 @@ json:
 
 # Generate documentation
 swagger:
-	@docker run --rm -v .:/source -w /source quay.io/goswagger/swagger:0.30.5 generate spec -m -o ./docs/swagger.json
+	@docker run --rm -v .:/source -w /source quay.io/goswagger/swagger:latest generate spec -m -o ./docs/swagger.json
 
 # Generate custom errors
 errors:
 	@go run cmd/errgen/errgen.go
+
+# Run tests
+test:
+	@go test ./...
+
+# Add migration
+%:
+	@:
+migration:
+	@goose -dir migrations create $(filter-out $@,$(MAKECMDGOALS)) sql

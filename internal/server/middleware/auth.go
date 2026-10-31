@@ -16,7 +16,7 @@ var (
 	// access token and puts the claims to the context.
 	Auth echo.MiddlewareFunc
 
-	// Auth middleware validates employee Bearer authorization token.
+	// AuthEmployee middleware validates employee Bearer authorization token.
 	AuthEmployee echo.MiddlewareFunc
 )
 

@@ -1,0 +1,5 @@
+-- +goose Up
+CREATE SCHEMA IF NOT EXISTS api;
+
+-- +goose Down
+DROP SCHEMA IF EXISTS api CASCADE;

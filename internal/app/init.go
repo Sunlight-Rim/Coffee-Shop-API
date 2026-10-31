@@ -9,6 +9,7 @@ import (
 	"coffeeshop-api/pkg/redis"
 	"coffeeshop-api/pkg/tools"
 
+	"github.com/pressly/goose/v3"
 	goRedis "github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -34,21 +35,21 @@ func readConfig() {
 	}
 }
 
-// Init application tools.
-func initTools() {
-	tools.Init(tools.Options{
-		CookieDomain:   viper.GetString("cookie.domain"),
-		CookieSecure:   viper.GetBool("cookie.secure"),
-		CookieHttpOnly: viper.GetBool("cookie.http_only"),
-	})
-}
-
 // Initialize logger.
 func initLogger() {
 	logger.Init(
 		viper.GetString("logger.level"),
 		viper.GetBool("logger.json"),
 	)
+}
+
+// Initialize application tools.
+func initTools() {
+	tools.Init(tools.Options{
+		CookieDomain:   viper.GetString("cookie.domain"),
+		CookieSecure:   viper.GetBool("cookie.secure"),
+		CookieHttpOnly: viper.GetBool("cookie.http_only"),
+	})
 }
 
 // Connect main storage.
@@ -78,6 +79,7 @@ func connectCache() *goRedis.Client {
 	client, err := redis.Connect(&redis.Options{
 		Host:        viper.GetString("database.redis.host"),
 		Port:        viper.GetString("database.redis.port"),
+		Username:    viper.GetString("database.redis.user"),
 		Password:    viper.GetString("database.redis.password"),
 		Database:    viper.GetInt("database.redis.database"),
 		PingTimeout: viper.GetDuration("database.redis.ping_timeout_sec"),
@@ -87,4 +89,15 @@ func connectCache() *goRedis.Client {
 	}
 
 	return client
+}
+
+// Run migrations.
+func runMigrations(db *sql.DB) {
+	if err := goose.SetDialect("postgres"); err != nil {
+		logrus.Fatalf("connect set goose dialect: %v", err)
+	}
+
+	if err := goose.Up(db, "./migrations"); err != nil {
+		logrus.Fatalf("connect run migrations: %v", err)
+	}
 }

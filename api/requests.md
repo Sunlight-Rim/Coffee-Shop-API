@@ -71,7 +71,7 @@ curl -X GET http://localhost:1337/api/toppings \
 # ORDERS
 
 
-### Create a coffee order (payment not implemented thus not needed)
+### Create a coffee order (payment not implemented)
 ```bash
 curl -X POST http://localhost:1337/api/orders \
     -H 'Accept: application/json' \

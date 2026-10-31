@@ -1,5 +1,5 @@
 /*
-Package app Coffee Shop API
+Coffee Shop API
 
 Example Go application with Clean Architecture pattern.
 Provides user registration, login and ordering of coffee.

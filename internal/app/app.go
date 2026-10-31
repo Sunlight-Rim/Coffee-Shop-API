@@ -27,6 +27,9 @@ func Start() {
 		cache   = connectCache()
 	)
 
+	// Run migrations
+	runMigrations(storage)
+
 	// Init server
 	s := server.New()
 
