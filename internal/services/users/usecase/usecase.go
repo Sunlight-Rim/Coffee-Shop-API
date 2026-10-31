@@ -4,6 +4,7 @@ import (
 	"coffeeshop-api/internal/services/users/model"
 	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/metrics"
 	"coffeeshop-api/pkg/tools"
 	"context"
 	"strings"
@@ -43,6 +44,8 @@ func (uc *usecase) Signup(ctx context.Context, req *model.SignupReqUsecase) (*mo
 	if err != nil {
 		return nil, errors.Wrap(err, "create user")
 	}
+
+	metrics.UserCreatedCounter.Inc()
 
 	return &model.SignupResUsecase{
 		UserID: user.UserID,

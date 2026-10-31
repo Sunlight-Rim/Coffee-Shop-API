@@ -30,6 +30,7 @@ import (
 	"coffeeshop-api/pkg/errors"
 
 	"github.com/labstack/echo/v4"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Register basic application routes.
@@ -58,4 +59,15 @@ func (s *server) register() {
 	s.ApiGroup.GET("/health", func(c echo.Context) error {
 		return c.JSONBlob(http.StatusOK, []byte("Success!"))
 	})
+
+	/*
+		swagger:route GET /api/metrics Web metricsNull
+
+		Get Prometheus metrics.
+
+		schemes: https
+		responses:
+			200: MetricsResponse
+	*/
+	s.ApiGroup.Add(http.MethodGet, "/metrics", echo.WrapHandler(promhttp.Handler()))
 }
