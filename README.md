@@ -51,13 +51,6 @@ Prometheus available at [localhost:9090](http://localhost:9090/)
 
 Pprof available at [localhost:6060](http://localhost:6060/)
 
-### Testing
-
-To run unit tests:
-```bash
-make test
-```
-
 ### Migrations
 
 Migrations are available via Goose and placed in **[migrations](migrations/)** dir:
@@ -70,4 +63,11 @@ make migration migration_name
 To generate custom errors add their descriptions to the **[errors.json](configs/errors.json)** file and run:
 ```bash
 make errors
+```
+
+### Testing
+
+To run unit tests:
+```bash
+make test
 ```
