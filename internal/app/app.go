@@ -49,5 +49,13 @@ func Start() {
 	defer stop()
 
 	<-ctx.Done()
+
+	if err := storage.Close(); err != nil {
+		logger.Errorf("Close DB: %s", err)
+	}
+	if err := cache.Close(); err != nil {
+		logger.Errorf("Close cache: %s", err)
+	}
+
 	logger.Fatalf("Shutdown: %v", s.Shutdown(ctx))
 }
