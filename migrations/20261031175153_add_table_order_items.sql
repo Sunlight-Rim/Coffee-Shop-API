@@ -1,4 +1,5 @@
 -- +goose Up
+-- Enums are not a good practice, but it's not critical here.
 CREATE TYPE api.topping AS ENUM (
     'vanilla',
     'strawberry',

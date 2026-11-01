@@ -11,7 +11,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var tracer trace.Tracer
+var tracer = otel.Tracer("")
 
 // Init OpenTelemetry pipeline.
 func Init(serviceName, jaegerEndpoint string) (*sdktrace.TracerProvider, error) {

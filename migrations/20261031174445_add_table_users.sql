@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS api.users (
     email           VARCHAR(200) UNIQUE NOT NULL,
     phone           BIGINT NOT NULL,
     password_hash   BYTEA NOT NULL,
-    deleted_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+    deleted_at      TIMESTAMP WITHOUT TIME ZONE,
     created_at      TIMESTAMP WITHOUT TIME ZONE DEFAULT current_timestamp NOT NULL
 );
 

@@ -70,6 +70,11 @@ make errors
 
 ### Testing
 
+To generate mocks:
+```bash
+make mocks
+```
+
 To run unit tests:
 ```bash
 make test

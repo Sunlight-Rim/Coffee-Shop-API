@@ -5,6 +5,8 @@ import (
 	"context"
 )
 
+//go:generate mockery --all --output=../mocks
+
 // Use cases
 type IUsecase interface {
 	Signup(context.Context, *SignupReqUsecase) (*SignupResUsecase, error)

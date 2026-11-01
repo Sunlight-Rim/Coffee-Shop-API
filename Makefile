@@ -17,6 +17,10 @@ swagger:
 errors:
 	@go run cmd/errgen/errgen.go
 
+# Generate mocks
+mocks:
+	go generate ./...
+
 # Run tests
 test:
 	@go test ./...
