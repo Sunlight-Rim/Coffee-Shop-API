@@ -7,6 +7,7 @@ import (
 
 	"coffeeshop-api/internal/services/users/model"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/tracer"
 )
 
 type storage struct {
@@ -18,6 +19,9 @@ func New(db *sql.DB) *storage {
 }
 
 func (s *storage) CreateUser(ctx context.Context, req *model.CreateUserReqStorage) (*model.CreateUserResStorage, error) {
+	ctx, span := tracer.Start(ctx, "CreateUser")
+	defer span.End()
+
 	// Check if email is busy
 	var emailBusy bool
 
@@ -60,6 +64,9 @@ func (s *storage) CreateUser(ctx context.Context, req *model.CreateUserReqStorag
 }
 
 func (s *storage) CheckCredentials(ctx context.Context, req *model.CheckCredentialsReqStorage) (*model.CheckCredentialsResStorage, error) {
+	ctx, span := tracer.Start(ctx, "CheckCredentials")
+	defer span.End()
+
 	var userID uint64
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -84,6 +91,9 @@ func (s *storage) CheckCredentials(ctx context.Context, req *model.CheckCredenti
 }
 
 func (s *storage) GetMe(ctx context.Context, req *model.GetMeReqStorage) (*model.GetMeResStorage, error) {
+	ctx, span := tracer.Start(ctx, "GetMe")
+	defer span.End()
+
 	var user model.User
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -109,6 +119,9 @@ func (s *storage) GetMe(ctx context.Context, req *model.GetMeReqStorage) (*model
 }
 
 func (s *storage) ChangePassword(ctx context.Context, req *model.ChangePasswordReqStorage) error {
+	ctx, span := tracer.Start(ctx, "ChangePassword")
+	defer span.End()
+
 	var changed bool
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -135,6 +148,9 @@ func (s *storage) ChangePassword(ctx context.Context, req *model.ChangePasswordR
 
 // DeleteMe provides user soft delete.
 func (s *storage) DeleteMe(ctx context.Context, req *model.DeleteMeReqStorage) (*model.DeleteMeResStorage, error) {
+	ctx, span := tracer.Start(ctx, "DeleteMe")
+	defer span.End()
+
 	var (
 		user      model.User
 		deletedAt *time.Time

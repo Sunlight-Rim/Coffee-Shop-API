@@ -4,6 +4,7 @@ import (
 	"coffeeshop-api/internal/services/users/model"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"coffeeshop-api/pkg/tracer"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,6 +18,9 @@ func New(uc model.IUsecase) *handler {
 }
 
 func (h *handler) signup(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "signup")
+	defer span.End()
+
 	var (
 		req *model.SignupReqDelivery
 		res *model.SignupResDelivery
@@ -31,7 +35,7 @@ func (h *handler) signup(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	user, err := h.uc.Signup(c.Request().Context(), &model.SignupReqUsecase{
+	user, err := h.uc.Signup(ctx, &model.SignupReqUsecase{
 		Username: req.Username,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -49,6 +53,9 @@ func (h *handler) signup(c echo.Context) (err error) {
 }
 
 func (h *handler) signin(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "signin")
+	defer span.End()
+
 	var req *model.SigninReqDelivery
 
 	// Send response
@@ -60,7 +67,7 @@ func (h *handler) signin(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	tokens, err := h.uc.Signin(c.Request().Context(), &model.SigninReqUsecase{
+	tokens, err := h.uc.Signin(ctx, &model.SigninReqUsecase{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -74,6 +81,9 @@ func (h *handler) signin(c echo.Context) (err error) {
 }
 
 func (h *handler) refresh(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "refresh")
+	defer span.End()
+
 	var req *model.RefreshReqDelivery
 
 	// Send response
@@ -85,7 +95,7 @@ func (h *handler) refresh(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	tokens, err := h.uc.Refresh(c.Request().Context(), &model.RefreshReqUsecase{
+	tokens, err := h.uc.Refresh(ctx, &model.RefreshReqUsecase{
 		RefreshToken: req.RefreshToken,
 	})
 	if err != nil {
@@ -98,6 +108,9 @@ func (h *handler) refresh(c echo.Context) (err error) {
 }
 
 func (h *handler) signout(c echo.Context) (err error) {
+	_, span := tracer.Start(c.Request().Context(), "signout")
+	defer span.End()
+
 	// Send response
 	defer func() { tools.SendResponse(c, nil, err) }()
 
@@ -107,6 +120,9 @@ func (h *handler) signout(c echo.Context) (err error) {
 }
 
 func (h *handler) signoutAll(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "signoutAll")
+	defer span.End()
+
 	var (
 		req *model.SignoutAllReqDelivery
 		res *model.SignoutAllResDelivery
@@ -119,7 +135,7 @@ func (h *handler) signoutAll(c echo.Context) (err error) {
 	req = signoutAllReq(c)
 
 	// Call usecase
-	tokens, err := h.uc.SignoutAll(c.Request().Context(), &model.SignoutAllReqUsecase{
+	tokens, err := h.uc.SignoutAll(ctx, &model.SignoutAllReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -136,6 +152,9 @@ func (h *handler) signoutAll(c echo.Context) (err error) {
 }
 
 func (h *handler) getMe(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "getMe")
+	defer span.End()
+
 	var (
 		req *model.GetMeReqDelivery
 		res *model.GetMeResDelivery
@@ -148,7 +167,7 @@ func (h *handler) getMe(c echo.Context) (err error) {
 	req = getMeReq(c)
 
 	// Call usecase
-	user, err := h.uc.GetMe(c.Request().Context(), &model.GetMeReqUsecase{
+	user, err := h.uc.GetMe(ctx, &model.GetMeReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -163,6 +182,9 @@ func (h *handler) getMe(c echo.Context) (err error) {
 }
 
 func (h *handler) changePassword(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "changePassword")
+	defer span.End()
+
 	var req *model.ChangePasswordReqDelivery
 
 	// Send response
@@ -174,7 +196,7 @@ func (h *handler) changePassword(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	if err := h.uc.ChangePassword(c.Request().Context(), &model.ChangePasswordReqUsecase{
+	if err := h.uc.ChangePassword(ctx, &model.ChangePasswordReqUsecase{
 		UserID:      req.UserID,
 		OldPassword: req.OldPassword,
 		NewPassword: req.NewPassword,
@@ -186,6 +208,9 @@ func (h *handler) changePassword(c echo.Context) (err error) {
 }
 
 func (h *handler) deleteMe(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "deleteMe")
+	defer span.End()
+
 	var (
 		req *model.DeleteMeReqDelivery
 		res *model.DeleteMeResDelivery
@@ -198,7 +223,7 @@ func (h *handler) deleteMe(c echo.Context) (err error) {
 	req = deleteMeReq(c)
 
 	// Call usecase
-	user, err := h.uc.DeleteMe(c.Request().Context(), &model.DeleteMeReqUsecase{
+	user, err := h.uc.DeleteMe(ctx, &model.DeleteMeReqUsecase{
 		UserID: req.UserID,
 	})
 	if err != nil {

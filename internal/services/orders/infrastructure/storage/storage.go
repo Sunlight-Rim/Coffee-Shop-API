@@ -6,6 +6,7 @@ import (
 
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/tracer"
 
 	"github.com/lib/pq"
 	logger "github.com/sirupsen/logrus"
@@ -22,6 +23,9 @@ func New(db *sql.DB) *storage {
 }
 
 func (s *storage) ListOrders(ctx context.Context, req *model.ListOrdersReqStorage) (*model.ListOrdersResStorage, error) {
+	ctx, span := tracer.Start(ctx, "ListOrders")
+	defer span.End()
+
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT
 			id,
@@ -73,6 +77,9 @@ func (s *storage) ListOrders(ctx context.Context, req *model.ListOrdersReqStorag
 }
 
 func (s *storage) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqStorage) (*model.GetOrderInfoResStorage, error) {
+	ctx, span := tracer.Start(ctx, "GetOrderInfo")
+	defer span.End()
+
 	var order model.GetOrderInfoOrder
 
 	// Get order
@@ -148,6 +155,9 @@ func (s *storage) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqSt
 }
 
 func (s *storage) CheckCoffeeIDsExists(ctx context.Context, req *model.CheckCoffeeIDsExistsReqStorage) error {
+	ctx, span := tracer.Start(ctx, "CheckCoffeeIDsExists")
+	defer span.End()
+
 	var count int
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -168,6 +178,9 @@ func (s *storage) CheckCoffeeIDsExists(ctx context.Context, req *model.CheckCoff
 }
 
 func (s *storage) CheckToppingsExists(ctx context.Context, req *model.CheckToppingsExistsReqStorage) error {
+	ctx, span := tracer.Start(ctx, "CheckToppingsExists")
+	defer span.End()
+
 	var count int
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -188,6 +201,9 @@ func (s *storage) CheckToppingsExists(ctx context.Context, req *model.CheckToppi
 }
 
 func (s *storage) CreateOrder(ctx context.Context, req *model.CreateOrderReqStorage) (_ *model.CreateOrderResStorage, err error) {
+	ctx, span := tracer.Start(ctx, "CreateOrder")
+	defer span.End()
+
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "start transaction")
@@ -257,6 +273,9 @@ func (s *storage) CreateOrder(ctx context.Context, req *model.CreateOrderReqStor
 }
 
 func (s *storage) CancelOrder(ctx context.Context, req *model.CancelOrderReqStorage) (*model.CancelOrderResStorage, error) {
+	ctx, span := tracer.Start(ctx, "CancelOrder")
+	defer span.End()
+
 	var order model.CancelOrderResStorage
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -286,6 +305,8 @@ func (s *storage) CancelOrder(ctx context.Context, req *model.CancelOrderReqStor
 		return nil, errors.Wrap(errors.CannotCancelThisOrder, "order cannot be cancelled")
 	}
 
+	// Here may be status race condition, but its acceptable
+
 	if err := s.db.QueryRowContext(ctx, `
 		UPDATE api.orders
 		SET "status" = 'cancelled'
@@ -301,6 +322,9 @@ func (s *storage) CancelOrder(ctx context.Context, req *model.CancelOrderReqStor
 }
 
 func (s *storage) EmployeeCompleteOrder(ctx context.Context, req *model.EmployeeCompleteOrderReqStorage) (*model.EmployeeCompleteOrderResStorage, error) {
+	ctx, span := tracer.Start(ctx, "EmployeeCompleteOrder")
+	defer span.End()
+
 	var order model.EmployeeCompleteOrderResStorage
 
 	if err := s.db.QueryRowContext(ctx, `

@@ -10,7 +10,7 @@ import (
 func Init(level string, jsonFormat bool) {
 	logLevel, err := logger.ParseLevel(level)
 	if err != nil {
-		logger.Fatalf("parse logger level: %v", err)
+		logger.Fatalf("Parse logger level: %v", err)
 	}
 
 	logger.SetLevel(logLevel)

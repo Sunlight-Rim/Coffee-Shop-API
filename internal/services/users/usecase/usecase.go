@@ -6,6 +6,7 @@ import (
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/metrics"
 	"coffeeshop-api/pkg/tools"
+	"coffeeshop-api/pkg/tracer"
 	"context"
 	"strings"
 )
@@ -31,6 +32,9 @@ func New(
 
 // Signup creates user in database.
 func (uc *usecase) Signup(ctx context.Context, req *model.SignupReqUsecase) (*model.SignupResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "Signup")
+	defer span.End()
+
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -54,6 +58,9 @@ func (uc *usecase) Signup(ctx context.Context, req *model.SignupReqUsecase) (*mo
 
 // Signin checks credentials and generates tokens.
 func (uc *usecase) Signin(ctx context.Context, req *model.SigninReqUsecase) (*model.SigninResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "Signin")
+	defer span.End()
+
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -76,7 +83,7 @@ func (uc *usecase) Signin(ctx context.Context, req *model.SigninReqUsecase) (*mo
 	}
 
 	// Save refresh token
-	if err := uc.cache.SaveUserRefreshToken(user.UserID, tokensPair.RefreshToken); err != nil {
+	if err := uc.cache.SaveUserRefreshToken(ctx, user.UserID, tokensPair.RefreshToken); err != nil {
 		return nil, errors.Wrap(err, "save refresh token")
 	}
 
@@ -87,6 +94,9 @@ func (uc *usecase) Signin(ctx context.Context, req *model.SigninReqUsecase) (*mo
 
 // Refresh revokes refresh token and updates tokens.
 func (uc *usecase) Refresh(ctx context.Context, req *model.RefreshReqUsecase) (*model.RefreshResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "Refresh")
+	defer span.End()
+
 	// Parse refresh token
 	claims, err := uc.token.Parse(req.RefreshToken)
 	if err != nil {
@@ -94,7 +104,7 @@ func (uc *usecase) Refresh(ctx context.Context, req *model.RefreshReqUsecase) (*
 	}
 
 	// Revoke refresh token
-	if err := uc.cache.RevokeUserRefreshToken(claims.UserID, req.RefreshToken); err != nil {
+	if err := uc.cache.RevokeUserRefreshToken(ctx, claims.UserID, req.RefreshToken); err != nil {
 		return nil, errors.Wrap(err, "revoke refresh token")
 	}
 
@@ -105,7 +115,7 @@ func (uc *usecase) Refresh(ctx context.Context, req *model.RefreshReqUsecase) (*
 	}
 
 	// Save refresh token
-	if err := uc.cache.SaveUserRefreshToken(claims.UserID, tokensPair.RefreshToken); err != nil {
+	if err := uc.cache.SaveUserRefreshToken(ctx, claims.UserID, tokensPair.RefreshToken); err != nil {
 		return nil, errors.Wrap(err, "save refresh token")
 	}
 
@@ -116,8 +126,11 @@ func (uc *usecase) Refresh(ctx context.Context, req *model.RefreshReqUsecase) (*
 
 // SignoutAll revokes all refresh tokens.
 func (uc *usecase) SignoutAll(ctx context.Context, req *model.SignoutAllReqUsecase) (*model.SignoutAllResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "SignoutAll")
+	defer span.End()
+
 	// Revoke all refresh tokens
-	refreshTokens, err := uc.cache.RevokeAllUserRefreshTokens(req.UserID)
+	refreshTokens, err := uc.cache.RevokeAllUserRefreshTokens(ctx, req.UserID)
 	if err != nil {
 		return nil, errors.Wrap(err, "revoke all refresh tokens")
 	}
@@ -129,6 +142,9 @@ func (uc *usecase) SignoutAll(ctx context.Context, req *model.SignoutAllReqUseca
 
 // GetMe returns user account inforamtion.
 func (uc *usecase) GetMe(ctx context.Context, req *model.GetMeReqUsecase) (*model.GetMeResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "GetMe")
+	defer span.End()
+
 	// Get user
 	user, err := uc.storage.GetMe(ctx, &model.GetMeReqStorage{
 		UserID: req.UserID,
@@ -144,6 +160,9 @@ func (uc *usecase) GetMe(ctx context.Context, req *model.GetMeReqUsecase) (*mode
 
 // ChangePassword updates user password.
 func (uc *usecase) ChangePassword(ctx context.Context, req *model.ChangePasswordReqUsecase) error {
+	ctx, span := tracer.Start(ctx, "ChangePassword")
+	defer span.End()
+
 	if err := req.Validate(); err != nil {
 		return errors.Wrap(err, "request validation")
 	}
@@ -162,8 +181,11 @@ func (uc *usecase) ChangePassword(ctx context.Context, req *model.ChangePassword
 
 // DeleteMe deletes user account.
 func (uc *usecase) DeleteMe(ctx context.Context, req *model.DeleteMeReqUsecase) (*model.DeleteMeResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "DeleteMe")
+	defer span.End()
+
 	// Revoke user all refresh tokens
-	if _, err := uc.cache.RevokeAllUserRefreshTokens(req.UserID); err != nil {
+	if _, err := uc.cache.RevokeAllUserRefreshTokens(ctx, req.UserID); err != nil {
 		return nil, errors.Wrap(err, "revoke all refresh tokens")
 	}
 

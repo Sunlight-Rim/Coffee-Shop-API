@@ -16,6 +16,11 @@
         "json": false
     },
 
+    "tracing": {
+        "service_name": "coffeeshop-api",
+        "jeager_endpoint": "jaeger:4318"
+    },
+
     "database": {
         "postgres": {
             "host": "postgres",
@@ -34,7 +39,7 @@
         "redis": {
             "host": "redis",
             "port": 6379,
-            "user": "coffeeshop",
+            "user": "default",
             "password": "coffeeshop",
             "database": 0,
             "ping_timeout_sec": 10

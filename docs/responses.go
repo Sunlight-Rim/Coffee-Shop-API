@@ -29,6 +29,24 @@ type ErrorsListResponse struct {
 	} `json:"body"`
 }
 
+// A list of Prometheus metrics.
+// swagger:response MetricsResponse
+type MetricsResponse struct {
+	// in: body
+	Body struct {
+		Response any `json:"metrics"`
+	} `json:"body"`
+}
+
+// A list of OpenTelemetry traces.
+// swagger:response TracesResponse
+type TracesResponse struct {
+	// in: body
+	Body struct {
+		Response any `json:"traces"`
+	} `json:"body"`
+}
+
 // Informs whether the service is alive or not.
 // swagger:response HealthResponse
 // in: body

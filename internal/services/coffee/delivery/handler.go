@@ -4,6 +4,7 @@ import (
 	"coffeeshop-api/internal/services/coffee/model"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"coffeeshop-api/pkg/tracer"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,6 +18,9 @@ func New(uc model.IUsecase) *handler {
 }
 
 func (h *handler) listCoffees(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "listCoffees")
+	defer span.End()
+
 	var (
 		req *model.ListCoffeesReqDelivery
 		res *model.ListCoffeesResDelivery
@@ -31,7 +35,7 @@ func (h *handler) listCoffees(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	coffees, err := h.uc.ListCoffees(c.Request().Context(), &model.ListCoffeesReqUsecase{
+	coffees, err := h.uc.ListCoffees(ctx, &model.ListCoffeesReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {
@@ -46,6 +50,9 @@ func (h *handler) listCoffees(c echo.Context) (err error) {
 }
 
 func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "getCoffeeInfo")
+	defer span.End()
+
 	var (
 		req *model.GetCoffeeInfoReqDelivery
 		res *model.GetCoffeeInfoResDelivery
@@ -60,7 +67,7 @@ func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	coffee, err := h.uc.GetCoffeeInfo(c.Request().Context(), &model.GetCoffeeInfoReqUsecase{
+	coffee, err := h.uc.GetCoffeeInfo(ctx, &model.GetCoffeeInfoReqUsecase{
 		CoffeeID: req.CoffeeID,
 	})
 	if err != nil {
@@ -75,6 +82,9 @@ func (h *handler) getCoffeeInfo(c echo.Context) (err error) {
 }
 
 func (h *handler) listToppings(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "listToppings")
+	defer span.End()
+
 	var (
 		req *model.ListToppingsReqDelivery
 		res *model.ListToppingsResDelivery
@@ -89,7 +99,7 @@ func (h *handler) listToppings(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	toppings, err := h.uc.ListToppings(c.Request().Context(), &model.ListToppingsReqUsecase{
+	toppings, err := h.uc.ListToppings(ctx, &model.ListToppingsReqUsecase{
 		Offset: req.Offset,
 	})
 	if err != nil {

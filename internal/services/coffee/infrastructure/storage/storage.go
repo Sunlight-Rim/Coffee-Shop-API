@@ -6,6 +6,7 @@ import (
 
 	"coffeeshop-api/internal/services/coffee/model"
 	"coffeeshop-api/pkg/errors"
+	"coffeeshop-api/pkg/tracer"
 
 	logger "github.com/sirupsen/logrus"
 )
@@ -24,6 +25,9 @@ func New(db *sql.DB) *storage {
 }
 
 func (s *storage) ListCoffees(ctx context.Context, req *model.ListCoffeesReqStorage) (*model.ListCoffeesResStorage, error) {
+	ctx, span := tracer.Start(ctx, "ListCoffees")
+	defer span.End()
+
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT
 			id,
@@ -77,6 +81,9 @@ func (s *storage) ListCoffees(ctx context.Context, req *model.ListCoffeesReqStor
 }
 
 func (s *storage) GetCoffeeInfo(ctx context.Context, req *model.GetCoffeeInfoReqStorage) (*model.GetCoffeeInfoResStorage, error) {
+	ctx, span := tracer.Start(ctx, "GetCoffeeInfo")
+	defer span.End()
+
 	var coffee model.Coffee
 
 	if err := s.db.QueryRowContext(ctx, `
@@ -110,6 +117,9 @@ func (s *storage) GetCoffeeInfo(ctx context.Context, req *model.GetCoffeeInfoReq
 }
 
 func (s *storage) ListToppings(ctx context.Context, req *model.ListToppingsReqStorage) (*model.ListToppingsResStorage, error) {
+	ctx, span := tracer.Start(ctx, "ListToppings")
+	defer span.End()
+
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT unnest(enum_range(NULL::api.topping))
 		LIMIT $1 OFFSET $2

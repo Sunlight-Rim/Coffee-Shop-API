@@ -70,4 +70,15 @@ func (s *server) register() {
 			200: MetricsResponse
 	*/
 	s.ApiGroup.Add(http.MethodGet, "/metrics", echo.WrapHandler(promhttp.Handler()))
+
+	/*
+		swagger:route GET /api/traces Web tracesNull
+
+		Get OpenTelemetry traces.
+
+		schemes: https
+		responses:
+			200: TracesResponse
+	*/
+	// s.ApiGroup.Add(http.MethodGet, "/traces", echo.WrapHandler(otelhttp.NewHandler(s.echo.Server.Handler, "/")))
 }

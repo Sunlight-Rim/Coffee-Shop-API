@@ -1,6 +1,6 @@
 # Build stage
 
-FROM golang:alpine3.19 AS builder
+FROM golang:alpine3.24 AS builder
 
 WORKDIR /app
 
@@ -18,5 +18,6 @@ RUN mkdir configs
 
 COPY --from=builder app/build/coffeeshop-api .
 COPY --from=builder app/configs/config.json configs/
+COPY --from=builder app/migrations migrations/
 
 CMD ["./coffeeshop-api"]

@@ -4,6 +4,7 @@ import (
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"
+	"coffeeshop-api/pkg/tracer"
 
 	"github.com/labstack/echo/v4"
 	"github.com/mailru/easyjson"
@@ -23,6 +24,9 @@ func New(uc model.IUsecase, hub *Hub) *handler {
 }
 
 func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "sseOrdersStatuses")
+	defer span.End()
+
 	// Parse request
 	req := ordersStatusesReq(c)
 
@@ -31,7 +35,7 @@ func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
 
 	// Unregister SSE client after context was done
 	go func() {
-		<-c.Request().Context().Done()
+		<-ctx.Done()
 		h.hub.unregisterClient(req.UserID)
 	}()
 
@@ -55,6 +59,9 @@ func (h *handler) sseOrdersStatuses(c echo.Context) (err error) {
 }
 
 func (h *handler) listOrders(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "listOrders")
+	defer span.End()
+
 	var (
 		req *model.ListOrdersReqDelivery
 		res *model.ListOrdersResDelivery
@@ -69,7 +76,7 @@ func (h *handler) listOrders(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	orders, err := h.uc.ListOrders(c.Request().Context(), &model.ListOrdersReqUsecase{
+	orders, err := h.uc.ListOrders(ctx, &model.ListOrdersReqUsecase{
 		UserID: req.UserID,
 		Offset: req.Offset,
 	})
@@ -85,6 +92,9 @@ func (h *handler) listOrders(c echo.Context) (err error) {
 }
 
 func (h *handler) getOrderInfo(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "getOrderInfo")
+	defer span.End()
+
 	var (
 		req *model.GetOrderInfoReqDelivery
 		res *model.GetOrderInfoResDelivery
@@ -99,7 +109,7 @@ func (h *handler) getOrderInfo(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.GetOrderInfo(c.Request().Context(), &model.GetOrderInfoReqUsecase{
+	order, err := h.uc.GetOrderInfo(ctx, &model.GetOrderInfoReqUsecase{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
 	})
@@ -115,6 +125,9 @@ func (h *handler) getOrderInfo(c echo.Context) (err error) {
 }
 
 func (h *handler) createOrder(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "createOrder")
+	defer span.End()
+
 	var (
 		req *model.CreateOrderReqDelivery
 		res *model.CreateOrderResDelivery
@@ -129,7 +142,7 @@ func (h *handler) createOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.CreateOrder(c.Request().Context(), &model.CreateOrderReqUsecase{
+	order, err := h.uc.CreateOrder(ctx, &model.CreateOrderReqUsecase{
 		UserID:  req.UserID,
 		Address: req.Address,
 		Items:   req.Items,
@@ -146,6 +159,9 @@ func (h *handler) createOrder(c echo.Context) (err error) {
 }
 
 func (h *handler) cancelOrder(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "cancelOrder")
+	defer span.End()
+
 	var (
 		req *model.CancelOrderReqDelivery
 		res *model.CancelOrderResDelivery
@@ -160,7 +176,7 @@ func (h *handler) cancelOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.CancelOrder(c.Request().Context(), &model.CancelOrderReqUsecase{
+	order, err := h.uc.CancelOrder(ctx, &model.CancelOrderReqUsecase{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
 	})
@@ -192,6 +208,9 @@ func (h *handler) cancelOrder(c echo.Context) (err error) {
 }
 
 func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
+	ctx, span := tracer.Start(c.Request().Context(), "employeeCompleteOrder")
+	defer span.End()
+
 	var (
 		req *model.EmployeeCompleteOrderReqDelivery
 		res *model.EmployeeCompleteOrderResDelivery
@@ -206,7 +225,7 @@ func (h *handler) employeeCompleteOrder(c echo.Context) (err error) {
 	}
 
 	// Call usecase
-	order, err := h.uc.EmployeeCompleteOrder(c.Request().Context(), &model.EmployeeCompleteOrderReqUsecase{
+	order, err := h.uc.EmployeeCompleteOrder(ctx, &model.EmployeeCompleteOrderReqUsecase{
 		OrderID: req.OrderID,
 	})
 	if err != nil {

@@ -8,11 +8,13 @@ import (
 	"coffeeshop-api/pkg/postgres"
 	"coffeeshop-api/pkg/redis"
 	"coffeeshop-api/pkg/tools"
+	"coffeeshop-api/pkg/tracer"
 
 	"github.com/pressly/goose/v3"
 	goRedis "github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 var flags struct {
@@ -31,7 +33,7 @@ func readConfig() {
 	viper.SetConfigFile(flags.configPath)
 
 	if err := viper.ReadInConfig(); err != nil {
-		logrus.Fatalf("read config: %v", err)
+		logrus.Fatalf("Read config: %v", err)
 	}
 }
 
@@ -52,6 +54,19 @@ func initTools() {
 	})
 }
 
+// Initialize tracer.
+func initTracer() *trace.TracerProvider {
+	tracerProvider, err := tracer.Init(
+		viper.GetString("tracing.service_name"),
+		viper.GetString("tracing.jeager_endpoint"),
+	)
+	if err != nil {
+		logrus.Fatalf("Init tracer: %v", err)
+	}
+
+	return tracerProvider
+}
+
 // Connect main storage.
 func connectStorage() *sql.DB {
 	db, err := postgres.Connect(&postgres.Options{
@@ -68,7 +83,7 @@ func connectStorage() *sql.DB {
 		PingTimeout:     viper.GetDuration("database.postgres.ping_timeout_sec"),
 	})
 	if err != nil {
-		logrus.Fatalf("connect to postgres: %v", err)
+		logrus.Fatalf("Connect to postgres: %v", err)
 	}
 
 	return db
@@ -85,7 +100,7 @@ func connectCache() *goRedis.Client {
 		PingTimeout: viper.GetDuration("database.redis.ping_timeout_sec"),
 	})
 	if err != nil {
-		logrus.Fatalf("connect to redis: %v", err)
+		logrus.Fatalf("Connect to redis: %v", err)
 	}
 
 	return client
@@ -94,10 +109,10 @@ func connectCache() *goRedis.Client {
 // Run migrations.
 func runMigrations(db *sql.DB) {
 	if err := goose.SetDialect("postgres"); err != nil {
-		logrus.Fatalf("connect set goose dialect: %v", err)
+		logrus.Fatalf("Connect set goose dialect: %v", err)
 	}
 
 	if err := goose.Up(db, "./migrations"); err != nil {
-		logrus.Fatalf("connect run migrations: %v", err)
+		logrus.Fatalf("Connect run migrations: %v", err)
 	}
 }

@@ -14,6 +14,7 @@ services:
       - postgres
       - redis
       - prometheus
+      - jaeger
 
   postgres:
     container_name: coffeeshop-postgres
@@ -48,10 +49,19 @@ services:
       - ./docs/swagger.json:/docs/swagger.json
 
   prometheus:
-    container_name: url-shortener-prometheus
+    container_name: coffeeshop-prometheus
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
     command: --config.file=/etc/prometheus/prometheus.yml
+  
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: coffeeshop-jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4318:4318"

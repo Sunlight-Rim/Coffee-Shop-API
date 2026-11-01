@@ -27,9 +27,9 @@ type IStorage interface {
 
 // Cache service
 type ICache interface {
-	SaveUserRefreshToken(userID uint64, token Token) error
-	RevokeUserRefreshToken(userID uint64, token string) error
-	RevokeAllUserRefreshTokens(userID uint64) (tokens []string, err error)
+	SaveUserRefreshToken(ctx context.Context, userID uint64, token Token) error
+	RevokeUserRefreshToken(ctx context.Context, userID uint64, token string) error
+	RevokeAllUserRefreshTokens(ctx context.Context, userID uint64) (tokens []string, err error)
 }
 
 // Token service

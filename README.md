@@ -1,8 +1,7 @@
 # Coffee Shop API
 
 Example Go application with Clean Architecture pattern. \
-Contains CRUD operations for `Users`, `Coffee` and `Orders` services. \
-Includes testing, migrations and custom errors.
+Contains CRUD operations for `Users`, `Coffee` and `Orders` services.
 
 <img align="right" src="imgs/logo.png" alt="logo" width="170"/>
 
@@ -16,7 +15,7 @@ Includes testing, migrations and custom errors.
 
 ## Architecture
 
-The architecture designed according to the SOLID and GRASP principles.
+Architecture designed according to the SOLID and GRASP principles.
 
 <img align="center" src="imgs/scheme.png" alt="scheme" width="700"/>
 

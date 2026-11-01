@@ -30,6 +30,9 @@ func Start() {
 	// Run migrations
 	runMigrations(storage)
 
+	// Init tracer
+	tracerProvider := initTracer()
+
 	// Init server
 	s := server.New()
 
@@ -52,12 +55,16 @@ func Start() {
 	defer stop()
 
 	<-ctx.Done()
+	ctx = context.Background()
 
 	if err := storage.Close(); err != nil {
 		logger.Errorf("Close DB: %s", err)
 	}
 	if err := cache.Close(); err != nil {
 		logger.Errorf("Close cache: %s", err)
+	}
+	if err := tracerProvider.Shutdown(ctx); err != nil {
+		logger.Errorf("Tracing shutdown: %s", err)
 	}
 
 	logger.Fatalf("Shutdown: %v", s.Shutdown(ctx))

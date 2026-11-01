@@ -1,11 +1,13 @@
 package usecase
 
 import (
+	"context"
+
 	"coffeeshop-api/internal/services/orders/model"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/metrics"
 	"coffeeshop-api/pkg/tools"
-	"context"
+	"coffeeshop-api/pkg/tracer"
 )
 
 type usecase struct {
@@ -19,7 +21,11 @@ func New(storage model.IStorage) *usecase {
 	}
 }
 
+// GetOrderInfo returns user orders list from database.
 func (uc *usecase) ListOrders(ctx context.Context, req *model.ListOrdersReqUsecase) (*model.ListOrdersResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "ListOrders")
+	defer span.End()
+
 	orders, err := uc.storage.ListOrders(ctx, &model.ListOrdersReqStorage{
 		UserID: req.UserID,
 		Offset: req.Offset,
@@ -32,7 +38,12 @@ func (uc *usecase) ListOrders(ctx context.Context, req *model.ListOrdersReqUseca
 		Orders: orders.Orders,
 	}, nil
 }
+
+// GetOrderInfo returns user order information from database.
 func (uc *usecase) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqUsecase) (*model.GetOrderInfoResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "GetOrderInfo")
+	defer span.End()
+
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -52,6 +63,9 @@ func (uc *usecase) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqU
 
 // CreateOrder creates order in database.
 func (uc *usecase) CreateOrder(ctx context.Context, req *model.CreateOrderReqUsecase) (*model.CreateOrderResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "CreateOrder")
+	defer span.End()
+
 	if err := req.Validate(); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -98,7 +112,11 @@ func (uc *usecase) CreateOrder(ctx context.Context, req *model.CreateOrderReqUse
 	}, nil
 }
 
+// CancelOrder marks order as cancelled.
 func (uc *usecase) CancelOrder(ctx context.Context, req *model.CancelOrderReqUsecase) (*model.CancelOrderResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "CancelOrder")
+	defer span.End()
+
 	order, err := uc.storage.CancelOrder(ctx, &model.CancelOrderReqStorage{
 		UserID:  req.UserID,
 		OrderID: req.OrderID,
@@ -117,6 +135,9 @@ func (uc *usecase) CancelOrder(ctx context.Context, req *model.CancelOrderReqUse
 
 // EmployeeCompleteOrder marks order as completed.
 func (uc *usecase) EmployeeCompleteOrder(ctx context.Context, req *model.EmployeeCompleteOrderReqUsecase) (*model.EmployeeCompleteOrderResUsecase, error) {
+	ctx, span := tracer.Start(ctx, "EmployeeCompleteOrder")
+	defer span.End()
+
 	order, err := uc.storage.EmployeeCompleteOrder(ctx, &model.EmployeeCompleteOrderReqStorage{
 		OrderID: req.OrderID,
 	})
