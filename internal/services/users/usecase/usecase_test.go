@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"coffeeshop-api/internal/services/users/mocks"
 	"coffeeshop-api/internal/services/users/model"
+	"coffeeshop-api/internal/services/users/model/mocks"
 	"coffeeshop-api/pkg/claims"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tools"

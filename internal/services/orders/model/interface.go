@@ -2,6 +2,8 @@ package model
 
 import "context"
 
+//go:generate mockery --all --output=mocks
+
 // Use cases
 type IUsecase interface {
 	ListOrders(context.Context, *ListOrdersReqUsecase) (*ListOrdersResUsecase, error)

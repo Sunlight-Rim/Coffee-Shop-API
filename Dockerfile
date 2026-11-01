@@ -2,6 +2,8 @@
 
 FROM golang:alpine3.24 AS builder
 
+ENV GOLANG_VERSION 1.27.0
+
 WORKDIR /app
 
 COPY . .

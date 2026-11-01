@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-//go:generate mockery --all --output=../mocks
+//go:generate mockery --all --output=mocks
 
 // Use cases
 type IUsecase interface {
