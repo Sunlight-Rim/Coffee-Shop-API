@@ -46,6 +46,10 @@ Swagger available at [localhost:8080](http://localhost:8080/). You can also use 
 
 Prometheus available at [localhost:9090](http://localhost:9090/)
 
+### Tracing
+
+Jaeger available at [localhost:16686](http://localhost:16686/)
+
 ### Profiling
 
 Pprof available at [localhost:6060](http://localhost:6060/)
