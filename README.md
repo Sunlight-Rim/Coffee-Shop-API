@@ -17,7 +17,7 @@ Contains CRUD operations for `Users`, `Coffee` and `Orders` services.
 
 Layered architecture according to the SOLID principles.
 
-<img align="center" src="imgs/architecture.png" alt="scheme" width="600"/>
+<img align="center" src="imgs/architecture.png" alt="scheme" width="630"/>
 
 ## Run
 
