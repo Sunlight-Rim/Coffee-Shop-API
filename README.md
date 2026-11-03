@@ -17,7 +17,7 @@ Contains CRUD operations for `Users`, `Coffee` and `Orders` services.
 
 Architecture designed according to the SOLID and GRASP principles.
 
-<img align="center" src="imgs/scheme.png" alt="scheme" width="700"/>
+<img align="center" src="imgs/architecture.png" alt="scheme" width="680"/>
 
 ## Run
 
