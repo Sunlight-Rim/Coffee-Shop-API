@@ -8,7 +8,11 @@ import (
 	"coffeeshop-api/internal/services/users/model"
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tracer"
+
+	sq "github.com/Masterminds/squirrel"
 )
+
+var builder = sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
 type storage struct {
 	db *sql.DB
@@ -23,40 +27,44 @@ func (s *storage) CreateUser(ctx context.Context, req *model.CreateUserReqStorag
 	defer span.End()
 
 	// Check if email is busy
-	var emailBusy bool
+	var id uint64
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT true
-		FROM api.users
-		WHERE email = $1
-	`,
-		req.Email,
-	).Scan(&emailBusy); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	query, args := builder.
+		Select("id").
+		From("api.users").
+		Where(sq.Eq{"email": req.Email}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&id); err != nil &&
+		!errors.Is(err, sql.ErrNoRows) {
 		return nil, errors.Wrap(err, "check email")
 	}
 
-	if emailBusy {
+	if id != 0 {
 		return nil, errors.Wrap(errors.EmailIsBusy, "busy email")
 	}
 
 	// Add user
 	var userID uint64
 
-	if err := s.db.QueryRowContext(ctx, `
-		INSERT INTO api.users(
-			username,
-			email,
-			phone,
-			password_hash
-		)
-		VALUES ($1, $2, $3, $4)
-		RETURNING id
-	`,
-		req.Username,
-		req.Email,
-		req.Phone,
-		req.PasswordHash,
-	).Scan(&userID); err != nil {
+	query, args = builder.
+		Insert("api.users").
+		Columns(
+			"username",
+			"email",
+			"phone",
+			"password_hash",
+		).
+		Values(
+			req.Username,
+			req.Email,
+			req.Phone,
+			[]byte(req.PasswordHash),
+		).
+		Suffix("RETURNING id").
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&userID); err != nil {
 		return nil, errors.Wrap(err, "create user")
 	}
 
@@ -69,17 +77,21 @@ func (s *storage) CheckCredentials(ctx context.Context, req *model.CheckCredenti
 
 	var userID uint64
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT id
-		FROM api.users
-		WHERE
-			email = $1 AND
-			password_hash = $2 AND
-			deleted_at IS NULL
-	`,
-		req.Email,
-		req.PasswordHash,
-	).Scan(&userID); err != nil {
+	query, args := builder.
+		Select(
+			"id",
+		).
+		From("api.users").
+		Where(sq.And{
+			sq.Eq{
+				"email":         req.Email,
+				"password_hash": []byte(req.PasswordHash),
+			},
+			sq.Expr("deleted_at IS NULL"),
+		}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&userID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.Wrap(errors.InvalidCredentials, "invalid credentials")
 		}
@@ -96,17 +108,18 @@ func (s *storage) GetMe(ctx context.Context, req *model.GetMeReqStorage) (*model
 
 	var user model.User
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT
-			id,
-			username,
-			email,
-			phone
-		FROM api.users
-		WHERE id = $1
-	`,
-		req.UserID,
-	).Scan(
+	query, args := builder.
+		Select(
+			"id",
+			"username",
+			"email",
+			"phone",
+		).
+		From("api.users").
+		Where(sq.Eq{"id": req.UserID}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
@@ -124,18 +137,17 @@ func (s *storage) ChangePassword(ctx context.Context, req *model.ChangePasswordR
 
 	var changed bool
 
-	if err := s.db.QueryRowContext(ctx, `
-		UPDATE api.users
-		SET password_hash = $1
-		WHERE
-			id = $2 AND
-			password_hash = $3
-		RETURNING true
-	`,
-		req.NewPasswordHash,
-		req.UserID,
-		req.OldPasswordHash,
-	).Scan(&changed); err != nil {
+	query, args := builder.
+		Update("api.users").
+		Set("password_hash", req.NewPasswordHash).
+		Where(sq.Eq{
+			"id":            req.UserID,
+			"password_hash": req.OldPasswordHash,
+		}).
+		Suffix("RETURNING true").
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&changed); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return errors.Wrap(errors.InvalidCredentials, "invalid password")
 		}
@@ -156,18 +168,19 @@ func (s *storage) DeleteMe(ctx context.Context, req *model.DeleteMeReqStorage) (
 		deletedAt *time.Time
 	)
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT
-			id,
-			username,
-			email,
-			phone,
-			deleted_at
-		FROM api.users
-		WHERE id = $1
-	`,
-		req.UserID,
-	).Scan(
+	query, args := builder.
+		Select(
+			"id",
+			"username",
+			"email",
+			"phone",
+			"deleted_at",
+		).
+		From("api.users").
+		Where(sq.Eq{"id": req.UserID}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Email,
@@ -181,14 +194,13 @@ func (s *storage) DeleteMe(ctx context.Context, req *model.DeleteMeReqStorage) (
 		return nil, errors.Wrapf(errors.UserAlreadyDeleted, "already deleted at %v", *deletedAt)
 	}
 
-	if _, err := s.db.ExecContext(ctx, `
-		UPDATE api.users
-		SET deleted_at = $1
-		WHERE id = $2
-	`,
-		time.Now(),
-		req.UserID,
-	); err != nil {
+	query, args = builder.
+		Update("api.users").
+		Set("deleted_at", time.Now()).
+		Where(sq.Eq{"id": req.UserID}).
+		MustSql()
+
+	if _, err := s.db.ExecContext(ctx, query, args...); err != nil {
 		return nil, errors.Wrap(err, "delete user")
 	}
 

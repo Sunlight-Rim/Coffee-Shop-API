@@ -8,9 +8,12 @@ import (
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tracer"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/lib/pq"
 	logger "github.com/sirupsen/logrus"
 )
+
+var builder = sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
 const ordersLimit = 10
 
@@ -26,26 +29,26 @@ func (s *storage) ListOrders(ctx context.Context, req *model.ListOrdersReqStorag
 	ctx, span := tracer.Start(ctx, "ListOrders")
 	defer span.End()
 
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT
-			id,
-			created_at
-		FROM api.orders
-		WHERE user_id = $1
-		ORDER BY created_at DESC
-		LIMIT $2 OFFSET $3
-	`,
-		req.UserID,
-		ordersLimit,
-		req.Offset,
-	)
+	query, args := builder.
+		Select(
+			"id",
+			"created_at",
+		).
+		From("api.orders").
+		Where(sq.Eq{"user_id": req.UserID}).
+		OrderBy("created_at DESC").
+		Limit(ordersLimit).
+		Offset(req.Offset).
+		MustSql()
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.Wrap(err, "get orders list")
 	}
 
 	defer func() {
 		if errClose := rows.Close(); errClose != nil {
-			logger.WithField("error", errClose).Error("Close rows")
+			logger.Errorf("Close rows: %s", errClose)
 		}
 	}()
 
@@ -59,10 +62,6 @@ func (s *storage) ListOrders(ctx context.Context, req *model.ListOrdersReqStorag
 			&order.OrderID,
 			&order.OrderCreatedAt,
 		); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return &model.ListOrdersResStorage{}, nil
-			}
-
 			return nil, errors.Wrap(err, "scan orders list")
 		}
 
@@ -83,20 +82,21 @@ func (s *storage) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqSt
 	var order model.GetOrderInfoOrder
 
 	// Get order
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT
-			id,
+	query, args := builder.
+		Select(
+			"id",
 			"status",
 			"address",
-			created_at
-		FROM api.orders
-		WHERE
-			user_id = $1 AND
-			id = $2
-	`,
-		req.UserID,
-		req.OrderID,
-	).Scan(
+			"created_at",
+		).
+		From("api.orders").
+		Where(sq.Eq{
+			"user_id": req.UserID,
+			"id":      req.OrderID,
+		}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&order.OrderID,
 		&order.Status,
 		&order.Address,
@@ -110,25 +110,26 @@ func (s *storage) GetOrderInfo(ctx context.Context, req *model.GetOrderInfoReqSt
 	}
 
 	// Get order items
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT
-			c.id,
-			c.title,
-			c."image",
-			oi.topping
-		FROM api.order_items AS oi
-		JOIN api.coffee AS c ON oi.coffee_id = c.id
-		WHERE oi.order_id = $1
-	`,
-		req.OrderID,
-	)
+	query, args = builder.
+		Select(
+			"c.id",
+			"c.title",
+			"c.image",
+			"oi.topping",
+		).
+		From("api.order_items AS oi").
+		Join("api.coffee AS c ON oi.coffee_id = c.id").
+		Where(sq.Eq{"order_id": req.OrderID}).
+		MustSql()
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.Wrap(err, "get order items")
 	}
 
 	defer func() {
 		if errClose := rows.Close(); errClose != nil {
-			logger.WithField("error", errClose).Error("Close rows")
+			logger.Errorf("Close rows: %s", errClose)
 		}
 	}()
 
@@ -160,13 +161,13 @@ func (s *storage) CheckCoffeeIDsExists(ctx context.Context, req *model.CheckCoff
 
 	var count int
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT count(*)
-		FROM api.coffee
-		WHERE id = any($1)
-	`,
-		pq.Array(req.CoffeeIDs),
-	).Scan(&count); err != nil {
+	query, args := builder.
+		Select("count(*)").
+		From("api.coffee").
+		Where(sq.Expr("id = ANY(?)", pq.Array(req.CoffeeIDs))).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&count); err != nil {
 		return errors.Wrap(err, "scan coffee IDs count")
 	}
 
@@ -183,13 +184,13 @@ func (s *storage) CheckToppingsExists(ctx context.Context, req *model.CheckToppi
 
 	var count int
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT count(*)
-		FROM unnest(enum_range(NULL::api.topping)) AS t(name)
-		WHERE t.name::TEXT = any($1)
-	`,
-		pq.Array(req.Toppings),
-	).Scan(&count); err != nil {
+	query, args := builder.
+		Select("count(*)").
+		From("unnest(enum_range(NULL::api.topping)) AS t(name)").
+		Where(sq.Expr("t.name::TEXT = ANY(?)", pq.Array(req.Toppings))).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&count); err != nil {
 		return errors.Wrap(err, "scan toppings count")
 	}
 
@@ -225,36 +226,42 @@ func (s *storage) CreateOrder(ctx context.Context, req *model.CreateOrderReqStor
 	// Insert order
 	var orderID uint64
 
-	if err := tx.QueryRowContext(ctx, `
-		INSERT INTO api.orders(
-			user_id,
-			"address"
-		)
-		VALUES ($1, $2)
-		RETURNING id
-	`,
-		req.UserID,
-		req.Address,
-	).Scan(&orderID); err != nil {
+	query, args := builder.
+		Insert("api.orders").
+		Columns(
+			"user_id",
+			"address",
+		).
+		Values(
+			req.UserID,
+			req.Address,
+		).
+		Suffix("RETURNING id").
+		MustSql()
+
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(&orderID); err != nil {
 		return nil, errors.Wrap(err, "insert order")
 	}
 
 	// Insert items
-	stmt, err := tx.PrepareContext(ctx, `
-		INSERT INTO api.order_items(
-			order_id,
-			coffee_id,
-			topping
-		)
-		VALUES ($1, $2, $3)
-	`)
+	query, _ = builder.
+		Insert("api.order_items").
+		Columns(
+			"order_id",
+			"coffee_id",
+			"topping",
+		).
+		Values("?", "?", "?").
+		MustSql()
+
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, errors.Wrap(err, "prepare items")
 	}
 
 	defer func() {
 		if errClose := stmt.Close(); errClose != nil {
-			logger.WithField("error", errClose).Error("Close stmt")
+			logger.Errorf("Close stmt: %s", errClose)
 		}
 	}()
 
@@ -278,17 +285,18 @@ func (s *storage) CancelOrder(ctx context.Context, req *model.CancelOrderReqStor
 
 	var order model.CancelOrderResStorage
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT
-			id,
-			user_id,
-			created_at,
-			"status"
-		FROM api.orders
-		WHERE id = $1
-	`,
-		req.OrderID,
-	).Scan(
+	query, args := builder.
+		Select(
+			"id",
+			"user_id",
+			"created_at",
+			"status",
+		).
+		From("api.orders").
+		Where(sq.Eq{"id": req.OrderID}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&order.OrderID,
 		&order.OrderCustomerID,
 		&order.OrderCreatedAt,
@@ -305,16 +313,17 @@ func (s *storage) CancelOrder(ctx context.Context, req *model.CancelOrderReqStor
 		return nil, errors.Wrap(errors.CannotCancelThisOrder, "order cannot be cancelled")
 	}
 
-	// Here may be status race condition, but its acceptable
+	// Here may be status race condition (if status setted
+	// as cooking now), but its acceptable
 
-	if err := s.db.QueryRowContext(ctx, `
-		UPDATE api.orders
-		SET "status" = 'cancelled'
-		WHERE id = $1
-		RETURNING "status"
-	`,
-		req.OrderID,
-	).Scan(&order.OrderStatus); err != nil {
+	query, args = builder.
+		Update("api.orders").
+		Set("status", "cancelled").
+		Where(sq.Eq{"id": req.OrderID}).
+		Suffix("RETURNING status").
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(&order.OrderStatus); err != nil {
 		return nil, errors.Wrap(err, "change order status")
 	}
 
@@ -327,18 +336,19 @@ func (s *storage) EmployeeCompleteOrder(ctx context.Context, req *model.Employee
 
 	var order model.EmployeeCompleteOrderResStorage
 
-	if err := s.db.QueryRowContext(ctx, `
-		UPDATE api.orders
-		SET "status" = 'ready to receive'
-		WHERE id = $1
-		RETURNING
+	query, args := builder.
+		Update("api.orders").
+		Set("status", "ready to receive").
+		Where(sq.Eq{"id": req.OrderID}).
+		Suffix(`RETURNING 
 			id,
 			user_id,
 			created_at,
-			"status"
-	`,
-		req.OrderID,
-	).Scan(
+			status
+		`).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&order.OrderID,
 		&order.OrderCustomerID,
 		&order.OrderCreatedAt,

@@ -17,6 +17,7 @@ curl -X POST http://localhost:1337/api/auth/signup \
 ```bash
 curl -X POST http://localhost:1337/api/auth/signin \
     -H 'Accept: application/json' \
+    -c cookies.txt \
     -d '{
             "email":    "test@mail.com",
             "password": "Password:123"
@@ -26,13 +27,15 @@ curl -X POST http://localhost:1337/api/auth/signin \
 ### Get account information
 ```bash
 curl -X GET http://localhost:1337/api/user \
-    -H 'Accept: application/json'
+    -H 'Accept: application/json' \
+    -b cookies.txt
 ```
 
 ### Change password
 ```bash
 curl -X PUT http://localhost:1337/api/user/password \
     -H 'Accept: application/json' \
+    -b cookies.txt \
     -d '{
             "old_password": "Password:123",
             "new_password": "newPassword:123"
@@ -42,6 +45,7 @@ curl -X PUT http://localhost:1337/api/user/password \
 ### Refresh token
 ```bash
 curl -X POST http://localhost:1337/api/auth/refresh \
+    -b cookies.txt \
     -H 'Accept: application/json'
 ```
 
@@ -74,6 +78,7 @@ curl -X GET http://localhost:1337/api/toppings \
 ### Create a coffee order (payment not implemented)
 ```bash
 curl -X POST http://localhost:1337/api/orders \
+    -b cookies.txt \
     -H 'Accept: application/json' \
     -d '{
             "address": "Grove st., 45",
@@ -85,9 +90,11 @@ curl -X POST http://localhost:1337/api/orders \
             ]
     }'
 ```
+
 ### Connect to Server-Sent Events endpoint for get orders statuses notifications
 ```bash
 curl -N http://localhost:1337/api/events/orders/statuses \
+    -b cookies.txt \
     -H 'Accept: text/event-stream'
 ```
 
@@ -101,18 +108,21 @@ curl -X POST http://localhost:1337/api/employee/orders/1/complete \
 ### ...or cancel the order (as a user)
 ```bash
 curl -X POST http://localhost:1337/api/orders/1/cancel \
+    -b cookies.txt \
     -H 'Accept: application/json'
 ```
 
 ### List your orders
 ```bash
 curl -X GET http://localhost:1337/api/orders \
+    -b cookies.txt \
     -H 'Accept: application/json'
 ```
 
 ### Get order details
 ```bash
 curl -X GET http://localhost:1337/api/orders/1 \
+    -b cookies.txt \
     -H 'Accept: application/json'
 ```
 
@@ -123,11 +133,13 @@ curl -X GET http://localhost:1337/api/orders/1 \
 ### Delete your account
 ```bash
 curl -X DELETE http://localhost:1337/api/user \
+    -b cookies.txt \
     -H 'Accept: application/json'
 ```
 
 ### Signout from active session
 ```bash
 curl -X POST http://localhost:1337/api/auth/signout \
+    -b cookies.txt \
     -H 'Accept: application/json'
 ```

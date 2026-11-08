@@ -1,11 +1,10 @@
 package coffee
 
 import (
-	"database/sql"
-
 	"coffeeshop-api/internal/services/coffee/delivery"
 	"coffeeshop-api/internal/services/coffee/infrastructure/storage"
 	"coffeeshop-api/internal/services/coffee/usecase"
+	"database/sql"
 
 	"github.com/labstack/echo/v4"
 )

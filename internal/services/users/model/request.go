@@ -34,7 +34,7 @@ type CreateUserReqStorage struct {
 	Username     string
 	Email        string
 	Phone        uint64
-	PasswordHash string
+	PasswordHash []byte
 }
 
 func (req *SignupReqUsecase) Validate() error {
@@ -68,7 +68,7 @@ type SigninReqUsecase struct {
 
 type CheckCredentialsReqStorage struct {
 	Email        string
-	PasswordHash string
+	PasswordHash []byte
 }
 
 func (req *SigninReqUsecase) Validate() error {
@@ -137,8 +137,8 @@ type ChangePasswordReqUsecase struct {
 
 type ChangePasswordReqStorage struct {
 	UserID          uint64
-	OldPasswordHash string
-	NewPasswordHash string
+	OldPasswordHash []byte
+	NewPasswordHash []byte
 }
 
 func (req *ChangePasswordReqUsecase) Validate() error {

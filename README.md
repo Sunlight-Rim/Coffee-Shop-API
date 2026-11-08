@@ -13,6 +13,8 @@ Contains CRUD operations for `Users`, `Coffee` and `Orders` services.
 > - Prometheus
 > - OpenTelemetry
 
+**Toolkit:** Echo, Squirrel, Goose, EasyJSON
+
 ## Architecture
 
 Layered architecture according to the SOLID principles.

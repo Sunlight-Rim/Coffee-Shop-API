@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
 )
 
@@ -26,7 +26,7 @@ type Options struct {
 
 // Connect and ping a postgres.
 func Connect(opts *Options) (*sql.DB, error) {
-	db, err := sql.Open("postgres", fmt.Sprintf(
+	db, err := sql.Open("pgx", fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		opts.Host,
 		opts.Port,

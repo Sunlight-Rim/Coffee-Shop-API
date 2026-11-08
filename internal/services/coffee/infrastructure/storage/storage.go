@@ -8,8 +8,11 @@ import (
 	"coffeeshop-api/pkg/errors"
 	"coffeeshop-api/pkg/tracer"
 
+	sq "github.com/Masterminds/squirrel"
 	logger "github.com/sirupsen/logrus"
 )
+
+var builder = sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
 const (
 	coffeeLimit   = 10
@@ -28,28 +31,29 @@ func (s *storage) ListCoffees(ctx context.Context, req *model.ListCoffeesReqStor
 	ctx, span := tracer.Start(ctx, "ListCoffees")
 	defer span.End()
 
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT
-			id,
-			title,
+	query, args := builder.
+		Select(
+			"id",
+			"title",
 			"description",
 			"image",
 			"weight",
-			price
-		FROM api.coffee
-		ORDER BY id ASC
-		LIMIT $1 OFFSET $2
-	`,
-		coffeeLimit,
-		req.Offset,
-	)
+			"price",
+		).
+		From("api.coffee").
+		OrderBy("id ASC").
+		Limit(coffeeLimit).
+		Offset(req.Offset).
+		MustSql()
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.Wrap(err, "get coffee list")
 	}
 
 	defer func() {
 		if errClose := rows.Close(); errClose != nil {
-			logger.WithField("error", errClose).Error("Close rows")
+			logger.Errorf("Close rows: %s", errClose)
 		}
 	}()
 
@@ -86,19 +90,20 @@ func (s *storage) GetCoffeeInfo(ctx context.Context, req *model.GetCoffeeInfoReq
 
 	var coffee model.Coffee
 
-	if err := s.db.QueryRowContext(ctx, `
-		SELECT
-			id,
-			title,
+	query, args := builder.
+		Select(
+			"id",
+			"title",
 			"description",
 			"image",
 			"weight",
-			price
-		FROM api.coffee
-		WHERE id = $1
-	`,
-		req.CoffeeID,
-	).Scan(
+			"price",
+		).
+		From("api.coffee").
+		Where(sq.Eq{"id": req.CoffeeID}).
+		MustSql()
+
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&coffee.ID,
 		&coffee.Title,
 		&coffee.Description,
@@ -120,20 +125,20 @@ func (s *storage) ListToppings(ctx context.Context, req *model.ListToppingsReqSt
 	ctx, span := tracer.Start(ctx, "ListToppings")
 	defer span.End()
 
-	rows, err := s.db.QueryContext(ctx, `
-		SELECT unnest(enum_range(NULL::api.topping))
-		LIMIT $1 OFFSET $2
-	`,
-		toppingsLimit,
-		req.Offset,
-	)
+	query, args := builder.
+		Select("unnest(enum_range(NULL::api.topping))").
+		Limit(toppingsLimit).
+		Offset(req.Offset).
+		MustSql()
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.Wrap(err, "get toppings list")
 	}
 
 	defer func() {
 		if errClose := rows.Close(); errClose != nil {
-			logger.WithField("error", errClose).Error("Close rows")
+			logger.Errorf("Close rows: %s", errClose)
 		}
 	}()
 

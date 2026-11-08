@@ -20,10 +20,10 @@ func Init(opts Options) {
 	options = opts
 }
 
-// SHA256 generates SHA-256 hash string.
-func SHA256(text string) string {
+// SHA256 generates SHA-256 hash.
+func SHA256(text string) []byte {
 	h := sha256.Sum256([]byte(text))
-	return string(h[:])
+	return h[:]
 }
 
 // SetCookie sets cookies.

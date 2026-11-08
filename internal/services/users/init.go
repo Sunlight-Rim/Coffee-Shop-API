@@ -1,13 +1,12 @@
 package users
 
 import (
-	"database/sql"
-
 	"coffeeshop-api/internal/services/users/delivery"
 	"coffeeshop-api/internal/services/users/infrastructure/cache"
 	"coffeeshop-api/internal/services/users/infrastructure/storage"
 	"coffeeshop-api/internal/services/users/infrastructure/token"
 	"coffeeshop-api/internal/services/users/usecase"
+	"database/sql"
 
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
